@@ -1,0 +1,33 @@
+name: order-service
+repo: git@github.com:your-org/order-platform.git
+module: order-service
+language: Java 21
+framework: Spring Boot 3.x
+port: 8081
+
+dependencies:
+  database:
+    - type: Oracle
+      schema: ORDER_DB
+      tables: [ORDERS, PRODUCTS]
+  cache:
+    - type: Redis
+      key_prefix: "order:"
+  messaging:
+    - type: Kafka
+      topics_produced: [order-created]
+      topics_consumed: []
+
+communication:
+  inbound:
+    - protocol: REST
+      from: api-gateway
+      path_prefix: /orders
+  outbound:
+    - protocol: Kafka
+      to: payment-service
+      topic: order-created
+
+team: Team A
+kb_last_synced: "2024-06-01"
+kb_sync_commit: abc1234

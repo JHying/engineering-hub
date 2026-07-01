@@ -1,0 +1,39 @@
+name: payment-service
+repo: git@github.com:your-org/order-platform.git
+module: payment-service
+language: Java 21
+framework: Spring Boot 3.x
+port: 8082
+
+dependencies:
+  database:
+    - type: Oracle
+      schema: PAYMENT_DB
+      tables: [PAYMENTS, PAYMENT_IDEMPOTENCY]
+  cache:
+    - type: Redis
+      key_prefix: "payment:"
+  messaging:
+    - type: Kafka
+      topics_consumed: [order-created]
+      topics_produced: [payment-result]
+
+communication:
+  inbound:
+    - protocol: REST
+      from: api-gateway
+      path_prefix: /payments
+    - protocol: Kafka
+      from: order-service
+      topic: order-created
+  outbound:
+    - protocol: HTTP
+      to: third-party-payment-gateway
+      base_url: "${payment.gateway.base-url}"
+    - protocol: Kafka
+      to: notification-service
+      topic: payment-result
+
+team: Team B
+kb_last_synced: "2024-06-01"
+kb_sync_commit: def5678

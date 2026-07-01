@@ -1,0 +1,52 @@
+# knowledge-hub 路徑配置
+#
+# 所有 kb 內文件以 {{key}} 引用此處定義的路徑常數。
+# 若 kb 搬移位置，僅需修改 kb key，其他文件無需改動。
+#
+# 專案知識庫（knowledge/{project}/）路徑由 skill 在執行期動態解析，
+# 不在此檔集中設定。
+
+# ============================================================
+# 基礎路徑
+# ============================================================
+
+kb: "D:\Work\engineering-hub"
+
+# ============================================================
+# 子資料夾路徑
+# ============================================================
+
+paths:
+  roles:     "@kb/roles"
+  flows:     "@kb/role-flows"
+  skills:    "@kb/skills"
+  knowledge: "@kb/knowledge"
+  guideline: "@kb/knowledge/guideline"
+  adrs:      "@kb/knowledge/ADRs"
+  setting:   "@kb/setting"
+
+# ============================================================
+# 常用文件（快速引用）
+# ============================================================
+
+regulations:
+
+  # 角色定義
+  role_backend:    "@kb/roles/role-backend.md"
+  role_qa:         "@kb/roles/role-qa.md"
+  role_sre:        "@kb/roles/role-sre.md"
+  role_pm:         "@kb/roles/role-pm.md"
+  role_consultant: "@kb/roles/role-consultant.md"
+  role_reviewer:   "@kb/roles/role-reviewer.md"
+
+  # 工作流程
+  flow_backend:    "@kb/role-flows/flow-backend.md"
+  flow_qa:         "@kb/role-flows/flow-qa.md"
+  flow_sre:        "@kb/role-flows/flow-sre.md"
+  flow_pm:         "@kb/role-flows/flow-pm.md"
+  flow_consultant: "@kb/role-flows/flow-consultant.md"
+  flow_reviewer:   "@kb/role-flows/flow-reviewer.md"
+
+  # 共用知識（跨專案，自動載入）
+  review_guide: "@kb/knowledge/guideline/REVIEW_GUIDE.md"
+  adrs:         "@kb/knowledge/ADRs"

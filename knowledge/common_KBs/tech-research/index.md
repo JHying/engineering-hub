@@ -1,0 +1,115 @@
+# Tech Research — 技術探討與研究筆記索引
+
+> 記錄技術選型評估、框架研究、跨專案可複用的技術發現。
+> 與 ADR 的差異：非正式決策，而是研究過程、實驗結論、技術比較。
+
+---
+
+## 雲端基礎設施
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-26 | GCP 計算服務選擇指南（Serverless → IaaS 分層） | [gcp-compute-service-selection.md](gcp-compute-service-selection.md) | GCP, Cloud Run, App Engine, GKE, Compute Engine |
+| 2026-06-26 | GCP 網路與安全架構（VPC、IAM、LB、Cloud Armor、IDS） | [gcp-networking-security.md](gcp-networking-security.md) | GCP, VPC, IAM, NEG, Load Balancer, WAF, DDoS |
+| 2026-06-26 | GCP / AWS DNS、CDN 與流量路由策略 | [gcp-aws-dns-cdn-routing.md](gcp-aws-dns-cdn-routing.md) | GCP, AWS, Cloud DNS, Route 53, CloudFront, ALB, CORS |
+| 2026-06-27 | Docker 容器化基礎：Container vs VM、網路架構、Image/Dockerfile | [docker-container-fundamentals.md](docker-container-fundamentals.md) | Docker, Container, Image, Dockerfile, VM, Bridge Network, docker compose |
+
+## 系統性能
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-27 | 系統性能指標：RPS / QPS / TPS 定義、公式、關係與 Thread 最佳化 | [system-performance-metrics-rps-qps-tps.md](system-performance-metrics-rps-qps-tps.md) | RPS, QPS, TPS, 併發數, Thread, 吞吐量, 高併發 |
+| 2026-06-27 | 高併發設計：指標、悲觀/樂觀鎖、分布式鎖（Redis Redisson）、分庫分表 | [high-concurrency-design.md](high-concurrency-design.md) | 高併發, QPS, 悲觀鎖, 樂觀鎖, 分布式鎖, Redisson, Sharding |
+| 2026-06-27 | Redis 快取三大異常情境：穿透、雪崩、擊穿與資料不一致解法 | [redis-cache-failure-patterns.md](redis-cache-failure-patterns.md) | Redis, 快取穿透, 快取雪崩, 快取擊穿, 布隆過濾器, Cache-Aside |
+
+## DevOps / 可觀測性
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-26 | GKE 架構、DevOps 工具鏈與 Service Mesh | [gcp-kubernetes-devops.md](gcp-kubernetes-devops.md) | GCP, GKE, Kubernetes, Istio, CI/CD, Cloud Build |
+| 2026-06-26 | AWS 監控與可觀測性策略（CloudWatch、Prometheus、X-Ray、大規模成本估算） | [aws-monitoring-observability.md](aws-monitoring-observability.md) | AWS, CloudWatch, CloudTrail, Prometheus, Grafana, X-Ray |
+| 2026-06-27 | Kubernetes 架構元件：Pod、Worker Node、Master Node、Cluster 與 Service 類型 | [kubernetes-architecture.md](kubernetes-architecture.md) | Kubernetes, K8s, Pod, Node, kubelet, kube-apiserver, etcd, kubectl |
+| 2026-06-27 | IaC：Ansible 設定管理與 Terraform 基礎設施佈署 | [iac-ansible-terraform.md](iac-ansible-terraform.md) | IaC, Ansible, Terraform, Playbook, Provider, 宣告式, GitOps |
+| 2026-06-30 | Spring Actuator 監測 DB 連線健康狀態與自動重連策略（HikariCP + Tomcat JDBC Pool） | [spring-actuator-db-connection-health.md](spring-actuator-db-connection-health.md) | Spring Boot, Spring Actuator, HikariCP, Tomcat JDBC Pool, Connection Pool, DataSource, Health Check, Spring Retry, 自動重連 |
+
+## 資料與分析
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-26 | GCP 資料儲存與分析服務選擇（Cloud SQL、BigQuery） | [gcp-data-analytics.md](gcp-data-analytics.md) | GCP, Cloud Storage, Cloud SQL, BigQuery, OLTP, OLAP |
+| 2026-06-27 | OLTP vs OLAP 與 ACID 四大特性 | [oltp-vs-olap.md](oltp-vs-olap.md) | OLTP, OLAP, ACID, 資料倉庫, BigQuery, ETL, 列式儲存 |
+| 2026-06-27 | DB Cluster 讀寫分離與 Data Sharding 三大策略 | [db-sharding-cluster.md](db-sharding-cluster.md) | Sharding, 分庫分表, 讀寫分離, Hash-based, Range-based, Master-Slave |
+| 2026-06-27 | NoSQL vs RDBMS 選型：CAP 定理、MongoDB vs Oracle 適用場景 | [nosql-vs-rdbms.md](nosql-vs-rdbms.md) | NoSQL, RDBMS, CAP, MongoDB, Oracle, 選型, 分散式 |
+
+## 應用整合
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-26 | Firebase FCM 推播通知與即時聊天室（Server + Android + Realtime DB） | [firebase-fcm-push.md](firebase-fcm-push.md) | Firebase, FCM, Push Notification, Realtime Database, Android, Spring Boot |
+| 2026-06-27 | Message Broker 選型（RabbitMQ / Kafka / RocketMQ）與 RabbitMQ AMQP 核心概念 | [message-broker-comparison.md](message-broker-comparison.md) | Message Broker, RabbitMQ, Kafka, AMQP, Exchange, Queue, 解耦, 削峰 |
+| 2026-06-27 | Redis 核心概念：資料結構、快取設計、Cluster 架構與 Hash Slot | [redis-fundamentals.md](redis-fundamentals.md) | Redis, In-Memory, Cache Stampede, Consistent Hash, Cluster, Gossip, Hash Slot |
+
+## 網路基礎
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-27 | 網路協議棧：DNS、CDN 加速原理、OSI/TCP/IP 分層與 TLS | [network-protocol-stack.md](network-protocol-stack.md) | OSI, TCP/IP, DNS, CDN, TLS, HTTPS, 三次握手, DDoS |
+| 2026-06-27 | 密碼學基礎：Hash、對稱/非對稱加密、數字簽名與 CA 憑證 | [cryptography-digital-certificates.md](cryptography-digital-certificates.md) | Hash, AES, RSA, 數字簽名, 數字證書, CA, JWT, PKI |
+| 2026-06-27 | HTTP vs MQTT：應用層通訊協議比較（IoT 選型、QoS、Pub/Sub） | [http-vs-mqtt-protocols.md](http-vs-mqtt-protocols.md) | MQTT, HTTP, IoT, Pub/Sub, QoS, Broker, Topic, 低功耗, 即時通訊 |
+
+## 架構設計
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-27 | 微服務架構：拆分原則、Gateway 聚合模式與 12-Factor | [microservices-decomposition.md](microservices-decomposition.md) | 微服務, DDD, Bounded Context, 康威定律, Gateway, Edge Pattern, 12-Factor |
+| 2026-06-27 | OOP 三大特性、SOLID 五大原則、Strategy Pattern 與 Clean Code | [oop-solid-design-patterns.md](oop-solid-design-patterns.md) | OOP, SOLID, SRP, OCP, LSP, ISP, DIP, Strategy Pattern, Clean Code |
+| 2026-06-27 | 企業分層架構物件模式：POJO / DTO / VO / DAO / BO 定義與轉換關係 | [enterprise-object-layer-patterns.md](enterprise-object-layer-patterns.md) | POJO, JavaBean, PO, DTO, VO, DAO, BO, 分層架構, ORM, 持久層 |
+| 2026-06-27 | UML 圖表應用與 OOAD 系統分析設計（OOA / OOD / USDP 迭代模型） | [uml-ooad-system-analysis.md](uml-ooad-system-analysis.md) | UML, OOAD, Use Case, Class Diagram, Activity Diagram, Sequence Diagram, USDP, 迭代開發 |
+| 2026-06-27 | IoC、DI 與 AOP：控制反轉、依賴注入、切面、Bean 生命週期與 Scope；含 JVM 記憶體模型 / final JMM happens-before 保證 | [ioc-di-aop-patterns.md](ioc-di-aop-patterns.md) | IoC, DI, AOP, Bean, Bean Lifecycle, Bean Scope, Singleton, Prototype, Aspect, Pointcut, Advice, JVM, Stack, Heap, final, JMM, happens-before, Constructor 注入, Field 注入 |
+| 2026-06-27 | ORM、JPA 與 Spring Data JPA：持久層技術棧與 Repository 體系 | [orm-jpa-spring-data.md](orm-jpa-spring-data.md) | ORM, JPA, Hibernate, Spring Data JPA, Entity, Repository, CrudRepository, 物件關聯對映 |
+| 2026-06-27 | JVM 記憶體模型：Stack / Heap / String Pool、GC 與 Singleton vs Static | [jvm-memory-model.md](jvm-memory-model.md) | JVM, Stack, Heap, String Pool, Primitive Type, Reference Type, GC, Singleton, Thread |
+| 2026-06-27 | Java 併發與執行緒安全：Thread、Thread Pool、Executor 體系與同步機制 | [java-concurrency-thread-safety.md](java-concurrency-thread-safety.md) | Thread, Process, Concurrency, Thread Safety, synchronized, ConcurrentHashMap, Thread Pool, ExecutorService, Executor |
+| 2026-06-29 | Java Sealed Interfaces 與 Pattern Matching：多態回傳型別建模、窮舉性保證與引入條件 | [java-sealed-interfaces-pattern-matching.md](java-sealed-interfaces-pattern-matching.md) | Sealed Interface, Pattern Matching, switch expression, JDK 17, JDK 21, 多態回傳型別, 窮舉性 |
+
+## 資訊安全
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-30 | 常見 Web 攻擊方式全覽（XSS、CSRF、SQL Injection、DDoS、MITM、Phishing、Broken Authentication） | [web-security-attacks-overview.md](web-security-attacks-overview.md) | XSS, CSRF, SQL Injection, DDoS, MITM, Phishing, Broken Authentication, Web Security, 資安 |
+
+## 前端開發
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-27 | 前端資安與非同步處理：CSRF、Cookie/Storage 比較、Token 儲存策略、async/await | [frontend-web-security.md](frontend-web-security.md) | CSRF, XSS, Cookie, LocalStorage, SessionStorage, HttpOnly, Bearer Token, Promise, async/await |
+
+## AI 工具
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-06-27 | 本地 LLM 開發環境建置（Windows + Docker + Ollama + Open WebUI + n8n + Continue.dev） | [local-llm-dev-environment.md](local-llm-dev-environment.md) | LLM, Ollama, Open WebUI, n8n, Continue.dev, Docker, Windows, 本地推論 |
+| 2026-06-27 | n8n × LLM：AI 自動化工作流設計（AI Agent、RAG、MCP、本地 LLM 整合、進階檢索策略） | [n8n-ai-workflow-automation.md](n8n-ai-workflow-automation.md) | n8n, AI Agent, Workflow, RAG, MCP, Webhook, Schedule Trigger, LM Studio, Tavily, FAISS, Query Rewriting, HyDE, Multi-Query |
+| 2026-07-01 | Playwright MCP × Claude Code：原型頁面 → Spec / Impl KB 自動化工作流（Axshare、版本對齊、差距分析） | [playwright-mcp-spec-to-kb-workflow.md](playwright-mcp-spec-to-kb-workflow.md) | Playwright MCP, Claude Code, AI Engineering, Spec Automation, Prototype, Axshare, Knowledge Base |
+
+---
+
+## 筆記格式範本
+
+```markdown
+# [技術主題]
+
+**日期**：YYYY-MM-DD  
+**關鍵字**：（框架名稱、技術名稱）
+
+## 問題背景
+
+（要解決的問題或評估的情境）
+
+## 研究結論
+
+（發現、比較結果、推薦方向）
+
+## 參考
+
+（文件連結、相關 ADR）
+```

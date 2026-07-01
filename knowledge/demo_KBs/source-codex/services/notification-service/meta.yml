@@ -1,0 +1,36 @@
+name: notification-service
+repo: git@github.com:your-org/order-platform.git
+module: notification-service
+language: Java 21
+framework: Spring Boot 3.x
+port: 8083
+
+dependencies:
+  database:
+    - type: Oracle
+      schema: NOTIF_DB
+      tables: [NOTIFICATION_LOG]
+  cache:
+    - type: Redis
+      key_prefix: "notif:"
+  messaging:
+    - type: Kafka
+      topics_consumed: [payment-result]
+      topics_produced: []
+
+communication:
+  inbound:
+    - protocol: Kafka
+      from: payment-service
+      topic: payment-result
+  outbound:
+    - protocol: HTTP
+      to: email-provider
+      base_url: "${notif.email.base-url}"
+    - protocol: HTTP
+      to: sms-provider
+      base_url: "${notif.sms.base-url}"
+
+team: Team B
+kb_last_synced: "2024-06-01"
+kb_sync_commit: ghi9012

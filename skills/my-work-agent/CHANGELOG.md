@@ -4,6 +4,57 @@
 
 ---
 
+## [2.8] — 2026-07-03
+
+### Added
+- 新增「Output 動作追蹤（強制，適用所有 stage）」規則：每個 stage 的 Output 清單中，「呼叫 /xxx」類項目需在進入該 stage 時各自建立獨立 `TaskCreate` task，且只有真的呼叫對應工具才可標記完成；stage 標記完成前需用 `TaskList` 核對這些 task 全部 completed
+- Step 5-SINGLE 補充引用「Output 動作追蹤（強制）」，避免單一角色模式下同樣漏執行
+
+### Context
+- 起因：實際執行 Spec-Driven 實作 stage 時，因為只建了一個「完成實作」大 task，做完程式碼與手動寫 KB 文件後就直接標記 stage 完成，漏掉了明確要求呼叫的 `/diagram`（且 `/update-kb` 也長期被手動寫檔案取代，未實際呼叫該 skill）。手動替代做法產出的文件表面上跟 skill 產出的格式差不多，導致這個疏漏在多輪對話中都沒被發現，直到使用者事後追問才補做
+
+---
+
+## [2.7] — 2026-07-03
+
+### Added
+- QA stage 新增功能正確性判定機制：QA 若判定「功能確實有誤」（區別於測試案例本身問題），回圈至 Spec-Driven 實作修正 → Code Review → QA，重複執行直到功能確定完成；連續 3 輪未通過時暫停迴圈，與使用者討論現況與解決方法
+- QA 驗測項目新增「本機啟動驗證」（本機驗測，非部署），依 `source-codex/services/{service}/sop-service-startup-verification-internal.md` 執行（若專案尚未建立，標注待補充不卡流程）
+- Stage 間銜接格式新增 `🔁 回圈` 與 `⏸ 暫停迴圈` 輸出格式；流程完成總結補上「QA 回圈次數」
+
+### Changed
+- QA stage 的 **Input** 補上 PM/SA 產生的 Gherkin 範本；**工作內容**新增 AC/Gherkin 對齊核對
+- Spec-Driven 實作 stage 的 **Input** 補上「QA 回圈修正」來源（缺陷描述 + AC/Gherkin 落差，取代重新從頭實作）
+- Step 5-SINGLE 補充說明：單一角色模式下 QA 判定功能有誤時不自動接續 BACKEND，僅提示使用者，維持「只執行該階段」的模式定位
+
+---
+
+## [2.6] — 2026-07-03
+
+### Added
+- Step 1.5 新增 `$SOURCE_ROOTS`：選定專案 KB 後讀取 `source-codex/cross/service-map.md` 的本機路徑欄位，記錄各服務對應的本機原始碼路徑；缺漏時延後到實際需要讀寫程式碼的 stage 才向使用者確認
+- Step 3 動態路徑注入補上 `$SOURCE_ROOTS` 來源說明，與既有 `$master_indexes` 並列
+
+### Changed
+- Spec 轉化（SA）、Spec-Driven 實作（BACKEND）、Code Review（REVIEWER）、QA 四個 stage 的 **Input** 補上 `$SOURCE_ROOTS`：SA 在需生成 impl 時、其餘三者在讀寫實際程式碼時都需要先知道服務對應的本機路徑，不再只憑 spec 內容分析
+
+---
+
+## [2.5] — 2026-07-03
+
+### Changed
+- 需求企劃（PM）stage 的 **Input** 補上第三種來源：企劃書 / 原型頁面網址，依格式自動判斷後透過 Playwright MCP 讀取（對應 `role-flows/flow-pm.md` Step 1 同步補上的自動判斷規則與 SSO 登入失敗的退回處理）
+
+---
+
+## [2.4] — 2026-07-03
+
+### Changed
+- Step 5-PIPELINE「Pipeline Stage 執行細節」改寫為統一結構：每個 stage 明確拆分為 **Input → 工作內容 → Decision → Output → 交給下一個 Stage** 五個區塊，取代原本的流水號步驟敘述
+- 修正 Spec 轉化 stage 工作內容中誤引用 `{{flow_pm}}` 的殘留錯字，改為正確的 `{{flow_sa}}`
+
+---
+
 ## [2.3] — 2026-07-01
 
 ### Added

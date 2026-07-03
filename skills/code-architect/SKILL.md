@@ -1,7 +1,7 @@
 ---
 name: code-architect
 description: Review Java code or a file path against the project's ArchUnit-enforced architecture rules and report violations with fix suggestions.
-version: "2.1"
+version: "2.2"
 ---
 
 You are a strict code architecture reviewer enforcing the layered DDD architecture rules below. These rules are authoritative — do NOT read external ArchUnit files or CLAUDE.md; all rules are embedded here.
@@ -154,7 +154,7 @@ switch (eventMsgType) {
 ## AppService Rules
 
 - Must end with `AppService` or `InitService`.
-- Inject ONLY `*Service` (DomainService) from `..service.domain..`. `java.util.concurrent.ExecutorService` 例外。
+- Inject ONLY `*Service` (DomainService) from `..service.domain..`, or `*Mapper` from `..mapper..`（DTO↔VO 轉換用）。`java.util.concurrent.ExecutorService` 例外。
 - Must NOT inject `*Manager`, `*Repository`, or anything from `..infra..`.
 - Must NOT use `@RequiredArgsConstructor` — write explicit constructors. *（慣例；Lombok 注解在編譯期消失，ArchUnit 無法偵測，由原始碼審查確認）*
 - Constructor dependencies ≤ 6.
@@ -165,17 +165,18 @@ switch (eventMsgType) {
 
 - `*InitAppService`：必須包含 `@EventListener` 方法作為啟動觸發入口，不可被 Controller 注入。*（慣例；ArchUnit 未強制）*
 - `*InitService`：僅在啟動邏輯複雜、需要多步驟編排時建立；單一方法呼叫不需要此層。
-- 兩者的依賴規則與 AppService 相同（只能注入 DomainService）。
+- 兩者的依賴規則與 AppService 相同（只能注入 DomainService 或 Mapper）。
 
 ## DomainService Rules
 
 - Must end with `Service` (not AppService/InitService).
-- Inject ONLY `*Manager` from `..manager..`.
+- Inject ONLY `*Manager` from `..manager..`, or `*Mapper` from `..mapper..`（DTO↔VO 轉換用）。
 - Must NOT inject `*Repository` or anything from `..infra..`.
 - Must NOT use `@RequiredArgsConstructor` — write explicit constructors. *（慣例；Lombok 注解在編譯期消失，ArchUnit 無法偵測，由原始碼審查確認）*
 - Constructor dependencies ≤ 6.
 - **DomainService 之間不可互相依賴。** 若有共用邏輯，應將其下沉至新的 Manager。*（慣例；ArchUnit 未強制）*
 - Public methods MUST return `*VO` / a type from `..vo..`. Allowed exceptions: primitives, `java.*`, `org.springframework.data.domain.*`, `com.example.project.common.dto.*Key`.
+- **此檢查需遞迴**：不只看回傳型別最外層是否為 `*VO`，VO 內部欄位與 generic type argument（如 `List<FooEntity>`、`PageVO<FooEntity>`）也不可挾帶 Entity/Cache 等 infra 型別，詳見 VO/DTO Rules 的欄位型別限制。Manager 套用相同規則（見 Manager Rules）。
 - **Parameter rule**: count all parameters (VO, `*Key`, primitives, enums, `java.util.*`, `java.time.*`). Total count **> 3 (i.e., ≥ 4)** → must wrap in VO. Non-VO project-internal types (other than `*Key`) are forbidden regardless of count.
 
 ## Manager Rules
@@ -186,6 +187,7 @@ switch (eventMsgType) {
 - Must NOT depend on `..service..` or `..controller..`.
 - Constructor dependencies ≤ 6.
 - Public methods: same return type and parameter rules as DomainService. Exception: external framework types (non `com.example.project`) do not count toward parameter total.
+- Must NOT contain business logic — no calculations based on business rules (fees, discounts), no business validation (balance checks), no domain-state branching (membership tier), no business status transitions. *（慣例；業務邏輯屬語意判斷，ArchUnit 無法強制偵測，需由 Code Review 依下方職責定義與範例確認）*
 
 ### Manager 職責定義
 
@@ -280,6 +282,7 @@ public interface XxxMapper {
 - Top-level classes must end with `VO` or `DTO`.
 - Allowed methods ONLY: constructors, getters (`get*`/`is*`), setters (`set*`), `toString`/`equals`/`hashCode`, Lombok methods (`builder`, `toBuilder`, `canEqual`). Inner `*Builder` class methods are also allowed.
 - No business logic methods.
+- **Field types MUST NOT be `*Entity`, `*Cache`/`*CacheData`, or any type from `..infra..`** — including when nested inside a generic type argument (e.g. `List<FooEntity>`, `PageVO<FooEntity>`, `Optional<FooCache>`). Infra 型別必須先經對應的 `*Mapper` 轉換為巢狀 VO，才能作為欄位型別；否則即為 infra 物件溢出到 service 層（頂層回傳型別檢查會誤判為合規）。
 
 ## Entity Rules
 
@@ -453,6 +456,25 @@ public FooEntity findActiveUser(String id) {
     return null;
 }
 // → return the raw Optional<FooEntity>; let Manager/DomainService decide activation logic
+
+// ❌ Manager containing business logic (fee calculation)
+public BigDecimal calculateFinalAmount(OrderVO order) {
+    BigDecimal fee = order.getAmount().multiply(FEE_RATE); // 業務規則 → 屬於 DomainService 職責
+    return order.getAmount().subtract(fee);
+}
+// → Manager 只做資料存取/格式轉換；費率計算搬到 FooDomainService，
+//    Manager 改為單純提供資料（如 getFeeRate()、getRawAmount()）
+
+// ❌ Infra 物件包在 VO 欄位裡溢出到 service 層（頂層型別檢查會誤判為合規）
+public class OrderResultVO {
+    private OrderEntity entity;      // → infra Entity 直接當欄位
+    private List<ItemCache> items;   // → infra Cache 包在 generic type argument 裡
+}
+// → 兩個欄位都應改為對應的巢狀 VO，並在 *Mapper 中新增轉換方法
+// public class OrderResultVO {
+//     private OrderDetailVO detail;
+//     private List<ItemVO> items;
+// }
 
 // ❌ 4+ unwrapped parameters (DomainService / Manager)
 public FooVO process(String a, String b, Integer c, Long d)

@@ -170,6 +170,12 @@ version: 2026-05
 | 大 Key | Value 過大（> 1MB）影響序列化與網路 |
 | Pipeline | 多個獨立命令應合併為 Pipeline，減少 RTT |
 | 過期策略 | TTL 缺失導致 Key 堆積、TTL 設定不合理 |
+| 快取穿透（Penetration） | 查詢不存在的 key 是否有防護（空值快取 + 短 TTL、布隆過濾器），避免每次繞過快取直打 DB |
+| 快取雪崩（Avalanche） | 大量 Key 是否使用相同 / 相近 TTL 未加隨機偏移，同時集體過期造成流量瞬間全打 DB |
+| 快取擊穿（Breakdown） | 熱點 Key 過期瞬間是否有互斥鎖（Mutex Lock）或邏輯過期（Logical TTL）防止重建風暴 |
+
+> 判斷「熱點 Key」「合理 TTL」需依專案實際流量與資料特性：Review 時請從對應**專案 KB 的系統規格基準**（`MASTER_INDEX.md`）或 `source-codex/cross/redis-keymap.md`（若專案有維護）取得實際 Key 設計與 TTL 依據，不套用通用門檻。
+> 三種異常情境的成因分析與解法範例，見 `common_KBs/tech-research/redis-cache-failure-patterns.md`。
 
 ### 3-4 Kafka
 
@@ -239,14 +245,19 @@ version: 2026-05
 
 ---
 
-## 五、審查不涵蓋範圍
+## 五、CI 覆蓋確認（曾為「審查不涵蓋範圍」，2026-07-03 移除排除清單）
 
-以下屬於實作階段的責任，Review 不重複檢查：
+以下項目過去假設「由 CI 工具強制，Review 不重複檢查」。此假設不可靜默沿用——**Review 開始前必須先確認對應專案的 CI 設定（`.gitlab-ci.yml` 等）是否真的涵蓋這些項目**；只要有一項未被 CI 實際涵蓋，Review 階段就必須自行檢查，不得因為「理論上該由誰把關」而略過：
 
-- Package 命名與邊界（由 ArchUnit 在 CI 強制）
-- 分層依賴方向（Controller → AppService → DomainService → Manager → Infra）
-- 測試覆蓋率數值（由 SonarQube 報告）
-- DB Schema 命名規則（由 db-object-rules skill 負責）
+| 項目 | 原本假設的把關方 | Review 時的處理 |
+|------|----------------|-----------------|
+| Package 命名與邊界、分層依賴方向 | ArchUnit（CI） | 呼叫 skill: `/code-architect` 逐檔審查，結果併入本次 Review 的品質問題區塊，不得略過 |
+| 測試覆蓋率 | SonarQube | 檢查本次異動是否有對應的單元 / 整合測試覆蓋；缺漏視為 Review 發現項 |
+| DB Schema 命名規則 | db-object-rules skill | 涉及 DB Object 異動時，呼叫 skill: `/db-object-rules` 審查，結果併入本次 Review |
+
+**判斷是否可略過的唯一依據**：實際檢視該專案的 CI 設定檔，確認對應 stage 存在且會執行。無法確認時，一律視為未涵蓋，Review 階段自行把關。
+
+若上述項目在 Review 階段被判定為未涵蓋而發現問題，其嚴重度與待遇比照第二節「品質問題」——列入審查輸出格式的品質問題區塊，計入摘要計數，不得因為「本非 Review 職責」而降級或省略。
 
 ---
 

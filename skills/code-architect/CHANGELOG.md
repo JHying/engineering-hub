@@ -4,6 +4,31 @@
 
 ---
 
+## [2.3] — 2026-07-03
+
+### Fixed / Clarified
+- **AppService Rules**：明確允許注入 `*Mapper`（DTO↔VO 轉換用），修正先前規則字面只列 `*Service`+`ExecutorService` 例外、未含 Mapper 的疏漏
+- **DomainService Rules**：同上，明確允許注入 `*Mapper`
+- **InitAppService / InitService 規範**：依賴規則說明同步補上 Mapper
+
+### Context
+- 起因：某專案的 code review 中，`FooAppService` 注入 `BarRequestMapper` 被規則字面判定為違規；但掃描後發現 `BazAppService`、`QuxAppService` 等至少 3 個 AppService 都是同一 pattern，屬專案既有的 DTO↔VO 轉換慣例，確認後修訂規則文字承認此為合法依賴，而非要求既有程式碼配合改寫
+
+---
+
+## [2.2] — 2026-07-03
+
+### Added
+- **VO / DTO Rules**：新增欄位型別限制——不可為 `*Entity`、`*Cache`/`*CacheData` 或 `..infra..` 套件下型別，含作為 generic type argument 時（如 `List<FooEntity>`）。修補「頂層回傳型別是 VO 就判合規，但 VO 內部欄位偷塞 infra 物件」的漏洞
+- **DomainService Rules**：回傳型別檢查註明需遞迴至 VO 內部欄位與 generic type argument，不可只看最外層 class 名稱（Manager 依既有規則引用套用相同檢查）
+- **Manager Rules**：新增明確條列「Must NOT contain business logic」規則，與既有「Manager 職責定義」表格呼應，避免業務邏輯（手續費計算、餘額驗證等）誤寫入 Manager
+- **Quick Reference**：補充「Manager 業務邏輯溢出」與「infra 物件包在 VO 欄位裡溢出到 service 層」兩則違規範例
+
+### Context
+- 起因：實際 review 中曾出現 infra 物件（Entity/Cache）溢出到 service 層、以及業務邏輯寫進 Manager 的分層錯誤，追查後發現舊版規則只檢查方法簽名「最外層型別」與「職責定義表格」，缺少欄位型別與語意判斷的明確 quick-reference 錨點
+
+---
+
 ## [2.1] — 2026-04-24
 
 ### Added

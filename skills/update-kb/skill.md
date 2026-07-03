@@ -184,6 +184,7 @@ description: >
   5. 去識別化的架構決策（更新共用 ADRs → `common_KBs/ADRs/`，將依「去識別化檢查清單」自動掃描與替換）
   6. Code Review 記錄（新增 review-history/ 條目，可含 ticket 單號或直接描述）
   7. 技術探討 / 研究筆記（更新 `common_KBs/tech-research/`，將依「去識別化檢查清單」自動掃描與替換）
+  8. KB_ROOT 結構性異動（`skills/`、`role-flows/`、`roles/`、`setting/` 等不綁定特定專案的異動，例如 skill 規則調整、審查/稽核結果）
 
 輸入內容：
 ```
@@ -205,7 +206,10 @@ description: >
 | 去識別化架構決策、跨專案通用決策（無任何專案識別資訊） | **共用 ADR KB**（`$KB_ROOT/knowledge/common_KBs/ADRs/`） |
 | 技術探討、框架評估、研究筆記、選型比較（去識別化） | **通用技術研究 KB**（`$KB_ROOT/knowledge/common_KBs/tech-research/`） |
 | code review、Review、品質問題、效能問題、原子性、[V]、[不處理]、審查範圍、審查結果、review history | **Review History KB**（`{$PROJECT_KB}/review-history/`） |
+| skill 規則調整（`skills/*/SKILL.md`）、角色定義（`roles/`）、角色流程（`role-flows/`）、`setting/paths.yml`、README.md、CLAUDE.md 等不綁定特定專案的異動；或針對這些路徑的稽核 / 檢查結果（如去識別化稽核、規則一致性檢查） | **KB_ROOT Meta**（不屬於任何 `$PROJECT_KB`，見下方說明） |
 
+> **KB_ROOT Meta 的處理方式**：這類異動範圍通常明確且單一（例如一次只改一個 skill 的一條規則），**不派發 Step 3 子代理**，由主流程直接讀取、修改、確認即可；`skills/*/SKILL.md` 的內容規則異動仍需依 CLAUDE.md 同步更新該 skill 自己的 CHANGELOG.md。**異動追蹤完全依賴該 CHANGELOG.md + git commit history，update-kb 不另外寫 log**（純稽核、無實際寫入的任務也不需要記錄）。
+>
 > **一次更新可能同時涉及多個 KB 類型。**
 >
 > **ADR 判斷規則（先做再去識別化）：**
@@ -588,8 +592,8 @@ $KB_ROOT 路徑外只允許讀取（原始碼、git log）。
 
 ### Step A — 確認檔案名稱
 依以下規則命名：`{YYYY-MM-DD}-{ticket-or-topic}-{service}.md`
-- 若有 ticket 單號（如 LS-1017）→ `2026-06-24-LS-1017-sexy-player.md`
-- 若無 ticket → `{YYYY-MM-DD}-{kebab-topic}-{service}.md`（例：`2026-06-24-ws-session-refactor-sexy-player.md`）
+- 若有 ticket 單號（如 PROJECT-123）→ `2026-06-24-PROJECT-123-order-service.md`
+- 若無 ticket → `{YYYY-MM-DD}-{kebab-topic}-{service}.md`（例：`2026-06-24-ws-session-refactor-order-service.md`）
 - 若檔案已存在 → 追加新的審查段落（日期區分），不覆蓋舊記錄
 
 ### Step B — 建立或更新 Review 記錄
@@ -764,6 +768,8 @@ mode: {ticket 模式 / 範圍模式}
 ## Step 6 — 輸出摘要
 
 向使用者輸出本次更新的最終摘要（格式同 Log），並標注所有需人工確認的 `[待補充]` 位置。
+
+若本次更新涉及 KB_ROOT Meta，在摘要中註明異動的 skill/檔案與其 CHANGELOG.md 版本號即可，不需另外的 log 路徑。
 
 若本次更新涉及共用 ADR 或通用技術研究，在摘要末尾附上各子代理回傳的「🔒 去識別化對照表」供使用者核對——**僅呈現於此對話輸出，不寫入 Log 或任何檔案**。
 

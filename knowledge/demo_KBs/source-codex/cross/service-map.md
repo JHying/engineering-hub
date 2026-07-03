@@ -2,12 +2,12 @@
 
 各服務 KB 同步狀態與基本資訊。
 
-| 服務 | KB 路徑 | KB 狀態 | 最後同步 commit | 負責人 |
-|------|---------|---------|----------------|--------|
-| order-service | `source-codex/services/order-service/` | ✅ 已同步 | abc1234 | Team A |
-| payment-service | `source-codex/services/payment-service/` | 🔲 待建立 | — | Team B |
-| notification-service | `source-codex/services/notification-service/` | 🔲 待建立 | — | Team B |
-| api-gateway | `source-codex/services/api-gateway/` | 🔲 待建立 | — | Team A |
+| 服務 | 本機路徑 | KB 路徑 | KB 狀態 | 最後同步 commit | 負責人 |
+|------|---------|---------|---------|----------------|--------|
+| order-service | `[待補充：本機原始碼路徑]` | `source-codex/services/order-service/` | ✅ 已同步 | abc1234 | Team A |
+| payment-service | `[待補充：本機原始碼路徑]` | `source-codex/services/payment-service/` | 🔲 待建立 | — | Team B |
+| notification-service | `[待補充：本機原始碼路徑]` | `source-codex/services/notification-service/` | 🔲 待建立 | — | Team B |
+| api-gateway | `[待補充：本機原始碼路徑]` | `source-codex/services/api-gateway/` | 🔲 待建立 | — | Team A |
 
 ## KB 狀態說明
 

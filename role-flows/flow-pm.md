@@ -10,14 +10,16 @@ description: >
 
 ---
 
-## Step 1 — 詢問 Jira 單號
+## Step 1 — 詢問 Story 來源
 
 ```
-請輸入要分析的 Jira 單號（例：PROJ-123），或直接貼上 Story 內容：
+請輸入要分析的 Jira 單號（例：PROJ-123）、直接貼上 Story 內容，或提供企劃書 / 原型頁面網址：
 ```
 
 - 若輸入單號格式 → 嘗試用 Jira MCP 拉取 issue 內容
-- 若 Jira MCP 不可用或失敗 → 請使用者直接貼上 Story 文字
+  - 若 Jira MCP 不可用或失敗 → 請使用者直接貼上 Story 文字
+- 若輸入 URL 格式（`http(s)://` 開頭）→ 用 Playwright MCP 讀取（`playwright_navigate` 開啟頁面 → `playwright_get_visible_text` 提取可見文字），詳細工作流程見 `knowledge/common_KBs/tech-research/playwright-mcp-spec-to-kb-workflow.md`
+  - 若頁面需要 SSO 登入或讀取失敗 → 請使用者先在瀏覽器完成登入後提供帶 session 的網址，或改直接貼上頁面文字
 - 若使用者直接貼文字 → 直接使用
 
 ---

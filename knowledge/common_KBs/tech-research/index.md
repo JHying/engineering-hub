@@ -21,6 +21,7 @@
 | 2026-06-27 | 系統性能指標：RPS / QPS / TPS 定義、公式、關係與 Thread 最佳化 | [system-performance-metrics-rps-qps-tps.md](system-performance-metrics-rps-qps-tps.md) | RPS, QPS, TPS, 併發數, Thread, 吞吐量, 高併發 |
 | 2026-06-27 | 高併發設計：指標、悲觀/樂觀鎖、分布式鎖（Redis Redisson）、分庫分表 | [high-concurrency-design.md](high-concurrency-design.md) | 高併發, QPS, 悲觀鎖, 樂觀鎖, 分布式鎖, Redisson, Sharding |
 | 2026-06-27 | Redis 快取三大異常情境：穿透、雪崩、擊穿與資料不一致解法 | [redis-cache-failure-patterns.md](redis-cache-failure-patterns.md) | Redis, 快取穿透, 快取雪崩, 快取擊穿, 布隆過濾器, Cache-Aside |
+| 2026-07-02 | Netty vs Javax WebSocket 效能實測比較（JMeter 壓測、CPU/記憶體、EventLoop 負載平衡） | [netty-vs-javax-websocket-performance.md](netty-vs-javax-websocket-performance.md) | Netty, Javax WebSocket, Tomcat, JMeter, 效能測試, EventLoop, 負載平衡, C10K |
 
 ## DevOps / 可觀測性
 
@@ -69,6 +70,11 @@
 | 2026-06-27 | ORM、JPA 與 Spring Data JPA：持久層技術棧與 Repository 體系 | [orm-jpa-spring-data.md](orm-jpa-spring-data.md) | ORM, JPA, Hibernate, Spring Data JPA, Entity, Repository, CrudRepository, 物件關聯對映 |
 | 2026-06-27 | JVM 記憶體模型：Stack / Heap / String Pool、GC 與 Singleton vs Static | [jvm-memory-model.md](jvm-memory-model.md) | JVM, Stack, Heap, String Pool, Primitive Type, Reference Type, GC, Singleton, Thread |
 | 2026-06-27 | Java 併發與執行緒安全：Thread、Thread Pool、Executor 體系與同步機制 | [java-concurrency-thread-safety.md](java-concurrency-thread-safety.md) | Thread, Process, Concurrency, Thread Safety, synchronized, ConcurrentHashMap, Thread Pool, ExecutorService, Executor |
+| 2026-07-02 | Netty 執行緒模型與開發手冊：BIO/NIO/AIO 比較、主從 Reactor、BossGroup/WorkerGroup/EventLoop | [netty-reactor-thread-model.md](netty-reactor-thread-model.md) | Netty, BIO, NIO, AIO, Reactor 模型, BossGroup, WorkerGroup, EventLoop, ChannelPipeline, ByteBuf, IdleStateHandler |
+| 2026-07-02 | Java NIO 核心元件：Buffer / Channel / Selector 深入與零拷貝（mmap / sendFile / DMA） | [nio-buffer-channel-selector-zero-copy.md](nio-buffer-channel-selector-zero-copy.md) | Java NIO, Buffer, Channel, Selector, SelectionKey, 零拷貝, mmap, sendFile, DMA, C10K |
+| 2026-07-02 | Reactor 模式三種實現方式比較：單 Reactor 單/多線程、主從 Reactor 多線程 | [reactor-pattern-thread-models.md](reactor-pattern-thread-models.md) | Reactor 模式, 單 Reactor 單線程, 單 Reactor 多線程, 主從 Reactor 多線程, Dispatcher, I/O 多路複用 |
+| 2026-07-02 | Netty 編解碼器與 TCP 粘包/拆包解決方案：Protobuf、ByteToMessageDecoder、LengthFieldBasedFrameDecoder | [netty-codec-and-tcp-sticky-packet.md](netty-codec-and-tcp-sticky-packet.md) | Netty, Codec, ByteToMessageDecoder, ReplayingDecoder, LengthFieldBasedFrameDecoder, TCP 粘包, TCP 拆包, Protobuf |
+| 2026-07-02 | Netty 參考書籍導覽（章節地圖）：《Netty 实战》與《Netty 权威指南 第2版》 | [netty-book-reading-guide.md](netty-book-reading-guide.md) | Netty, Netty in Action, Netty 权威指南, 書籍導覽, 原始碼分析, 高性能之道 |
 | 2026-06-29 | Java Sealed Interfaces 與 Pattern Matching：多態回傳型別建模、窮舉性保證與引入條件 | [java-sealed-interfaces-pattern-matching.md](java-sealed-interfaces-pattern-matching.md) | Sealed Interface, Pattern Matching, switch expression, JDK 17, JDK 21, 多態回傳型別, 窮舉性 |
 
 ## 資訊安全

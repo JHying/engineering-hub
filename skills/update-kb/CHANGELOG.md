@@ -4,6 +4,38 @@
 
 ---
 
+## [1.8] — 2026-07-03
+
+### Fixed
+- **Review History KB 子代理 prompt**：檔名範例殘留真實服務名稱與 ticket 單號，改用通用佔位符（`PROJECT-123`、`order-service`），符合本檔案自己規範的「內容限制規則」
+
+---
+
+## [1.7] — 2026-07-03
+
+### Removed
+- **Step 5-3**（KB_ROOT 層級異動 Log）：移除。KB_ROOT Meta 異動改為完全依賴各 skill/檔案自身的 CHANGELOG.md + git commit history 追蹤，不再另外寫入 `pending/logs/kb-root-update-*.md`
+- Step 6 輸出摘要移除「已寫入 KB_ROOT Meta log」的提示，改為僅註明異動的 skill/檔案與版本號
+
+### Context
+- [1.6] 引入 Step 5-3 後，使用者認為與各 skill 自己的 CHANGELOG.md、git history 重複記錄，決定 KB_ROOT Meta 只需保留 Step 2 的路由分類（判斷「這是不綁定專案的異動、不派發子代理」），不需要額外的 log 機制
+- Step 2「KB_ROOT Meta」分類與 Mode B 選項 8 予以保留——原本的路由缺口（`skills/` 等路徑完全沒有被任何 Step 辨識）仍是實質問題，只是解法從「額外寫 log」改為「維持路由辨識、追蹤交回各自的 CHANGELOG + git history」
+
+---
+
+## [1.6] — 2026-07-03
+
+### Added
+- **Step 2 路由表**：新增「KB_ROOT Meta」分類，涵蓋 `skills/`、`role-flows/`、`roles/`、`setting/`、README.md、CLAUDE.md 等不綁定特定專案的異動或稽核結果，補上原本權限規則已宣告（`$KB_ROOT` 完整 CRUD）但 Step 2～5 從未實際涵蓋的路由缺口
+- **Step 5-3**（新）：KB_ROOT 層級異動 Log，寫入 `$KB_ROOT/pending/logs/kb-root-update-{YYYY-MM-DD}.md`，記錄「異動 / 稽核事實」（含無實際寫入的稽核類任務），不重複 skill 自身 CHANGELOG 或其他文件內容
+- Mode B 選單新增選項 8「KB_ROOT 結構性異動」
+- Step 6 輸出摘要補充：涉及 KB_ROOT Meta 時需註明已寫入的 Step 5-3 log 路徑
+
+### Context
+- 起因：`skills/code-architect` 規則更新後，使用者詢問「LOG呢」才發現此類異動完全沒有落地記錄——舊版 Step 2～5 只認 `{$PROJECT_KB}` 底下的內容類型，`skills/` 等 KB_ROOT 層級路徑從未被任何 Step 涵蓋，也沒有對應的 log 路徑
+
+---
+
 ## [1.5] — 2026-07-01
 
 ### Added

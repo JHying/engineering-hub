@@ -107,3 +107,12 @@ and records to cache → expect ACK within 200 ms → close.
 Reading: at moderate sustained load Tomcat began losing messages where Undertow
 stayed lossless; at burst, Undertow reached a ~44% higher peak and held it
 longer. The stronger the hardware, the wider the gap is expected to be.
+
+### Related research
+
+A separate internal JMeter benchmark comparing Netty against Javax WebSocket
+(blocking IO, thread-per-connection) corroborates this ADR's problem statement:
+under a 6,000-connection load, the blocking model showed materially higher CPU
+consumption (283–314% vs Netty's 180%) and message delay (4–5 s vs Netty's
+~2.7 s), degrading further as concurrency grew relative to available threads.
+See [Netty vs Javax WebSocket performance comparison](../../tech-research/netty-vs-javax-websocket-performance.md).

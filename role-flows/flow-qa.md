@@ -75,6 +75,13 @@ description: >
 
 > 範本格式參照 `{{qa_format}}`
 
+### AC / Gherkin 對齊檢查
+
+逐條核對需求企劃（PM）與 Spec 轉化（SA）階段產生的 AC 與 Gherkin 範本，確認每條都有對應測試案例覆蓋；若測試結果與 AC/Gherkin 有落差，標注落差屬於「測試案例設計問題」或「功能本身確實有誤」——只有後者才需要回報給上游觸發 Spec-Driven 實作修正。
+
+| # | AC / Gherkin 條目 | 對應測試案例 | 是否對齊 | 落差類型（若不對齊） |
+|---|------------------|------------|---------|-------------------|
+
 ### Happy Path 測試案例
 | # | 前置條件 | 操作步驟 | 預期結果 | 對應 AC |
 
@@ -101,15 +108,26 @@ description: >
 
 ## Step 6 — 執行測試並記錄結果（auto 模式）
 
-auto 模式下，Phase 2 完成後：
-1. 撰寫單元測試與整合測試程式碼
-2. 執行測試，取得通過 / 失敗 / 略過統計
-3. 若有 Spring Cloud Contract，驗證契約測試通過
-4. 呼叫 `/update-kb`，依 `{{qa_format}}` 建立 `{$PROJECT_KB}/qa-records/{TICKET}-qa.md`，記錄測試案例表、範圍與執行結果
+auto 模式下，Phase 2 完成後執行三類驗測：
+
+1. **Unit test**：撰寫單元測試程式碼並執行
+2. **Integration test**：撰寫整合測試程式碼並執行，取得通過 / 失敗 / 略過統計；若有 Spring Cloud Contract，驗證契約測試通過
+3. **本機啟動驗證**：此為本機驗測，非部署（部署屬 SRE 職責，不在 QA 範圍）。讀取 `{$PROJECT_KB}/source-codex/services/{service}/sop-service-startup-verification-internal.md`（若存在）並依其步驟執行（build → 重啟服務 → 健康檢查，皆在本機進行）；若專案尚未建立此 SOP，標注 `[待補充：本機啟動驗證 SOP 尚未建立]`，不因此中斷後續流程
+4. 呼叫 `/update-kb`，依 `{{qa_format}}` 建立 `{$PROJECT_KB}/qa-records/{TICKET}-qa.md`，記錄測試案例表、範圍與三類驗測結果
 
 confirm 模式下，完成 Phase 2 輸出後：
 - 詢問使用者是否執行測試
-- 確認後執行，完成後呼叫 `/update-kb` 記錄結果
+- 確認後依上方三類驗測執行，完成後呼叫 `/update-kb` 記錄結果
+
+### 功能正確性判定（不分 auto / confirm，三類驗測執行後皆需判定）
+
+對照「AC / Gherkin 對齊檢查」表與三類驗測結果，判定：
+
+| 判定結果 | 條件 | 後續動作 |
+|---------|------|---------|
+| 通過 | 三類驗測皆過，且對齊 PM / SA 的 AC 與 Gherkin | 流程結束（或依 pipeline 進入下一 stage） |
+| 測試案例本身問題 | 落差來自測試案例設計錯誤（如前置條件寫錯、預期值誤植） | 修正測試案例後重新執行，不計入回圈輪數 |
+| 功能確實有誤 | 落差來自實作行為與 AC / Gherkin 不符 | 回報具體缺陷描述 + 對應 AC/Gherkin 落差，交還 Spec-Driven 實作修正；此輪計入回圈輪數，連續 3 輪未通過則暫停，與使用者討論現況與解決方法 |
 
 ---
 

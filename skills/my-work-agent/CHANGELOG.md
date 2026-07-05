@@ -4,6 +4,44 @@
 
 ---
 
+## [2.12] — 2026-07-05
+
+### Changed
+- Step 4 pipeline 模式的文件載入方式改為懶載入（lazy load）：原本啟動時「預載從起始 stage 起所有涉及角色的文件對」，改成 Step 4 只記住 stage 對照表，實際讀檔延後到 Step 5-PIPELINE 各 stage 開始執行前才進行，且明文禁止預先讀取尚未執行之 stage 的檔案
+- 新增 CONSULTANT 跨 stage 載入例外：ADR 溝通貫穿 Spec 轉化至 Spec-Driven 實作，進入 Spec 轉化 stage 時隨 SA 一併載入 CONSULTANT 檔案對，保留至 Spec-Driven 實作 stage 結束，中間不重讀、也不在 Spec-Driven 實作 stage 重複載入
+- Step 5-PIPELINE 各 stage 開始前的提示語同步補上「先讀取對應檔案對，讀取完成後才輸出 stage 開始訊息」，避免與新載入規則矛盾
+- 單一角色模式與 PREVIEW 模式的檔案載入本來就只讀取所選角色 / 對應 subagent 需要的一對檔案，未發現過度預載，僅微調單一角色模式表格說明文字使措辭一致，未變更行為
+
+### Context
+- 起因：pipeline 模式啟動時一次讀入起始 stage 之後所有 stage 的角色與流程文件，即使流程尚未執行到後面的 stage，也已把這些檔案內容佔用在對話 context 中，增加不必要的固定成本；改為到了對應 stage 才讀取可降低此開銷
+
+---
+
+## [2.11] — 2026-07-05
+
+### Added
+- frontmatter 補上 `version` 欄位
+
+---
+
+## [2.10] — 2026-07-05
+
+### Changed
+- Step P2 各 stage auto/confirm 選單：原本把顯示條件（`{若 $start_stage ≤ N}`）直接寫在要印給使用者看的模板區塊內，容易被弱模型照字面原樣印出；改為模板外先以明確規則逐行判斷要列出哪些 stage，模板本身只留純文字與佔位符，不含任何條件標記
+- auto 模式行為補上客觀決策判準，取代單純「Agent 依 KB 內容自行判斷最佳解」：KB 有明確依據直接採用、KB 無依據且影響架構則降級 confirm、KB 無依據但屬局部細節則採最小改動並標註
+- QA 回圈的功能正確性判定補上可執行判定規則：實作與 AC 預期輸出不符（引用 AC 編號比對）算功能有誤、測試預期值或前置條件與 AC 不一致算測試設計問題、AC 本身模糊則停下向使用者確認語意
+- PREVIEW 模式的兩處 Agent 派發（Step M2 初次並行派工、Step M4 的 BQ 再次並行派工）補上明確的 `subagent_type: general-purpose` 與 `model: sonnet`，並註記調度原則見 `governance/model-dispatch.md` §1，避免留空繼承成本較高的模型
+
+---
+
+## [2.9] — 2026-07-05
+
+### Changed
+- 修正 Spec-Driven 實作 stage 對 `/code-architect` 的描述：原本寫成「執行 `/code-architect` 產出完整程式碼」，容易被誤讀為由該工具產出程式碼；改為「產出完整程式碼，並執行 `/code-architect` 驗證架構合規，有違規項則修正後重新驗證」，明確該工具的定位是審查而非產碼
+- 流程完成總結的產出摘要項目同步修正措辭，避免同樣的誤解
+
+---
+
 ## [2.8] — 2026-07-03
 
 ### Added

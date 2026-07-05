@@ -4,6 +4,57 @@
 
 ---
 
+## [1.12] — 2026-07-05
+
+### Changed
+- **Step 3 拆分為外部模板檔**：原本內嵌於 skill.md 的 8 份子代理 prompt（PM / RD / SRE / 專案 ADR / 共用 ADR / tech-research / Review History / QA Records）逐字搬移至同目錄新建的 `templates/` 子目錄（`pm-spec.md`、`rd-source-codex.md`、`sre.md`、`project-adr.md`、`common-adr.md`、`tech-research.md`、`review-history.md`、`qa-records.md`），內容（含各模板的「派發規格」`subagent_type` / `model` 標注）逐字保留、零語意變動
+- Step 3 本體改為精簡調度表（KB 類型 | 模板檔路徑 | subagent_type | model），並明確指示派發時依 Step 2 判定結果**只讀取**對應的單一模板檔，不得一次讀取全部模板
+
+### Context
+- 起因：skill.md 全載約 850 行，但單次觸發通常只用到 1～2 種 KB 類型的子代理模板，其餘 6～7 份模板內容純屬固定 context 成本；拆分後 skill.md 降至約 390 行，派發時按需讀取對應模板即可，不影響既有子代理 prompt 的實際內容或派發規則
+
+---
+
+## [1.11] — 2026-07-05
+
+### Fixed
+- **Step 0.7 Scaffolding**：直接複製清單中「`ADRs/index.md`（若存在 `0000-record-architecture-decisions.md` 也一併複製）」為過期引用，`demo_KBs/ADRs/` 下實際並無此檔案；改為說明實際目錄內容（僅 `index.md` 與示範 ADR `0001-service-communication-protocol.md`），並釐清示範 ADR 依「不複製」規則排除、不隨 index.md 一併複製
+
+### Added
+- frontmatter 補上 `version` 欄位
+
+### Context
+- 起因：定期稽核 skill frontmatter 與內容一致性時發現此過期引用；先實查 `demo_KBs/ADRs/` 實際檔案清單，確認 `0000-record-architecture-decisions.md` 不存在後修正表述
+
+---
+
+## [1.10] — 2026-07-05
+
+### Changed
+- **Step 3 全部 8 個子代理模板**（PM / RD / SRE / 專案 ADR / 共用 ADR / tech-research / Review History / QA Records）補上派發規格：統一 `subagent_type: general-purpose`；`model` 依內容性質標注——需摘要與改寫的（PM、專案 ADR、共用 ADR、tech-research、Review History、QA Records）用 `sonnet`，屬結構性事實登錄 / 條目追加的（RD、SRE）用 `haiku`
+- **去識別化檢查清單**：執行流程 Step 1 改為「雙軌掃描」——regex 先掃 + 語意比對補漏，兩者皆須執行，不可只跑其一
+
+### Added
+- Step 3 開頭新增一行調度原則引用：「調度原則見 governance/model-dispatch.md」
+- 去識別化檢查清單新增「機械化偵測規則」小節：Ticket / 單號（`[A-Z]{2,10}-\d+`）、Email（`\S+@\S+\.\S+`）、IPv4（`\b\d{1,3}(\.\d{1,3}){3}\b`）、內部網域樣式（`*.internal`、`*.local`、公司網域樣式）四類 regex；並明訂掃描範圍須涵蓋巢狀內容（程式碼註解、log / stacktrace 片段、diff 內文），不得只掃正文段落
+
+### Context
+- 起因：既有 Step 3 子代理模板全數未標注 `subagent_type` / `model`，派發時預設繼承主線模型，成本與任務複雜度不匹配；去識別化檢查清單僅有語意判斷步驟，缺乏可機械執行的偵測規則，容易漏抓格式明確的識別資訊（ticket 單號、email、IP、內部網域），且巢狀在程式碼片段中的識別資訊過去常被略過
+
+---
+
+## [1.9] — 2026-07-05
+
+### Added
+- **Step 2 路由表**：新增 QA Records KB 判斷規則（`qa`、測試案例、測試結果、qa-records、`{TICKET}-qa` 等關鍵字），目標路徑 `{$PROJECT_KB}/qa-records/{TICKET}-qa.md`，格式規範引用 `qa_format`
+- **QA Records KB 子代理 prompt**（新）：讀取 `qa-format.md`，依票號建立或追加 `{TICKET}-qa.md`（測試策略、測試案例表、Contract 覆蓋、測試執行結果），完成後回報建立 / 更新路徑與結果摘要
+- **Step 0.7 Scaffolding**：新 KB 初始化時，`qa-records/qa-format.md` 納入「直接複製」清單，`qa-records/` 目錄不存在時一併建立
+
+### Context
+- 起因：QA 工作流程結束時會呼叫 `/update-kb` 寫入 QA 記錄，但先前版本的路由表、子代理清單與新 KB scaffolding 皆未涵蓋 `qa-records/`，導致此類更新實際上無路可派，記錄從未落地
+
+---
+
 ## [1.8] — 2026-07-03
 
 ### Fixed

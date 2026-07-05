@@ -7,8 +7,8 @@ description: >
   或要求產生 DB Object 審查報告。
   關鍵字：DB Object、DDL、DML、Oracle、MongoDB、Table、Index、
   Sequence、命名規則、DBA Review、db-object-check。
-version: "1.0"
-source: DBObjectsRule_3.1.pdf
+version: "1.1"
+source: 本檔為規則唯一來源（原始 PDF 未隨知識庫提供，勿嘗試查找）
 ---
 
 # DB Object Check Skill
@@ -60,12 +60,12 @@ source: DBObjectsRule_3.1.pdf
 ### 2.1 檔案命名格式
 
 ```
-[Oracle] <SystemName>_<SerialNumber>_<DDL|DML>_<Prod|Uat|Dev>.sql
-[MongoDB] <SystemName>_<SerialNumber>_<DDL|DML>_<Prod|Uat|Dev>.js
+[Oracle] <SystemName>_<SerialNumber>_<DDL|DML>_<Prod|Stg|Dev>.sql
+[MongoDB] <SystemName>_<SerialNumber>_<DDL|DML>_<Prod|Stg|Dev>.js
 
 合法範例：
   SYS_1234_DDL_Prod.sql
-  APP_1234_DDL_Uat.sql
+  APP_1234_DDL_Stg.sql
   SYS_1234_DML_Dev.js
 ```
 
@@ -76,21 +76,22 @@ source: DBObjectsRule_3.1.pdf
 
 ### 2.2 Checklist — 逐條規則
 
-| # | 檢查項目 | 說明 | 違規範例 |
-|---|----------|------|----------|
-| 1 | **檔名命名正確** | 符合上方格式 | `sys_1234_DDL_prod.sql` |
-| 2 | **相關 Object 名稱一致** | 同一 Object 全文拼寫一致 | `MY_TRANSACTION` 與 `MY_TRANSATION` 混用 |
-| 3 | **加 Object Owner（Oracle）** | Table 前需加 Schema Owner | `MY_TRANSACTION` → 應為 `OWNER.MY_TRANSACTION` |
-| 4 | **符號只允許底線** | 名稱中僅可使用 `_`，不可使用 `-`、`$`、`#` 等 | `ROLE-INFO`、`$ITEM` |
-| 5 | **語句不能有空白行** | DDL 語句區塊內不可出現空白行 | CREATE TABLE 欄位間有空行 |
-| 6 | **命令結束要分號（;）** | 每條語句末尾必須有 `;` | `COMMENT ON COLUMN ... IS 'X'` 無 `;` |
-| 7 | **名稱以英文字開頭** | 不可以數字或特殊符號開頭 | `2ITEM`、`$ITEM` |
-| 8 | **名稱長度不超過 64 字元** | Object/Column 名稱 ≤ 64 字元 | — |
-| 9 | **避免使用關鍵字和保留字** | 參考 Oracle / MongoDB 保留字清單 | `ALIAS`、`ALL`、`_id`（MongoDB） |
-| 10 | **Object Name 使用大寫** | Table Name、Column Name 全大寫 | `role_info`、`userId` |
-| 11 | **每行不超過 240 字元** | 超過請斷行 | — |
-| 12 | **使用空白排版，取代 Tab** | 排版縮排改用空白字元 | 含 `\t` 的縮排 |
-| 13 | **移除雙引號** | 不可使用 `"BAC"."GAMEGROUP"` 形式 | `"ID" NUMBER(2)` |
+| #   | 檢查項目                       | 說明                             | 違規範例                                 |
+| --- | -------------------------- | ------------------------------ | ------------------------------------ |
+| 1   | **檔名命名正確**                 | 符合上方格式                         | `sys_1234_DDL_prod.sql`              |
+| 2   | **相關 Object 名稱一致**         | 同一 Object 全文拼寫一致               | `MY_TABLE 與 MY_TALE` 混用              |
+| 3   | **加 Object Owner（Oracle）** | Table 前需加 Schema Owner         | `MY_TABLE` → 應為 `OWNER.MY_TABLE`     |
+| 4   | **符號只允許底線**                | 名稱中僅可使用 `_`，不可使用 `-`、`$`、`#` 等 | `ROLE-INFO`、`$ITEM`                  |
+| 5   | **語句不能有空白行**               | DDL 語句區塊內不可出現空白行               | CREATE TABLE 欄位間有空行                  |
+| 6   | **命令結束要分號（;）**             | 每條語句末尾必須有 `;`                  | `COMMENT ON COLUMN ... IS 'X'` 無 `;` |
+| 7   | **名稱以英文字開頭**               | 不可以數字或特殊符號開頭                   | `2ITEM`、`$ITEM`                      |
+| 8   | **名稱長度不超過 64 字元**          | Object/Column 名稱 ≤ 64 字元       | —                                    |
+| 9   | **避免使用關鍵字和保留字**            | 參考 Oracle / MongoDB 保留字清單      | `ALIAS`、`ALL`、`_id`（MongoDB）         |
+| 10  | **Object Name 使用大寫**       | Table Name、Column Name 全大寫     | `role_info`、`userId`                 |
+| 11  | **每行不超過 240 字元**           | 超過請斷行                          | —                                    |
+| 12  | **使用空白排版，取代 Tab**          | 排版縮排改用空白字元                     | 含 `\t` 的縮排                           |
+| 13  | **移除雙引號**                  | 不可使用 `"OWNER"."TABLE"` 形式      | `"ID" NUMBER(2)`                     |
+|     |                            |                                |                                      |
 
 ---
 
@@ -389,19 +390,19 @@ db.ACCOUNT.deleteMany({ AGE: { $lt: 30 } });
 
 ## VIII. 常見違規速查
 
-| 違規類型 | 典型錯誤 | 正確寫法 |
-|----------|----------|----------|
-| 使用雙引號 | `"BAC"."ACCOUNT"` | `OWNER.ACCOUNT` |
-| 小寫 Object 名稱 | `role_info` | `ROLE_INFO` |
-| 缺少 Schema Owner | `ACCOUNT` | `OWNER.ACCOUNT` |
-| 名稱以數字開頭 | `2ITEM` | `ITEM2` |
-| 使用非底線符號 | `ROLE-INFO` | `ROLE_INFO` |
-| 語句無分號結尾 | `COMMENT ON TABLE OWNER.TEST IS 'x'` | 末尾加 `;` |
-| DML 無 COMMIT | `UPDATE ... SET ...` | 末尾加 `COMMIT;` |
-| 字串未加引號 | `VALUES (HERO, 18)` | `VALUES ('HERO', 18)` |
-| 空白行在 DDL 內 | 欄位定義間有空行 | 移除空行 |
-| MongoDB 無 Validation | `db.createCollection('X')` | 加入 `$jsonSchema` validator |
-| MongoDB 缺少 `_id` | `required: ['COL1']` | 需包含 `_id` |
+| 違規類型                 | 典型錯誤                                 | 正確寫法                       |
+| -------------------- | ------------------------------------ | -------------------------- |
+| 使用雙引號                | `"OWNER"."ACCOUNT"`                  | `OWNER.ACCOUNT`            |
+| 小寫 Object 名稱         | `role_info`                          | `ROLE_INFO`                |
+| 缺少 Schema Owner      | `ACCOUNT`                            | `OWNER.ACCOUNT`            |
+| 名稱以數字開頭              | `2ITEM`                              | `ITEM2`                    |
+| 使用非底線符號              | `ROLE-INFO`                          | `ROLE_INFO`                |
+| 語句無分號結尾              | `COMMENT ON TABLE OWNER.TEST IS 'x'` | 末尾加 `;`                    |
+| DML 無 COMMIT         | `UPDATE ... SET ...`                 | 末尾加 `COMMIT;`              |
+| 字串未加引號               | `VALUES (HERO, 18)`                  | `VALUES ('HERO', 18)`      |
+| 空白行在 DDL 內           | 欄位定義間有空行                             | 移除空行                       |
+| MongoDB 無 Validation | `db.createCollection('X')`           | 加入 `$jsonSchema` validator |
+| MongoDB 缺少 `_id`     | `required: ['COL1']`                 | 需包含 `_id`                  |
 
 ---
 
@@ -412,4 +413,4 @@ db.ACCOUNT.deleteMany({ AGE: { $lt: 30 } });
 | Oracle Keywords & Reserved Words | Oracle 官方保留字清單 |
 | MongoDB Keywords | MongoDB 官方保留字清單 |
 | SQLPlus Limits | 每行 240 字元上限依據 |
-| DBObjectsRule_3.1.pdf | 本 Skill 原始規則文件 |
+| 本檔（SKILL.md） | 規則唯一來源，原始 PDF 未隨知識庫提供 |

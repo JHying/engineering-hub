@@ -4,6 +4,18 @@
 
 ---
 
+## [2.4] — 2026-07-05
+
+### Added
+- **新增章節「Anti-Corruption Layer（外部型別隔離）規則」**：Domain 層（VO、DomainService）與其上層不得依賴外部系統原生型別（gRPC/proto 生成類、外部 API 的 request/response 型別、持久層 Entity/Document、訊息格式原始 payload 類）；轉換責任限定在 Manager（配合對應 `*Mapper`）完成，補上可 grep 的違規訊號與一組完整 ❌/✅ Java 範例
+- **Quick Reference**：補充 ACL 違規範例（DomainService 方法簽名直接帶外部型別參數）
+
+### Context
+- 起因：通用 review 規範（REVIEW_GUIDE）已將 Anti-Corruption Layer 列為 DDD 審查點之一，但 code-architect 先前的規則集中沒有對應章節，屬已確認的職責內缺口；本次新增不影響既有規則內容
+- 此規則目前僅由 Code Review 階段確認，尚無對應 ArchUnit 測試強制外部型別 import 檢查
+
+---
+
 ## [2.3] — 2026-07-03
 
 ### Fixed / Clarified

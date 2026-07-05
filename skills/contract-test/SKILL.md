@@ -1,6 +1,7 @@
 ---
 name: contract-test
 description: 根據指定的 Controller，生成符合本專案慣例的 Spring Cloud Contract Groovy DSL 契約檔與 ContractBase。契約用於 producer 自動化驗收測試，同時產生 consumer MockMVC stub。
+version: "1.1"
 ---
 
 根據指定的 Controller，生成 Spring Cloud Contract Groovy DSL 契約檔與對應的 ContractBase。

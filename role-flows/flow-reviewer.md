@@ -57,7 +57,7 @@ description: >
 - 效能瓶頸 / 資料原子性（系統現狀為強制門檻、系統期望目標僅供參考、跨 Pod 同步）
 - 設計模式（Singleton、Factory Method、Abstract Factory、Aggregator Pattern、Spring Aggregator Pattern）
 - 技術棧分類表（Java、Spring Cloud 2025、Spring Boot 3、Spring Data JPA/Mongo、WebSocket、Kafka、Redis、Oracle、gRPC、HTTP、Undertow、Tomcat、JAR、WAR、Servlet、JDBC、JSP、Vue）
-- 審查不涵蓋範圍
+- CI 覆蓋確認（曾為「審查不涵蓋範圍」，需先確認對應項目是否真的由 CI 涵蓋，未確認前 Review 階段自行檢查）
 
 審查輸出**必須依序包含三區塊**（詳見 `{{review_guide}}` 頂部格式定義）：
 1. 品質問題（Quality Issues）
@@ -67,6 +67,10 @@ description: >
 ---
 
 ## Step 5 — 執行 Review 並輸出結果
+
+### CI 覆蓋確認執行
+
+呼叫 `/code-architect`，範圍為本次異動的所有檔案；違規項列入 review findings（併入下方「品質問題」區塊，計入摘要計數）。
 
 ### ticket 模式輸出格式
 

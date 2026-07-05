@@ -1,53 +1,63 @@
-# Claude Code 工作規則
+# Claude Code 工作規則(索引)
 
-## Session 初始化
+本檔只做路由,長內容都在 `governance/`,依觸發條件按需讀取,**不要一開場就全部讀完**。
+改本檔或 governance/ 前,先讀 `governance/maintenance-protocol.md`。
 
-**每次新對話開始時**（使用者送出第一則訊息後），主動詢問以下兩件事：
+## Session 初始化(靜默,不逐項詢問)
 
-1. **確認 KB 路徑**
-   ```
-   目前 KB 根路徑：D:\Work\engineering-hub
-   確認使用此路徑？（Y / 輸入新路徑）
-   ```
-   - 若使用者輸入 Y → 沿用，不需任何操作
-   - 若使用者輸入新路徑 → 更新 `setting/paths.yml` 的 `kb` 欄位
+1. KB 根路徑預設 `D:\Work\engineering-hub`(= `setting/paths.yml` 的 `kb`)。
+   **僅當**實際工作目錄與該值不符時,才提醒使用者確認是否更新 paths.yml;一致就什麼都不說。
+2. 不主動啟動定時考題。使用者明說想複習時,才建議 `/loop 30m /quiz`(分鐘數可自訂)。
 
-2. **詢問是否啟動定時考題**
-   ```
-   是否啟動定時知識考題？
-     Y：每 30 分鐘（預設）
-     N：不啟動
-     或輸入自訂分鐘數（如：20）
-   ```
-   - 若 Y → 執行 `/loop 30m /quiz`
-   - 若 N → 略過
-   - 若輸入數字 → 執行 `/loop {數字}m /quiz`
+## 按需讀取路由
 
-這兩題合併在同一則訊息中詢問，等使用者一次回覆後再處理。
+| 情境(觸發條件) | 先讀 |
+|---|---|
+| 要派發 subagent、選模型、設 effort | `governance/model-dispatch.md` |
+| 要寫交辦 prompt(搜尋/實作/重構/研究/審查) | `governance/prompt-templates.md` |
+| 拿不準:要不要升級模型/算不算完成/該不該問使用者/是不是方向錯了 | `governance/judgment-rubrics.md` |
+| 要修改 CLAUDE.md、governance/、skill | `governance/maintenance-protocol.md` |
+| 反覆出錯、token 燒太快、感覺失焦 | `governance/diagnosis.md` |
+| 第一次在此環境作業、想了解制度來由 | `governance/handover-letter.md` |
 
----
+## 硬規則(常駐,無條件遵守)
+
+1. **模型 ID 與 API 參數不憑記憶填**:先抄 `governance/model-dispatch.md` 的已查證表;
+   表上沒有→派 `claude-code-guide`(haiku)查官方文件;查不到→標「未查證」,不編造。
+2. **大量讀取派 subagent**:要讀 3 個以上檔案、單檔超過 300 行、或不知道目標在哪
+   →派 Explore / general-purpose,主線只收「結論+檔案:行號」。
+3. **說要做就同回覆做**:任何「我會/我將/稍後」都必須在同一則回覆內附上對應工具呼叫;
+   當下派不了就先 `TaskCreate` 佔位,派發完成才標 completed。
+   (TaskCreate 是延遲載入工具:先用 ToolSearch 查 `select:TaskCreate,TaskUpdate` 載入 schema;
+   若此環境確實沒有該工具,改為在回覆中明列待辦清單文字,下一則回覆優先補派。)
+4. **改檔先備份**:修改 CLAUDE.md、governance/、skill 前,
+   先複製到 `governance/backup/{原檔名}.{YYYY-MM-DD}.bak`。
+   (例外:maintenance-protocol.md 權限表標 ✅ 的操作——lessons.md 追加、查證表更新——免備份。)
+5. **產出不自驗**:宣告完成前,檔案用 fresh-context subagent read-back、
+   程式碼用測試或實跑、高風險判斷加第二意見。詳見 judgment-rubrics.md。
 
 ## Skill 開發規範
 
-每次修改任何 skill 的 `SKILL.md`，必須在同一次工作中同步更新該 skill 目錄下的 `CHANGELOG.md`。
+- 修改任何 skill 的 `SKILL.md`,同一次工作中必須同步更新該 skill 的 `CHANGELOG.md`
+  (版本號、日期、Added / Changed / Removed)。
+- SKILL.md 與 CHANGELOG.md 均需去識別化(不含專案名稱、ticket 編號、真實類別名稱)。
 
-- 加入對應版本條目（版本號、日期、Added / Changed / Removed）
-- SKILL.md 與 CHANGELOG.md 內容均需去識別化（不含專案名稱、ticket 編號、真實類別名稱等）
+## 知識庫整合規範(每次對話都適用)
 
-## 知識庫整合規範
+KB 分兩類:**專案 KB**(特定專案的規範/架構/業務邏輯)與**通用 KB**(跨專案研究與共用規範)。
 
-知識庫整合適用於**每次對話**，不限於 skill 執行情境。KB 分兩類：
-- **專案 KB**：特定專案的技術規範、架構決策、業務邏輯
-- **通用 KB**：跨專案的技術探討、研究心得、共用規範
+對話中產生值得記錄的結論(技術決策、研究結論、規範確立)時,按下表處理;
+若分類無法從下表**直接對上**、需要比較兩個選項優劣才能決定,就直接問使用者(給 2-3 個選項),
+不要自己長篇推理:
 
-**對話中產生值得記錄的 context 時**（技術決策、研究結論、規範確立等）：依內容類型分級處理，避免不必要的中斷：
+| 內容類型 | 動作 |
+|---|---|
+| 通用技術研究(`tech-research/`)、專案 ADR | 免確認:直接觸發 `/update-kb`,寫入依 skill Step 3 開**背景 subagent** 執行(勿在主線讀寫檔案),主線只收摘要、事後回報一行「已存入哪個檔」 |
+| 共用 ADR(`common_KBs/ADRs/`) | 先問使用者是否同步+存哪個分類,確認後同樣背景 subagent 寫入 |
+| guideline(`common_KBs/guideline/`) | 不主動觸發,僅使用者明確指示才處理 |
+| 分不出類、或橫跨多類 | 比照風險較高者:先問 |
 
-- **通用技術研究（`tech-research/`）、專案 ADR**（`/update-kb` skill 本身已定義為免確認路徑）：不詢問，直接觸發 `/update-kb`；實際寫入依 skill Step 3 規則**開背景 subagent 執行**（勿在主線自己讀寫檔案），主線只等回傳的摘要，事後回報一行結果（已存入哪個檔案）即可，不佔用主線 context、不中斷主線工作。
-- **共用 ADR（`common_KBs/ADRs/`）**（`/update-kb` skill 本身要求使用者確認才更新，屬去識別化風險較高、影響跨專案通用決策的路徑）：先詢問使用者是否同步、確認要存入哪個分類，確認後同樣依 Step 3 開背景 subagent 執行寫入。
-- **guideline（`common_KBs/guideline/`）**：不透過本規則主動觸發，僅在使用者明確指示要更新規範時才處理。
+執行紀律同硬規則 3:觸發同步的工具呼叫必須與判斷在同一則回覆內,否則 TaskCreate 佔位。
 
-判斷不出屬於哪一類、或內容同時橫跨多類時，比照風險較高的一類處理（先詢問）。
-
-**執行紀律（避免「說了但沒做」）**：一旦判斷要觸發同步，必須在**同一則回覆內**就實際完成對應的工具呼叫，不能只用文字敘述「我會處理」、「稍後會背景寫入」等承諾句作結——這種收尾句放在長篇內容之後很容易被誤讀成已完成，卻其實什麼都沒觸發。若確認同步與最終派發不在同一步（例如還要先判斷分類、決定檔名），先用 `TaskCreate` 建立一個待辦項目，實際呼叫 Agent 工具、派發完成後才標記完成；如此即使當下漏掉，也會在待辦清單留下痕跡，而不是無聲消失。
-
-**判斷執行任務前需要先載入知識庫 context 時**：先詢問使用者確認是否需要讀庫、以及要讀取哪類 KB（專案 KB 請指定專案、通用 KB 直接載入），確認後再使用 `/my-work-agent consultant` 模式載入。
+**需要先載入 KB context 再做事時**:先問使用者要讀哪類 KB(專案 KB 指定專案、通用 KB 直接載入),
+確認後用 `/my-work-agent consultant` 模式載入。

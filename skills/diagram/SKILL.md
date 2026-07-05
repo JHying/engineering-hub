@@ -1,7 +1,7 @@
 ---
 name: diagram
 description: 統一 Mermaid 圖表工具：依描述範圍生成圖表（套用通用顏色規範 + 專案 participant alias）、依 git diff 同步更新。
-version: "1.0"
+version: "1.1"
 ---
 
 # diagram
@@ -16,6 +16,12 @@ version: "1.0"
 - `/diagram OrderController 的完整流程`
 - `/diagram OrderController + OrderAppService 的建立訂單流程`
 - `/diagram 排程報表流程，從 ReportScheduler 開始`
+
+### 輸出路徑參數（選填）
+
+呼叫方（例如 `/my-work-agent`）可額外指定完整輸出路徑，覆蓋預設輸出位置：
+- `/diagram <範圍描述> --output <完整檔案路徑>`
+- 未指定時，維持預設輸出路徑規則（見「檔案輸出規範」）
 
 ---
 
@@ -156,7 +162,7 @@ Controller / Handler / Scheduler
 git log --oneline -1
 ```
 
-輸出至 `docs/<功能名稱>-flow.md`，metadata 含 `synced` hash、`type`（`sequenceDiagram` 或 `flowchart`）、`covers` 清單。
+輸出至指定路徑（依「檔案輸出規範」：預設 `docs/<功能名稱>-flow.md`，呼叫方有指定輸出路徑時寫入指定路徑），metadata 含 `synced` hash、`type`（`sequenceDiagram` 或 `flowchart`）、`covers` 清單。
 
 ---
 
@@ -207,7 +213,7 @@ git log --oneline -1
 
 ## 檔案輸出規範
 
-存放路徑：`docs/<功能名稱>-flow.md`
+存放路徑：預設 `docs/<功能名稱>-flow.md`；呼叫方（如 `/my-work-agent`）有指定輸出路徑時，寫入該指定路徑，其父目錄不存在則自動建立。
 
 ```markdown
 <!-- synced: {commit-hash} -->

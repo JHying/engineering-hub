@@ -1,7 +1,7 @@
 # REVIEW_GUIDE.md
 # Code Review 統一規範
 
-version: 2026-05
+version: 2026-07-05（新增 MongoDB save() 禁令、Infra 空值處理、欄位新增資料流追蹤三項正確性檢查點，來源：/code-architect）
 目標：確保系統的「維護性」、「擴展性」、「可靠性」
 
 ---
@@ -111,6 +111,8 @@ version: 2026-05
 | 註解 | 只寫「為什麼」，不寫「做什麼」（程式碼自解釋） |
 | 例外處理 | 不吞異常、不用 Exception 做流程控制、分層邊界轉譯 |
 
+> **Infra 層空值處理**：Infra 層方法查無資料時禁止直接回傳 `null`，必須回傳 `Optional<T>`（集合類則回傳空 List）。原因：直接回傳 null 讓「查無資料」與「例外狀況」混在同一種訊號裡，呼叫端容易漏判導致 NPE；統一用 `Optional` 讓「找不到」成為型別系統可見、強制呼叫端顯式處理的狀態。審查時檢查 Infra 方法簽名回傳型別，以及是否有 `return null;` 或未包裝的可空表達式。完整判準與範例見 `/code-architect` skill（Infra Rules）。
+
 ### 2-3 SOLID
 
 | 原則 | 說明 | 違規警示 |
@@ -132,8 +134,11 @@ version: 2026-05
 | Aggregate | 一致性邊界，只透過 Aggregate Root 修改內部狀態 | 外部不應直接操作 Aggregate 內部 Entity |
 | Domain Service | 跨多個 Aggregate 的業務邏輯，無狀態 | 不應含持久化操作（交給 Repository） |
 | Manager | 包裝 Infra 操作、回傳技術結果（boolean / Optional / 數值） | **不應拋業務例外、不做業務判斷**；業務規則解讀屬 Domain Service 職責 |
+| — | Manager 職責的完整判準與 ✅/❌ 範例以 `/code-architect` skill 為準，本表僅作概念摘要 | — |
 | Repository | 持久化抽象，Domain 層不知道 DB 實作 | 不在 Domain Service 直接呼叫 JPA/Mongo API |
 | Anti-Corruption Layer | 外部系統整合邊界轉譯 | 外部 DTO 不應滲透到 Domain 內部 |
+| 欄位新增資料流追蹤 | 新增欄位需追蹤完整鏈路（Entity/Proto → Mapper → VO → Mapper → Cache → Redis），不能只確認到 VO 與 Mapper 就停止 | Cache 類別最容易被漏加：MapStruct 對缺漏欄位採 `ReportingPolicy.IGNORE` 靜默不報錯，導致該欄位存進 Redis 後恆為 null |
+| — | 完整資料流圖示與範例以 `/code-architect` skill 為準，本表僅作概念摘要 | — |
 
 ---
 
@@ -160,6 +165,9 @@ version: 2026-05
 | 批次處理 | 單筆迴圈 INSERT 應改 batch INSERT |
 | 悲觀鎖範圍 | FOR UPDATE 鎖住過多列、持鎖時間過長 |
 | 樂觀鎖衝突 | 高並發下 @Version 衝突率、重試策略 |
+| MongoDB `save()` 誤用 | `save()` 具 upsert 語意，帶 `_id` 時會整份文件覆蓋，可能造成非預期資料遺失；審查是否應改用 `insert()`（新增）或 `upsert()`（條件更新） |
+
+> MongoDB `save()` 禁令的完整判準、正確替代寫法與程式碼範例見 `/code-architect` skill（Infra Rules → MongoDB 操作限制）。
 
 ### 3-3 Redis
 

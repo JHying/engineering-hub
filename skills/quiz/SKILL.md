@@ -1,7 +1,7 @@
 ---
 name: quiz
 description: 從 tech-research 知識庫隨機抽題，以面試考題風格出題（選擇題或簡答題），協助溫故知新、讓眼睛休息。支援獨立呼叫或由 /loop 定時觸發。
-version: "1.0"
+version: "1.0.2"
 ---
 
 # quiz

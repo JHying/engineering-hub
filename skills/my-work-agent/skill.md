@@ -4,6 +4,7 @@ description: >
   多專案軟體開發 AI Agent，支援單一角色執行、部分流程（從指定 stage 起依序執行至 QA）或完整 Spec-Driven 開發流程。
   每個 pipeline stage 可獨立設定 auto（自動執行）或 confirm（與使用者確認後執行）。
   觸發關鍵字：my-work-agent、分析 story、分析 jira、code review
+version: "2.12"
 ---
 
 # Dev Work Agent
@@ -122,16 +123,20 @@ description: >
 
 ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一併適用，不單獨設定。
 
-依 `$start_stage` 動態顯示需設定的 stage：
+**顯示選單前，先依以下規則逐行判斷要列出哪些 stage（規則本身只用來決定內容，不得出現在顯示給使用者的文字中）：**
+
+- `$start_stage` ≤ 1 → 列出「需求企劃」行，否則省略該行
+- `$start_stage` ≤ 2 → 列出「Spec 轉化（含 ADR 溝通）」行，否則省略該行
+- `$start_stage` ≤ 3 → 列出「Spec-Driven 實作（含 ADR 驗證）」行，否則省略該行
+- `$start_stage` ≤ 4 → 列出「Code Review」行，否則省略該行
+- 「QA」行一律列出，不受 `$start_stage` 限制
+
+依上述規則篩出的 stage 清單，依序填入下方模板（模板內只留純文字與佔位符，不得原樣印出任何條件標記）：
 
 ```
 請為各 stage 設定執行方式（A = auto 自動執行，C = confirm 先與你確認再執行）：
 
-{若 $start_stage ≤ 1}  需求企劃：
-{若 $start_stage ≤ 2}  Spec 轉化（含 ADR 溝通）：
-{若 $start_stage ≤ 3}  Spec-Driven 實作（含 ADR 驗證）：
-{若 $start_stage ≤ 4}  Code Review：
-                       QA：
+{依上述規則篩出的 stage 清單，每行一個 stage 名稱加冒號}
 
 依上方順序輸入（例：A A C A A）：
 ```
@@ -153,9 +158,9 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 - 各選定 KB 的 `MASTER_INDEX.md` 已在 Step 1.5 記錄於 `$master_indexes`
 - 各選定 KB 的服務本機原始碼路徑已在 Step 1.5 記錄於 `$SOURCE_ROOTS`
 
-### Step 4 — 載入角色與流程文件
+### Step 4 — 角色與流程文件載入規則
 
-**單一角色模式**：依選擇讀取對應文件對：
+**單一角色模式**：只依選擇的角色讀取對應的一對文件，不讀取其餘角色的檔案：
 
 | 角色        | 角色文件                | 工作流程                  |
 |------------|----------------------|--------------------------|
@@ -166,7 +171,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 | CONSULTANT | `{{role_consultant}}`| `{{flow_consultant}}`    |
 | REVIEWER   | `{{role_reviewer}}`  | `{{flow_reviewer}}`      |
 
-**Pipeline 模式**：預載從 `$start_stage` 起所有涉及角色的文件對：
+**Pipeline 模式（懶載入 / lazy load）**：Step 4 本身**不讀取任何 stage 的角色或流程文件**，只記住下表作為 `$start_stage` 起各 stage 對應的檔案路徑對照；實際讀檔動作延後到 Step 5-PIPELINE 各 stage **開始執行前**才進行：
 
 | Stage | 角色文件 | 工作流程 |
 |-------|---------|---------|
@@ -175,6 +180,13 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 | Spec-Driven 實作 | `{{role_backend}}` + `{{role_consultant}}` | `{{flow_backend}}` + `{{flow_consultant}}` |
 | Code Review | `{{role_reviewer}}` | `{{flow_reviewer}}` |
 | QA | `{{role_qa}}` | `{{flow_qa}}` |
+
+**載入規則（Pipeline 模式）：**
+
+- 每個 stage 開始執行前，才讀取該 stage 對應列的檔案對；**不得預先讀取尚未開始執行之 stage 的角色或流程文件**。
+- **CONSULTANT 為跨 stage 角色，ADR 溝通貫穿 Spec 轉化至 Spec-Driven 實作**：進入「Spec 轉化」stage 時，除了 SA 的檔案對，一併載入 CONSULTANT 的檔案對（`{{role_consultant}}` + `{{flow_consultant}}`）；此檔案對持續保留使用直到「Spec-Driven 實作」stage 結束為止——「Spec-Driven 實作」stage 開始時不需重複載入 CONSULTANT 檔案對，中間也不因換 stage 而重讀。
+- 除上述 CONSULTANT 例外，各 stage 之間不共用已讀取的角色/流程檔案；下一個 stage 開始時，只依對照表載入自己該讀的檔案對。
+- 「不預先讀取」不等於「可卸載」：已讀入的檔案內容仍留在對話 context 中無法移除，因此更需嚴格遵守「到了才讀」，避免提早讀入尚未執行到的 stage 文件而增加固定 context 成本。
 
 ---
 
@@ -205,7 +217,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 
 依序執行從 `$start_stage` 起的各 stage，每個 stage 完成後自動銜接下一個。
 
-每個 stage 開始前告知使用者：
+每個 stage 開始執行前，先依 Step 4「載入規則（Pipeline 模式）」讀取該 stage 對應的角色/流程文件對（含 CONSULTANT 跨 stage 例外），讀取完成後才告知使用者：
 
 ```
 ▶ 開始 {stage 名稱}（{auto / confirm} 模式）
@@ -213,7 +225,10 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 
 #### auto 模式行為
 - 不停下詢問，直接分析、決策、產出
-- 決策點由 Agent 依 KB 內容自行判斷最佳解
+- 決策點判準（取代單純「自行判斷最佳解」，各 stage 的 auto 決策皆依此執行）：
+  - 候選方案在 KB（spec、ADR、guideline）中有明確依據 → 直接採用
+  - KB 無依據，且各方案會影響後續架構 → 降級為 confirm，向使用者確認
+  - KB 無依據，但屬局部實作細節 → 採最小改動方案，並在輸出中標註「KB 無依據，採最小改動」
 - 完成後直接呼叫 `/update-kb` 記錄產出，通知使用者結果後繼續下一 stage
 
 #### confirm 模式行為
@@ -274,7 +289,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
   - auto：自行選擇最佳方案直接實作
   - confirm：呈現建議方案，等待使用者選擇後實作
 - **Output**：
-  1. 執行 `/code-architect` 產出完整程式碼
+  1. 產出完整程式碼，並執行 `/code-architect` 驗證架構合規，有違規項則修正後重新驗證
   2. 執行 `/diagram <主要入口類別> 的完整流程`，輸出至 `{$PROJECT_KB}/source-codex/services/{service}/flow-diagram-{TICKET}.md`
   3. 呼叫 `/update-kb` 記錄實作產出；若 `specs/impls/{TICKET}-impls.md` 尚未建立，一併建立
 - **交給下一個 Stage**：程式碼異動 + 流程圖 → Code Review
@@ -305,7 +320,10 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 - **Decision**：
   - auto：自動撰寫並執行單元與整合測試、依 SOP 執行本機啟動驗證，回報結果
   - confirm：呈現測試策略，等待使用者確認後撰寫與執行
-  - **功能正確性判定**（測試執行後皆需判定，不分 auto/confirm）：區分落差屬於「測試案例設計問題」還是「功能本身確實有誤」；只有後者才計入回圈輪數
+  - **功能正確性判定**（測試執行後皆需判定，不分 auto/confirm）：區分落差屬於「測試案例設計問題」還是「功能本身確實有誤」；只有後者才計入回圈輪數。判定規則：
+    - 實作行為與 spec AC 的預期輸出不符（引用 AC 編號比對）→ 功能有誤，回 BACKEND 修
+    - 測試的預期值或前置條件與 AC 本身不一致 → 測試設計問題，修測試
+    - AC 本身模糊無法判定 → 停下向使用者確認 AC 語意
     - 通過（三類驗測皆過，且對齊 AC/Gherkin）→ 交給下一個 Stage（pipeline 終點）
     - 功能確實有誤 → 回圈至 Spec-Driven 實作修正（見下方「例外」說明；連續 3 輪未通過則暫停與使用者討論）
 - **Output**：呼叫 `/update-kb` 記錄測試案例表、測試範圍、三類驗測結果；若判定回圈，記錄本輪失敗原因、對應的 AC/Gherkin 落差與目前輪數
@@ -359,7 +377,7 @@ QA 回圈次數：{N}（無回圈則寫「0」）
 產出摘要：
   - specs/{TICKET}.md（完整規格）
   - ADRs：{建立 / 更新的 ADR 清單}
-  - 實作程式碼（/code-architect）
+  - 實作程式碼（經 /code-architect 驗證架構合規）
   - 流程圖（/diagram + /diagram sync）
   - review-history/{...}（review 記錄）
   - 測試案例表 + 測試結果（unit / integration / 本機啟動驗證）
@@ -386,7 +404,9 @@ QA 回圈次數：{N}（無回圈則寫「0」）
 
 #### Step M2 — 並行派工兩個 Subagent
 
-**在同一個 response 中**同時發出兩個 `Agent` tool call（不等第一個完成才發第二個）。
+**在同一個 response 中**同時發出兩個 `Agent` tool call（不等第一個完成才發第二個）。兩個 Agent 呼叫皆須明確指定：
+- `subagent_type: general-purpose`
+- `model: sonnet`（角色 stage 子代理屬「實作/分析明確規格」等級；調度原則見 `governance/model-dispatch.md` §1，未來調整只改該處）
 
 以下是兩個 subagent 的 prompt 模板，發出前請將所有 `{...}` 替換為實際值：
 
@@ -479,7 +499,7 @@ QA 回圈次數：{N}（無回圈則寫「0」）
 
 - 輸入 `B` → 以 BACKEND 角色繼續，執行 `{{flow_backend}}` Step 5
 - 輸入 `Q` → 以 QA 角色繼續，執行 `{{flow_qa}}` Step 5
-- 輸入 `BQ` → 再次並行派兩個 subagent，各自執行對應 Phase 2，完成後彙整輸出
+- 輸入 `BQ` → 再次並行派兩個 subagent（`subagent_type`、`model` 設定比照 Step M2），各自執行對應 Phase 2，完成後彙整輸出
 
 ---
 

@@ -76,6 +76,16 @@
 | 2026-07-02 | Netty 編解碼器與 TCP 粘包/拆包解決方案：Protobuf、ByteToMessageDecoder、LengthFieldBasedFrameDecoder | [netty-codec-and-tcp-sticky-packet.md](netty-codec-and-tcp-sticky-packet.md) | Netty, Codec, ByteToMessageDecoder, ReplayingDecoder, LengthFieldBasedFrameDecoder, TCP 粘包, TCP 拆包, Protobuf |
 | 2026-07-02 | Netty 參考書籍導覽（章節地圖）：《Netty 实战》與《Netty 权威指南 第2版》 | [netty-book-reading-guide.md](netty-book-reading-guide.md) | Netty, Netty in Action, Netty 权威指南, 書籍導覽, 原始碼分析, 高性能之道 |
 | 2026-06-29 | Java Sealed Interfaces 與 Pattern Matching：多態回傳型別建模、窮舉性保證與引入條件 | [java-sealed-interfaces-pattern-matching.md](java-sealed-interfaces-pattern-matching.md) | Sealed Interface, Pattern Matching, switch expression, JDK 17, JDK 21, 多態回傳型別, 窮舉性 |
+| 2026-07-03 | JSP/Servlet + Quartz + 傳統 JDBC Web 應用遷移至 Spring Boot：分層架構對比、Servlet 重構 9 步驟 | [servlet-jsp-to-springboot-web-migration.md](servlet-jsp-to-springboot-web-migration.md) | Spring Boot, JSP, Servlet, Quartz, log4j2, Spring Data JPA, 分層架構重構, SpringBootServletInitializer, Connection Pool |
+| 2026-07-04 | 從零建置技術基礎設施：治理骨幹決策與任務拆解方法論（微服務治理骨幹、平台工程雙案例） | [infra-buildout-governance-methodology.md](infra-buildout-governance-methodology.md) | 微服務治理骨幹, 平台工程, Spring Cloud, Vault, Kubernetes, GitOps, 任務拆解, 架構決策 |
+| 2026-07-05 | Spring AOP 代理機制、Processor 體系（執行期/編譯期）與 WebSocket @OnOpen 時序陷阱 | [spring-aop-processor-mechanism-and-websocket-lazy-timing.md](spring-aop-processor-mechanism-and-websocket-lazy-timing.md) | Spring AOP, JDK Dynamic Proxy, CGLIB, BeanPostProcessor, BeanFactoryPostProcessor, AspectJ, Compile-Time Weaving, Load-Time Weaving, Jakarta WebSocket, ServerEndpoint, SpringConfigurator, @Lazy, self-invocation |
+
+## 區塊鏈 / 分散式帳本
+
+| 日期 | 主題 | 檔案 | 關鍵字 |
+|------|------|------|--------|
+| 2026-07-02 | 企業區塊鏈應用架構與技術棧：資料儲存、DID、供應鏈金融、數位同意書、證書平台、碳足跡上鏈 | [enterprise-blockchain-architecture-patterns.md](enterprise-blockchain-architecture-patterns.md) | Blockchain, DID, Verifiable Credential, Hyperledger Fabric, Ethereum, PKI, 供應鏈金融, 碳足跡, 混合架構 |
+| 2026-07-03 | 企業區塊鏈實戰學習地圖：4 個專案分階段吃透 6 個應用情境，含進度追蹤 | [enterprise-blockchain-learning-roadmap.md](enterprise-blockchain-learning-roadmap.md) | Blockchain, DID, Verifiable Credential, Hyperledger Fabric, Web3j, Veramo, 學習地圖, Oracle Pattern |
 
 ## 資訊安全
 

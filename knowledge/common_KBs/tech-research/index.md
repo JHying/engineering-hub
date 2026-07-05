@@ -32,6 +32,7 @@
 | 2026-06-27 | Kubernetes 架構元件：Pod、Worker Node、Master Node、Cluster 與 Service 類型 | [kubernetes-architecture.md](kubernetes-architecture.md) | Kubernetes, K8s, Pod, Node, kubelet, kube-apiserver, etcd, kubectl |
 | 2026-06-27 | IaC：Ansible 設定管理與 Terraform 基礎設施佈署 | [iac-ansible-terraform.md](iac-ansible-terraform.md) | IaC, Ansible, Terraform, Playbook, Provider, 宣告式, GitOps |
 | 2026-06-30 | Spring Actuator 監測 DB 連線健康狀態與自動重連策略（HikariCP + Tomcat JDBC Pool） | [spring-actuator-db-connection-health.md](spring-actuator-db-connection-health.md) | Spring Boot, Spring Actuator, HikariCP, Tomcat JDBC Pool, Connection Pool, DataSource, Health Check, Spring Retry, 自動重連 |
+| 2026-07-04 | WebSocket 使用 OTEL Baggage 傳遞版本號並整合 Istio 版本路由（自建 Spring AOP 工具補齊追蹤缺口） | [websocket-otel-baggage-version-routing.md](websocket-otel-baggage-version-routing.md) | WebSocket, OpenTelemetry, OTEL, Baggage, Istio, 版本路由, Canary, Spring AOP, Distributed Tracing |
 
 ## 資料與分析
 
@@ -49,6 +50,7 @@
 | 2026-06-26 | Firebase FCM 推播通知與即時聊天室（Server + Android + Realtime DB） | [firebase-fcm-push.md](firebase-fcm-push.md) | Firebase, FCM, Push Notification, Realtime Database, Android, Spring Boot |
 | 2026-06-27 | Message Broker 選型（RabbitMQ / Kafka / RocketMQ）與 RabbitMQ AMQP 核心概念 | [message-broker-comparison.md](message-broker-comparison.md) | Message Broker, RabbitMQ, Kafka, AMQP, Exchange, Queue, 解耦, 削峰 |
 | 2026-06-27 | Redis 核心概念：資料結構、快取設計、Cluster 架構與 Hash Slot | [redis-fundamentals.md](redis-fundamentals.md) | Redis, In-Memory, Cache Stampede, Consistent Hash, Cluster, Gossip, Hash Slot |
+| 2026-07-04 | WebSocket API 文件自動生成：選型比較（AsyncAPI/Springwolf/Postman）與 Jakarta WebSocket + API Gateway 整合架構 | [websocket-api-doc-generation.md](websocket-api-doc-generation.md) | WebSocket, API 文件生成, AsyncAPI, Springwolf, STOMP, Jakarta WebSocket, Swagger, API Gateway |
 
 ## 網路基礎
 

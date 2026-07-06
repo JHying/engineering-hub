@@ -4,6 +4,16 @@
 
 ---
 
+## [2.13] — 2026-07-06
+
+### Changed
+- Step 1（Knowledge Hub 根路徑初始化）改為靜默執行：原本開口第一句話就強制問使用者「確認 Y / 輸入新路徑」才能繼續，每次啟動都中斷 session；改為直接讀取 memory 的 `reference_knowledge_base.md` 取得 `$KB_ROOT` 並沿用，僅當實際工作目錄與記錄不符時才提醒使用者確認是否更新，比照 `update-kb` skill Step 0 與專案 `CLAUDE.md` 的 session 初始化慣例（一致就不詢問）
+
+### Context
+- 起因：使用者反映每次啟動 my-work-agent 都被 Step 1 的路徑確認問題中斷，但路徑實際上幾乎不變動，這道問題形同每次都要多回答一次已知答案
+
+---
+
 ## [2.12] — 2026-07-05
 
 ### Changed

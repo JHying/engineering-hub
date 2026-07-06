@@ -4,28 +4,20 @@ description: >
   多專案軟體開發 AI Agent，支援單一角色執行、部分流程（從指定 stage 起依序執行至 QA）或完整 Spec-Driven 開發流程。
   每個 pipeline stage 可獨立設定 auto（自動執行）或 confirm（與使用者確認後執行）。
   觸發關鍵字：my-work-agent、分析 story、分析 jira、code review
-version: "2.12"
+version: "2.13"
 ---
 
 # Dev Work Agent
 
 ## 執行步驟
 
-### Step 1 — 確認 Knowledge Hub 根路徑
+### Step 1 — 初始化 Knowledge Hub 根路徑（靜默）
 
-開口第一句話前，先讀取 memory 中的 `reference_knowledge_base.md` 取得 KB 根路徑作為預設值。
+讀取 memory 中的 `reference_knowledge_base.md` 取得 `$KB_ROOT`（knowledge-hub 根目錄）。
 
-開口第一句話問使用者：
+**僅當**目前實際工作目錄與 `$KB_ROOT` 不符時，才提醒使用者確認是否更新；一致就不詢問、直接沿用進入 Step 1.5，不中斷 session。
 
-```
-請確認 Knowledge Hub 路徑（預設：{從 memory 取得的路徑}）：
-輸入 Y 使用預設，或輸入自訂路徑：
-```
-
-等待使用者回答，記住確認後的路徑（以下稱 `$KB_ROOT`）。
-
-若使用者輸入的路徑與 memory 記錄不同，更新 memory 的 `reference_knowledge_base.md`，
-並將 `$KB_ROOT/setting/paths.yml` 的 `kb` 行更新為新路徑，告知使用者已更新。
+若使用者確認要更新路徑，同步更新 memory 的 `reference_knowledge_base.md`，並將 `$KB_ROOT/setting/paths.yml` 的 `kb` 行更新為新路徑，告知使用者已更新。
 
 ### Step 1.5 — 選擇專案知識庫
 

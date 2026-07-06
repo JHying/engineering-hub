@@ -11,7 +11,7 @@
 # ============================================================
 
 # 注意:Windows 路徑含反斜線,必須用單引號(雙引號內 \W 等為非法 YAML 跳脫序列)
-kb: 'D:\Work\engineering-hub'
+kb: 'D:/Work/engineering-hub'
 
 # ============================================================
 # 子資料夾路徑
@@ -51,10 +51,6 @@ regulations:
   flow_reviewer:   "@kb/role-flows/flow-reviewer.md"
 
   # 共用知識（跨專案，自動載入）
-  review_guide: "@kb/knowledge/common_KBs/guideline/REVIEW_GUIDE.md"
-  adrs:         "@kb/knowledge/common_KBs/ADRs"
-
-  # 專案 KB 內規格範本（相對 {$PROJECT_KB}，執行期動態替換）
-  spec_format:   "{$PROJECT_KB}/specs/spec-format.md"
-  impls_format:  "{$PROJECT_KB}/specs/impls/impls-format.md"
-  qa_format:     "{$PROJECT_KB}/qa-records/qa-format.md"
+  review_guide:   "@kb/knowledge/common_KBs/guideline/REVIEW_GUIDE.md"
+  adrs:           "@kb/knowledge/common_KBs/ADRs"
+  tech-research:  "@kb/knowledge/common_KBs/tech-research"

@@ -1,7 +1,7 @@
 # REVIEW_GUIDE.md
 # Code Review 統一規範
 
-version: 2026-07-05（新增 MongoDB save() 禁令、Infra 空值處理、欄位新增資料流追蹤三項正確性檢查點，來源：/code-architect）
+version: 2026-07-06（新增 Redis Cluster Cross-Slot 檢查點，來源：多 key Lua Script 實務案例）
 目標：確保系統的「維護性」、「擴展性」、「可靠性」
 
 ---
@@ -174,6 +174,7 @@ version: 2026-07-05（新增 MongoDB save() 禁令、Infra 空值處理、欄位
 | 問題類型 | 審查項目 |
 |---------|---------|
 | 原子性 | 非原子的 GET-CHECK-SET 應改 Lua Script 或 SET NX |
+| Cluster Cross-Slot | Redis Cluster 環境下，Lua Script／MULTI／`DEL`(多 key) 等指令若涉及 2 個以上 key，需確認這些 key 是否保證落在同一 slot；由不同來源值（如不同業務欄位各自組字串）組成的 key 幾乎必然落在不同 slot，執行時會拋 `CROSSSLOT Keys in request don't hash to the same slot`。Lua Script／MULTI 無法像 `MGET`/`DEL` 那樣被 client 端自動依 slot 拆分執行，是硬性限制而非效能問題。審查時檢查：① 是否為 Redis Cluster 部署（非 standalone/Sentinel）② Script 是否有 2 個以上 key ③ 這些 key 是否用 hash tag（`{tag}`）強制同 slot，或整個資料模型改為單一 key（如用 HASH 的多個 field 取代多個獨立 key）避免跨 key 依賴 |
 | 熱 Key | 單一 Key 寫入頻率過高，考慮分片或 Local Cache 前置 |
 | 大 Key | Value 過大（> 1MB）影響序列化與網路 |
 | Pipeline | 多個獨立命令應合併為 Pipeline，減少 RTT |

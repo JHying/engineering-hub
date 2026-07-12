@@ -24,3 +24,8 @@
 - 情境:code-architect 2026-07-07 更新(尚未 commit)裡,REVIEW_GUIDE.md 版本註記寫「來源:封盤結算流程實務案例」(博弈網域詞彙),CHANGELOG.md [2.5] Context 直接寫真實類別名,SKILL.md 範例也複製了真實 bean 名稱(拼字帶真實命名的 typo)——同一份 CHANGELOG 較早版本([2.3])卻已正確用 Foo/Bar 佔位符。
 - 教訓:CLAUDE.md 已明文要求 SKILL.md/CHANGELOG.md 去識別化,但只靠動筆當下自覺,沒有寫完後的機械檢查;「Context/起因」段落與版本註記為保留案例真實感最容易被跳過,而 update-kb 的去識別化檢查清單(regex+語意雙軌掃描)適用範圍只涵蓋 common_KBs/ADRs 與 tech-research,guideline 與 skill CHANGELOG 的直接編輯完全不經過這道檢查。
 - 以後怎麼做:改任何 skill 的 SKILL.md/CHANGELOG.md 或 common_KBs/guideline/ 後,展示 diff 給使用者確認前,先對新增的「Context/起因」段落與版本註記,逐字套用內容限制規則判準(不認識此專案的工程師能否憑技術知識理解)檢查一次。
+
+## 2026-07-12 新增 .claude/agents worker 定義檔(記錄,非踩雷)
+- 情境:使用者主線 session 為 sonnet xhigh,子代理繼承 xhigh,機械性派工也燒高推理預算;Agent 工具本身無 effort 參數。
+- 教訓:固定低 effort 的派工角色只能靠 `.claude/agents/*.md` 定義檔(model-dispatch §3 既有結論,本次落實)。
+- 以後怎麼做:批次機械修改/模板套用派 `worker-mechanical`(sonnet, low);read-back 驗證/搜尋定位派 `worker-readback`(haiku, low);兩檔隨 repo 攜帶(`.claude/agents/`),新主機執行 `setting/setup-host.ps1|.sh` 接線 memory 與 skills。

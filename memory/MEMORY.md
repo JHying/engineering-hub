@@ -1,0 +1,3 @@
+- [Narrate-then-act](feedback_narrate-then-act.md) — pair "I will do X" statements with the actual tool call in the same reply, don't just narrate it
+- [待辦:demo_KBs 煙霧測試](project_pending-demo-smoke-test.md) — 使用者已核准、下次 session 執行;防 skill 介面漂移的端到端測試機制
+- [使用者日常跑 Sonnet 5 xhigh](user-default-model-sonnet5-xhigh.md) — 主線非最貴模型,子代理化無費率套利;成本大頭是 xhigh thinking 與 context 累積

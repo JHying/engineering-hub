@@ -22,6 +22,7 @@
 | 2026-06-27 | 高併發設計：指標、悲觀/樂觀鎖、分布式鎖（Redis Redisson）、分庫分表 | [high-concurrency-design.md](high-concurrency-design.md) | 高併發, QPS, 悲觀鎖, 樂觀鎖, 分布式鎖, Redisson, Sharding |
 | 2026-06-27 | Redis 快取三大異常情境：穿透、雪崩、擊穿與資料不一致解法 | [redis-cache-failure-patterns.md](redis-cache-failure-patterns.md) | Redis, 快取穿透, 快取雪崩, 快取擊穿, 布隆過濾器, Cache-Aside |
 | 2026-07-02 | Netty vs Javax WebSocket 效能實測比較（JMeter 壓測、CPU/記憶體、EventLoop 負載平衡） | [netty-vs-javax-websocket-performance.md](netty-vs-javax-websocket-performance.md) | Netty, Javax WebSocket, Tomcat, JMeter, 效能測試, EventLoop, 負載平衡, C10K |
+| 2026-07-07 | 服務過載時的拒絕策略、HTTP 狀態碼語意與熔斷責任分層（Bulkhead、Istio/Envoy vs 應用層） | [overload-rejection-and-circuit-breaking-layers.md](overload-rejection-and-circuit-breaking-layers.md) | ThreadPoolExecutor, Bulkhead, AbortPolicy, CallerRunsPolicy, HTTP 503, HTTP 429, HTTP 502, Istio, Envoy, Resilience4j, Circuit Breaker |
 
 ## DevOps / 可觀測性
 

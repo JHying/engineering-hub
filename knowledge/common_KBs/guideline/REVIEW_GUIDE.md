@@ -1,7 +1,7 @@
 # REVIEW_GUIDE.md
 # Code Review 統一規範
 
-version: 2026-07-06（新增 Redis Cluster Cross-Slot 檢查點，來源：多 key Lua Script 實務案例）
+version: 2026-07-07（新增 @Transactional 邊界／Deadlock／Connection Leak／跨系統資料一致性檢查點，來源：跨 DataSource 交易一致性實務案例）
 目標：確保系統的「維護性」、「擴展性」、「可靠性」
 
 ---
@@ -166,6 +166,10 @@ version: 2026-07-06（新增 Redis Cluster Cross-Slot 檢查點，來源：多 k
 | 悲觀鎖範圍 | FOR UPDATE 鎖住過多列、持鎖時間過長 |
 | 樂觀鎖衝突 | 高並發下 @Version 衝突率、重試策略 |
 | MongoDB `save()` 誤用 | `save()` 具 upsert 語意，帶 `_id` 時會整份文件覆蓋，可能造成非預期資料遺失；審查是否應改用 `insert()`（新增）或 `upsert()`（條件更新） |
+| `@Transactional` 邊界與批次原子性 | 檢查交易邊界是否對齊「需要一起成功或失敗」的操作範圍：呼叫端在迴圈中呼叫同一個 Manager 的單筆 `@Transactional` 方法 N 次，會產生 N 個獨立交易，喪失批次原子性（部分 commit、部分遺漏，且無重試/補償機制）；應收斂為該 Manager 新增一個接受整批資料的方法，內部一次寫入。另需確認未誤套「`@Transactional` 只能標在 AppService」的教條——橫跨多個 DataSource/`TransactionManager` 時，交易邊界必須留在各自擁有該 DataSource 的 Manager，見 `/code-architect` skill AppService Rules 的例外說明 |
+| Deadlock | 多筆資源的鎖獲取順序是否跨呼叫端一致（不同執行緒以不同順序鎖多筆資源即有死鎖風險）；批次/迴圈內對同一組資源的操作，確認鎖定順序穩定（如先依主鍵排序再逐一鎖定）；`SELECT ... FOR UPDATE` 範圍是否過大、持鎖時間是否過長；與分散式鎖（見 3-6）並用時，確認取得順序不會互相等待 |
+| Connection Leak / 大量查詢逾時 | 大量查詢或批次操作是否設定明確 timeout；逾時後是否有 fallback 機制並確實釋放/歸還連線，避免長時間卡住的查詢拖垮連線池、讓其他請求排隊甚至逾時；虛擬執行緒（Virtual Thread）搭配阻塞式 JDBC 驅動（如 OJDBC8）在高並發下需留意 pinning 風險，可能使有效並發能力被底層 carrier thread 數量限制、連線池提前耗盡 |
+| 跨系統資料一致性 | 多步驟流程橫跨多個系統時（例如：Redis 扣款 → 外部系統驗證 → DB 寫入 → 清理暫存），確認任一步驟失敗的處理：是否有清理/補償機制（如 try/finally 確保清理步驟必執行，不因中途例外而永久卡住暫存資料）；例外是否被靜默吞噬（只 log 沒有告警）導致資料處於不一致狀態卻無人知曉 |
 
 > MongoDB `save()` 禁令的完整判準、正確替代寫法與程式碼範例見 `/code-architect` skill（Infra Rules → MongoDB 操作限制）。
 

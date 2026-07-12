@@ -4,6 +4,13 @@
 
 ---
 
+## [1.2] — 2026-07-08
+
+### Fixed
+- `diagram-participants.md` 路徑固定寫死 `docs/`，未考慮圖表用 `--output` 覆蓋輸出到其他位置（例如整合流程將圖表存進 KB 的 `source-codex/services/{service}/`）的情境，導致參與者設定檔與它描述的圖表分散在兩個不相關目錄，且圖表輸出到 KB 時完全不會被自動探索到。改為：`diagram-participants.md` 一律放在**與本次圖表實際輸出目錄相同**的目錄，未覆蓋輸出路徑時仍是預設的 `docs/diagram-participants.md`，行為不變；有覆蓋時跟隨移到該目錄
+
+---
+
 ## [1.1] — 2026-07-05
 
 ### Added

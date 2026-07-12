@@ -25,9 +25,14 @@
 
 1. 備份:`cp {檔} governance/backup/{檔名}.{YYYY-MM-DD}.bak`(同日多次改,加 `-2`、`-3` 序號)。
    ✅ 項目(lessons.md 追加、查證表更新)免備份;⚠️ 項目一律備份。
-2. 向使用者展示:改什麼(前後對照)、為什麼、影響哪些情境。
-3. 使用者同意後才寫入。
-4. 若改動源自一次踩雷,同時在 lessons.md 記錄(§3)。
+2. 寫入前,先依 `skills/update-kb/SKILL.md` 的「去識別化檢查清單」跑一輪雙軌掃描(regex 掃描
+   ＋語意比對,尤其留意新增的「Context/起因」段落與版本註記)——本協議涵蓋的路徑(CLAUDE.md、
+   governance/、skill、`.claude/agents/`)本來就在該清單「專案 KB 以外」的適用範圍內,不是只
+   靠主觀判斷。(起因:2026-07-08 發現 REVIEW_GUIDE 版本註記與 code-architect CHANGELOG 的
+   Context 段落直接洩漏真實業務詞彙與類別名,詳見 lessons.md 同日條目)
+3. 向使用者展示:改什麼(前後對照)、為什麼、影響哪些情境。
+4. 使用者同意後才寫入。
+5. 若改動源自一次踩雷,同時在 lessons.md 記錄(§3)。
 
 ## 3. 踩雷教訓寫回哪裡、什麼格式
 

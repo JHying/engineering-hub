@@ -1,7 +1,7 @@
 ---
 name: diagram
 description: 統一 Mermaid 圖表工具：依描述範圍生成圖表（套用通用顏色規範 + 專案 participant alias）、依 git diff 同步更新。
-version: "1.1"
+version: "1.2"
 ---
 
 # diagram
@@ -27,7 +27,11 @@ version: "1.1"
 
 ## 專案 Participant 設定檔
 
-路徑：`docs/diagram-participants.md`
+路徑：與本次圖表**實際輸出目錄**同一目錄下的 `diagram-participants.md`。
+
+- 未使用 `--output` 覆蓋時，預設輸出目錄為 `docs/`，故路徑為 `docs/diagram-participants.md`
+- 使用 `--output <完整檔案路徑>` 時（例如呼叫方將圖表輸出到 KB 內的 `{$PROJECT_KB}/source-codex/services/{service}/`），`diagram-participants.md` 跟隨放在**同一目錄**，不固定寫死 `docs/`——參與者設定檔理應與它描述的圖表放在一起，才會在同一次 `/diagram sync` 或後續生成時被正確探索與維護
+- 一個專案若在不同目錄下累積多份圖表（例如同時有 `docs/` 下的圖與 KB 內的圖），對應也會有多份 `diagram-participants.md`，各自維護該目錄下圖表用到的 alias，不強制合併
 
 ```markdown
 <!-- diagram-participants -->
@@ -40,8 +44,8 @@ participant MQ as kafka
 participant EXT as external-api
 ```
 
-- 生成 / sync 時自動讀取，**每次執行**都比對追蹤到的元件，補入尚未收錄的 alias
-- 不存在時依追蹤到的元件名稱自動建立初稿並寫入
+- 生成 / sync 時自動讀取（對應目錄下的那一份），**每次執行**都比對追蹤到的元件，補入尚未收錄的 alias
+- 不存在時依追蹤到的元件名稱自動建立初稿並寫入該目錄
 - 各專案自行維護此檔，skill 本身不內建任何 alias
 
 ---
@@ -145,9 +149,9 @@ Controller / Handler / Scheduler
 
 ### Step 3：維護 diagram-participants.md
 
-追蹤完成後，比對追蹤到的所有元件名稱與現有設定檔的差異：
+先依 Step 5 將採用的圖表輸出路徑，決定 `diagram-participants.md` 應在的目錄（與圖表同一目錄，見「專案 Participant 設定檔」）。追蹤完成後，比對追蹤到的所有元件名稱與該目錄下既有設定檔的差異：
 
-- **不存在** → 依追蹤到的元件名稱產生初稿後寫入 `docs/diagram-participants.md`
+- **不存在** → 依追蹤到的元件名稱產生初稿後寫入該目錄的 `diagram-participants.md`
 - **存在** → 讀取現有 alias，將**尚未收錄的新元件**追加至檔案末尾
 
 > 每次生成都執行此步驟，確保隨著程式碼增長，設定檔持續完整。
@@ -282,8 +286,8 @@ git diff {synced-hash} HEAD -- {covers 中的每個路徑}
 
 **`type: sequenceDiagram`：**
 - `%%{init: ...}%%` 顏色區塊缺失時自動補回
-- 比對 diff 中出現的元件與 `docs/diagram-participants.md`，將尚未收錄的新元件追加至設定檔
-- 保持圖表內的 participant alias 與 `docs/diagram-participants.md` 一致
+- 比對 diff 中出現的元件與該圖表所在目錄下的 `diagram-participants.md`（見「專案 Participant 設定檔」，非固定 `docs/`），將尚未收錄的新元件追加至設定檔
+- 保持圖表內的 participant alias 與同目錄的 `diagram-participants.md` 一致
 
 **`type: flowchart`：**
 - 更新 subgraph 標籤、節點文字、決策條件

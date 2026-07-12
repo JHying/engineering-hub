@@ -3,11 +3,13 @@
 本檔只做路由,長內容都在 `governance/`,依觸發條件按需讀取,**不要一開場就全部讀完**。
 改本檔或 governance/ 前,先讀 `governance/maintenance-protocol.md`。
 
-## Session 初始化(靜默,不逐項詢問)
+## Session 初始化(每個 session 第一則回覆固定回報一行,不逐項詢問)
 
-1. KB 根路徑預設 `D:\Work\engineering-hub`(= `setting/paths.yml` 的 `kb`)。
-   **僅當**實際工作目錄與該值不符時,才提醒使用者確認是否更新 paths.yml;一致就什麼都不說。
-2. 不主動啟動定時考題。使用者明說想複習時,才建議 `/loop 30m /quiz`(分鐘數可自訂)。
+1. 比對 `setting/paths.yml` 的 `kb` 與實際工作目錄:
+   - 一致 → 第一則回覆附一行「KB 路徑:{實際路徑}(已確認一致)」
+   - 不一致 → 提示使用者確認是否更新 paths.yml
+2. 同一行附註「如需定時複習可說 `/loop 30m /quiz`」,不主動啟動,僅提示選項存在。
+3. 僅第一則回覆執行一次,同一 session 後續不重複。
 
 ## 按需讀取路由
 

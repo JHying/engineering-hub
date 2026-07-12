@@ -4,6 +4,17 @@
 
 ---
 
+## [2.5] — 2026-07-07
+
+### Fixed / Clarified
+- **AppService Rules — `@Transactional` 位置規則**：修正先前「`@Transactional` 只能標注在 AppService 層」的絕對化表述，補上例外——橫跨多個 DataSource / `TransactionManager` 時，單一 `@Transactional` 無法涵蓋跨 DataSource 操作（Spring 宣告式交易的硬限制，非分層問題），此時交易邊界必須留在各自擁有該 DataSource 的 Manager 層，AppService 只依序呼叫。同時釐清「同一 DataSource 內多筆操作」與「跨 DataSource」是兩種不同情境：前者應把交易邊界收斂到單一批次呼叫（避免呼叫端迴圈呼叫產生 N 個獨立交易），後者才是本例外的適用範圍。補上 ✅/❌ 範例。
+
+### Context
+- 起因：某專案 code review 中，`MainDbManager`（Manager 層）標注 `@Transactional("transactionManager")`，`NotifyDbManager`（另一 Manager）標注 `@Transactional("notifyTransactionManager")`——兩者對應不同 DataSource。舊規則會將兩者都判為「Manager 不應使用 @Transactional」的違規，但使用者指出：即使把交易邊界拉高到共同呼叫兩者的 AppService 層，單一 `@Transactional` 也只能綁定一個 `TransactionManager`，無法讓兩個不同 DataSource 的操作同屬一個交易——規則對此情境的表述有誤，需修正而非要求程式碼配合改寫
+- 同一輪 review 也發現一個真正的違規（同一個 DataSource 內，呼叫端迴圈呼叫 Manager 的單筆方法，產生 N 個獨立交易、喪失批次原子性），修法是把交易邊界收斂到 Manager 新增的批次方法內——這與「跨 DataSource 例外」是不同情境，本次一併在規則文字中釐清區別，避免未來誤用其中一種情境的結論套用到另一種
+
+---
+
 ## [2.4] — 2026-07-05
 
 ### Added

@@ -4,7 +4,26 @@
 
 ---
 
-## [1.12] — 2026-07-05
+## [1.14] — 2026-07-08
+
+### Added
+- **新增「表格欄位可讀性規則」章節**（緊接內容限制規則之後，去識別化檢查清單之前）：單一表格儲存格若塞入 3 個以上不同面向的獨立事實（規模數字 + 時間限制 + 架構原因 + 待補充項等），視為過度密集，須拆成「主表格精簡摘要列 + 下方結構化子表格（項目/數值/說明）」，子表格每列只放一件事；棄用數值用刪除線標注並簡述原因與日期，不得整段塞回備註欄
+
+### Context
+- 起因：某專案 KB 的 `MASTER_INDEX.md` 系統規格基準表中某一列，因連續三輪技術分析修正（時間預算拆解、並行架構發現、舊估算口徑棄用）逐次疊加內容，最終單一儲存格塞入約 8 件不相關的事實（規模數字、時間限制、架構原因、待補充項、已棄用的舊數值等）混在一段文字裡，使用者直接反饋「好難閱讀」；修正方式為拆成主表格摘要列 + 獨立的結構化子表格，同時要求此規則寫入 skill 本身，避免未來同類型多輪技術分析疊加時重蹈覆轍
+
+---
+
+## [1.13] — 2026-07-08
+
+### Changed
+- **去識別化檢查清單擴大適用範圍**：原本僅涵蓋 `common_KBs/ADRs/`、`common_KBs/tech-research/`（Mode B 選項 5、7），現擴大為「專案 KB（`{$PROJECT_KB}/`）以外的所有 git-tracked 內容」——新增涵蓋 `common_KBs/guideline/`、`skills/*/SKILL.md`、`CHANGELOG.md`、`role-flows/`、`roles/`、`setting/`、`README.md`、`CLAUDE.md`、`governance/` 等 KB_ROOT Meta 路徑（Mode B 選項 8），且明確不論異動經由本 skill 派發或由主流程 / 其他 skill 直接編輯產生，皆須套用
+- Step 2 路由表「KB_ROOT Meta」列補上 `common_KBs/guideline/`：先前完全沒有路由項目涵蓋 guideline 更新
+- 「對照表的呈現限制」段落：從「只能出現在 Step 6」放寬為「當次對話最終摘要」，涵蓋 KB_ROOT Meta / 直接編輯類異動不走 Step 6 的情況；並新增 CHANGELOG.md 為禁止寫入對照表的路徑之一
+
+### Context
+- 起因：2026-07-08 發現 `REVIEW_GUIDE.md` 版本註記與 `code-architect/CHANGELOG.md` 的 Context 段落直接洩漏真實業務詞彙與類別名——兩者皆屬「內容限制規則」（軟性、主觀判斷）管轄範圍，未經過「去識別化檢查清單」（regex＋語意雙軌掃描）的機械檢查；追查發現該清單的適用範圍設計上就只綁定 Mode B 選項 5、7，guideline 與 skill CHANGELOG 的直接編輯流程完全不會觸發它，屬設計缺口而非執行疏漏
+- 對應 `governance/maintenance-protocol.md` §2 同步新增直接編輯前的去識別化自檢步驟，兩處為同一次修正
 
 ### Changed
 - **Step 3 拆分為外部模板檔**：原本內嵌於 skill.md 的 8 份子代理 prompt（PM / RD / SRE / 專案 ADR / 共用 ADR / tech-research / Review History / QA Records）逐字搬移至同目錄新建的 `templates/` 子目錄（`pm-spec.md`、`rd-source-codex.md`、`sre.md`、`project-adr.md`、`common-adr.md`、`tech-research.md`、`review-history.md`、`qa-records.md`），內容（含各模板的「派發規格」`subagent_type` / `model` 標注）逐字保留、零語意變動

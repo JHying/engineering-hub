@@ -5,7 +5,7 @@ description: >
   1. 排程自啟動：掃描各專案 KB 的 pending/ 目錄、每日 git 更新，自動判斷涉及的 KB 並派發子代理並行更新。
   2. 使用者自啟動：使用者輸入要更新的內容（ticket/檔案/描述），手動選擇目標專案 KB 後觸發更新流程。
   觸發關鍵字：update-kb、更新知識庫、kb更新、同步知識庫、寫到KB、review history
-version: "1.12"
+version: "1.14"
 ---
 
 # Update Knowledge Base
@@ -52,10 +52,29 @@ version: "1.12"
 
 ---
 
-## 去識別化檢查清單（強制去識別化路徑適用）
+## 表格欄位可讀性規則（寫入前必查，適用所有 Step）
 
-> 適用範圍：`knowledge/common_KBs/ADRs/`、`knowledge/common_KBs/tech-research/`（即 Mode B 選項 5、7 與對應子代理）。
-> 與上方「內容限制規則」的差異：內容限制規則適用**所有**路徑（專案 KB 例外，允許完整識別資訊）；本清單專用於**強制去識別化**路徑，標準更嚴格，專案 KB 不適用。
+> 適用於任何 markdown 表格（`MASTER_INDEX.md`、各 `index.md`、`facts.md` 內的表格等），不限於特定 KB 類型。
+
+**觸發條件**：單一儲存格內容若包含 **3 個以上不同面向的獨立事實**（例如：數量規模 + 時間限制 + 架構原因 + 待補充項，四件不相關的事混在一起），視為過度密集，不得直接塞進一個儲存格。
+
+**處理方式**：
+
+1. 主表格該列**只留精簡摘要**（一句話講完最關鍵的數字/結論），並註明「詳見下方」
+2. 在主表格之後，新增一個**結構化子表格**（欄位建議：項目 / 數值 / 說明），把原本擠在同一儲存格的每個獨立事實各自拆成一列
+3. 子表格的每一列只放**一件事**，不得再度把多個面向壓縮回同一列
+4. 若某個事實已棄用或被修正，用 `~~刪除線~~` 標注在該列的「數值」欄，並在「說明」欄簡述棄用原因與日期，不要整段文字塞進備註欄
+
+**反例（不可接受）**：一個儲存格塞入 5 句話、多組數字、多個技術原因、外加一個 `[待補充]`，段落中間穿插 `**粗體**` 強調多個不同重點——讀者無法一眼定位任一具體數字。
+
+**判斷標準（一句話）**：如果你自己重新看這個儲存格，要讀兩遍以上才能抓到裡面有幾件事、分別是什麼數字，就代表要拆。
+
+---
+
+## 去識別化檢查清單（專案 KB 以外一律適用）
+
+> 適用範圍：`{$PROJECT_KB}/`（各專案 KB）以外的**所有 git-tracked 內容**——不限於共用 ADR / 通用技術研究（Mode B 選項 5、7），也涵蓋 `common_KBs/guideline/`、`skills/*/SKILL.md`、`CHANGELOG.md`、`role-flows/`、`roles/`、`setting/`、`README.md`、`CLAUDE.md`、`governance/` 等 KB_ROOT Meta 路徑（Mode B 選項 8），不論異動是經由本 skill 派發子代理、或由主流程 / 其他 skill 直接編輯（例如 `governance/maintenance-protocol.md` §2 的直接編輯流程）產生。
+> 與上方「內容限制規則」的關係：兩者適用範圍現已一致（專案 KB 以外全部）；內容限制規則是判斷原則（能否憑技術知識理解），本清單是把該原則落實為可執行步驟（regex 掃描＋語意比對雙軌），兩者一起跑，不是取代關係。
 
 ### 識別項目分類
 
@@ -97,8 +116,8 @@ version: "1.12"
 
 ### 對照表的呈現限制
 
-- 對照表**只能出現在 Step 6 對話最終摘要**中，供使用者核對本次替換是否正確
-- **禁止**將對照表寫入任何檔案：不得出現在共用 KB 文件本身、`pending/logs/` 更新記錄、MASTER_INDEX 或其他任何 `$KB_ROOT` 下的檔案
+- 對照表**只能出現在當次對話的最終摘要**中（Mode B 走 Step 6；KB_ROOT Meta 或直接編輯類異動則於完成後的摘要回覆中呈現），供使用者核對本次替換是否正確
+- **禁止**將對照表寫入任何檔案：不得出現在共用 KB 文件本身、`pending/logs/` 更新記錄、MASTER_INDEX、CHANGELOG.md 或其他任何 `$KB_ROOT` 下的檔案
 - 原因：對照表含原始識別內容，寫入檔案等同讓業務內容混入通用知識庫；僅留存於當次對話輸出則不會被 KB 收錄
 
 ---
@@ -201,7 +220,7 @@ version: "1.12"
   5. 去識別化的架構決策（更新共用 ADRs → `common_KBs/ADRs/`，將依「去識別化檢查清單」自動掃描與替換）
   6. Code Review 記錄（新增 review-history/ 條目，可含 ticket 單號或直接描述）
   7. 技術探討 / 研究筆記（更新 `common_KBs/tech-research/`，將依「去識別化檢查清單」自動掃描與替換）
-  8. KB_ROOT 結構性異動（`skills/`、`role-flows/`、`roles/`、`setting/` 等不綁定特定專案的異動，例如 skill 規則調整、審查/稽核結果）
+  8. KB_ROOT 結構性異動（`skills/`、`role-flows/`、`roles/`、`setting/` 等不綁定特定專案的異動，例如 skill 規則調整、審查/稽核結果，將依「去識別化檢查清單」自動掃描與替換）
 
 輸入內容：
 ```
@@ -224,9 +243,9 @@ version: "1.12"
 | 技術探討、框架評估、研究筆記、選型比較（去識別化） | **通用技術研究 KB**（`$KB_ROOT/knowledge/common_KBs/tech-research/`） |
 | code review、Review、品質問題、效能問題、原子性、[V]、[不處理]、審查範圍、審查結果、review history | **Review History KB**（`{$PROJECT_KB}/review-history/`） |
 | qa、測試案例、測試結果、qa-records、{TICKET}-qa | **QA Records KB**（`{$PROJECT_KB}/qa-records/{TICKET}-qa.md`，格式規範見 `qa_format`） |
-| skill 規則調整（`skills/*/SKILL.md`）、角色定義（`roles/`）、角色流程（`role-flows/`）、`setting/paths.yml`、README.md、CLAUDE.md 等不綁定特定專案的異動；或針對這些路徑的稽核 / 檢查結果（如去識別化稽核、規則一致性檢查） | **KB_ROOT Meta**（不屬於任何 `$PROJECT_KB`，見下方說明） |
+| skill 規則調整（`skills/*/SKILL.md`）、共用審查規範（`common_KBs/guideline/`）、角色定義（`roles/`）、角色流程（`role-flows/`）、`setting/paths.yml`、README.md、CLAUDE.md 等不綁定特定專案的異動；或針對這些路徑的稽核 / 檢查結果（如去識別化稽核、規則一致性檢查） | **KB_ROOT Meta**（不屬於任何 `$PROJECT_KB`，見下方說明） |
 
-> **KB_ROOT Meta 的處理方式**：這類異動範圍通常明確且單一（例如一次只改一個 skill 的一條規則），**不派發 Step 3 子代理**，由主流程直接讀取、修改、確認即可；`skills/*/SKILL.md` 的內容規則異動仍需依 CLAUDE.md 同步更新該 skill 自己的 CHANGELOG.md。**異動追蹤完全依賴該 CHANGELOG.md + git commit history，update-kb 不另外寫 log**（純稽核、無實際寫入的任務也不需要記錄）。
+> **KB_ROOT Meta 的處理方式**：這類異動範圍通常明確且單一（例如一次只改一個 skill 的一條規則），**不派發 Step 3 子代理**，由主流程直接讀取、修改、確認即可；寫入前依「去識別化檢查清單」跑一輪雙軌掃描（不只本節上方的內容限制規則）；`skills/*/SKILL.md` 的內容規則異動仍需依 CLAUDE.md 同步更新該 skill 自己的 CHANGELOG.md。**異動追蹤完全依賴該 CHANGELOG.md + git commit history，update-kb 不另外寫 log**（純稽核、無實際寫入的任務也不需要記錄）。
 >
 > **一次更新可能同時涉及多個 KB 類型。**
 >

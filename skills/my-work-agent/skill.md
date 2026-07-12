@@ -11,6 +11,20 @@ version: "2.13"
 
 ## 執行步驟
 
+### Step 0 — 啟動參數直通（有參數時）
+
+呼叫時若帶參數，依下列規則解析並**跳過對應的問答步驟**；解析不出的部分照常詢問：
+
+| 參數樣式 | 解析為 |
+|---------|--------|
+| `_KBs` 結尾名稱、或 Step 1.5 選單編號 | 選定專案 KB（跳過 Step 1.5 詢問） |
+| `single`/`單一`、`pipeline`/`部分`、`full`/`完整`、`preview` | 執行模式 1–4（跳過 Step 2 詢問） |
+| 角色名（PM/SA/CONSULTANT/BACKEND/REVIEWER/QA/SRE） | 模式 1 並選定該角色 |
+| stage 名稱或編號（搭配 `pipeline`） | `$start_stage`（跳過 Step P1） |
+| 連續 A/C 字串（如 `CAAAA`，長度須等於待設定 stage 數） | `$stage_modes`（跳過 Step P2） |
+
+範例：`/my-work-agent 1 full CAAAA` ＝ 第 1 個 KB、完整流程、C A A A A，零問答直接開跑。
+
 ### Step 1 — 初始化 Knowledge Hub 根路徑（靜默）
 
 讀取 memory 中的 `reference_knowledge_base.md` 取得 `$KB_ROOT`（knowledge-hub 根目錄）。
@@ -130,7 +144,10 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 
 {依上述規則篩出的 stage 清單，每行一個 stage 名稱加冒號}
 
-依上方順序輸入（例：A A C A A）：
+建議預設：C A A A A（spec 成形時人工把關一次，其後全自動——需求判斷錯誤是唯一
+後面階段補不回來的錯，且此閘門成本最低）；起點非需求企劃時，建議首個 stage 為 C、其餘 A。
+
+依上方順序輸入（例：A A C A A），或直接按 Enter 採用建議預設：
 ```
 
 記住每個 stage 的設定（以下稱 `$stage_modes`），進入 Step 3。
@@ -178,6 +195,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 - 每個 stage 開始執行前，才讀取該 stage 對應列的檔案對；**不得預先讀取尚未開始執行之 stage 的角色或流程文件**。
 - **CONSULTANT 為跨 stage 角色，ADR 溝通貫穿 Spec 轉化至 Spec-Driven 實作**：進入「Spec 轉化」stage 時，除了 SA 的檔案對，一併載入 CONSULTANT 的檔案對（`{{role_consultant}}` + `{{flow_consultant}}`）；此檔案對持續保留使用直到「Spec-Driven 實作」stage 結束為止——「Spec-Driven 實作」stage 開始時不需重複載入 CONSULTANT 檔案對，中間也不因換 stage 而重讀。
 - 除上述 CONSULTANT 例外，各 stage 之間不共用已讀取的角色/流程檔案；下一個 stage 開始時，只依對照表載入自己該讀的檔案對。
+- **共用參考文件不重讀**：master_index、REVIEW_GUIDE、服務文檔（features / architecture / api-spec 等）、spec / impls 等**非角色/流程類**文件，pipeline 中第一次讀取後即沿用 context 內容；後續 stage 的流程文件再要求讀取同一檔案時，跳過重讀、直接引用已載入內容。唯一例外：該檔案在 pipeline 中途被寫入或變更（spec 更新、`/update-kb` 寫入、程式碼異動連帶更新文檔）→ 重讀該檔取得最新版。
 - 「不預先讀取」不等於「可卸載」：已讀入的檔案內容仍留在對話 context 中無法移除，因此更需嚴格遵守「到了才讀」，避免提早讀入尚未執行到的 stage 文件而增加固定 context 成本。
 
 ---
@@ -221,12 +239,13 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
   - 候選方案在 KB（spec、ADR、guideline）中有明確依據 → 直接採用
   - KB 無依據，且各方案會影響後續架構 → 降級為 confirm，向使用者確認
   - KB 無依據，但屬局部實作細節 → 採最小改動方案，並在輸出中標註「KB 無依據，採最小改動」
-- 完成後直接呼叫 `/update-kb` 記錄產出，通知使用者結果後繼續下一 stage
+- **降級決策點批次呈現**：同一 stage 內降級為 confirm 的決策點**不逐一中斷使用者**——先記下並繼續處理不相依的其他工作，待該 stage 分析完成（或累積達 4 個）時，以單次 AskUserQuestion 一次呈現（每題附選項與建議）。例外：彼此相依的決策點（前一題答案會改變後一題的選項）仍即時詢問。
+- stage 完成後依「/update-kb 批次化」規則將產出草稿直寫 pending/，通知使用者結果後繼續下一 stage
 
 #### confirm 模式行為
 - 在每個決策點暫停，呈現分析結果後等待使用者確認
 - 使用者確認後才繼續執行
-- 完成後詢問使用者是否執行 `/update-kb`（預設 Y）後再繼續下一 stage
+- stage 完成後依「/update-kb 批次化」規則將產出草稿直寫 pending/（此步免詢問）再繼續下一 stage；pipeline 終點的正式入庫才詢問一次是否執行 `/update-kb`（預設 Y）
 
 ---
 
@@ -243,6 +262,31 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 - 每個 task 只有在**真的呼叫了對應工具**（透過 Skill 呼叫 `/code-architect`、`/diagram`、`/update-kb` 等）才可標記完成；手動寫文件、手動審查等「產出結果看起來差不多」的替代做法**不算完成**——這類手動替代會漏掉該工具本身的其他副作用（例如 `/diagram` 會同步維護 `diagram-participants.md`、`/update-kb` 會清理對應的 pending 項目與寫入 log），且容易在長對話中被忽略而沒有被發現。
 - 該 stage 標記「✅ {stage 名稱} 完成」之前，用 `TaskList` 確認這些 task 全部是 completed；有缺漏就先補做，不得省略後直接進入下一個 stage 或標記流程完成。
 
+#### 測試執行分層（強制，適用 Spec-Driven 實作起的所有 stage）
+
+驗證義務不變，改變的是**範圍**——全套 test suite 在整條 pipeline 中只完整執行一次（QA 第 1 輪）：
+
+| 執行時機 | 測試範圍 |
+|---------|---------|
+| Spec-Driven 實作完成時（含回圈修正輪） | 只跑**受本次異動影響的測試**：本次新增/修改的測試類別 + 直接呼叫異動程式碼的既有測試（以 `mvn test -Dtest=...` / `gradle test --tests ...` 等指定範圍），不跑全套 |
+| Code Review 修正完成時 | 同上，只跑受修正影響的測試 |
+| QA 第 1 輪 | **完整三類驗測**（全套 unit + integration + 本機啟動驗證）——整條 pipeline 唯一的全套執行點 |
+| QA 回圈第 2 輪起 | 只重跑上一輪失敗的案例 + 受本輪修正影響的測試；**本機啟動驗證亦跳過**（修正若涉及啟動設定/依賴注入則例外）；判定通過後**補跑一次最終全套**（含本機啟動驗證）確認無迴歸，通過才標記 pipeline 完成 |
+
+- 無法圈定影響範圍時（如異動橫切多模組的共用元件、修改建置設定）→ 該次退回全套執行，並在輸出中標註原因。
+- 單一角色模式比照對應 stage 的範圍規則（QA 單獨執行時視同「QA 第 1 輪」跑全套）。
+
+#### /update-kb 批次化（強制，僅 Pipeline 模式）
+
+`/update-kb` 在 pipeline 中是記帳而非運輸——stage 間的交接靠對話 context 與磁碟上的程式碼/流程圖，不依賴讀回 KB 檔案。因此：
+
+- **各 stage Output 中所有「呼叫 `/update-kb`」項目，在 pipeline 模式下一律改為**：將該產出的完整草稿直寫 `{$PROJECT_KB}/pending/{TICKET}-{stage 代號}.md`（主線直接 Write 的輕量檔案操作，**不派子代理**；同一 stage 多筆產出如 SA 的多個 ADR，同檔分節追加）。QA 回圈的輪數與失敗紀錄同樣追加於 QA 草稿檔。
+- **pipeline 終點**（QA 通過後、輸出「🎉 流程完成」總結前）觸發**一次** `/update-kb`，由其將 pending/ 草稿正式入庫（分類、去識別化、index/MASTER_INDEX 同步）並清理 pending；auto 模式直接觸發，confirm 模式詢問一次（預設 Y）。
+- **中斷保護網**：pipeline 中途死掉時，pending/ 草稿仍在磁碟上，update-kb 排程模式（Mode A）原生掃描 pending/ 會將其撿回入庫，或下次手動觸發時處理。
+- `/diagram`、`/code-architect` **不在批次範圍**，照各 stage 原定時機即時執行。
+- **單一角色模式不適用本規則**：維持該角色完成後即時 `/update-kb`（跨 session 執行下一角色時依賴磁碟上的正式 KB 檔案）。
+- Output 動作追蹤的對應調整：pipeline 模式下各 stage 的 `/update-kb` task 以「pending 草稿已寫入」為完成標準；pipeline 終點另建一個「觸發 /update-kb 正式入庫」task，於總結前確認 completed。
+
 ---
 
 **需求企劃**（PM）
@@ -252,7 +296,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 - **Decision**：
   - auto：自行判斷審查結果與 Gherkin 範本是否足夠，直接採用
   - confirm：呈現審查結果與補充的 Gherkin 範本，等待使用者確認
-- **Output**：呼叫 `/update-kb` 建立 `specs/{TICKET}.md` 第一版
+- **Output**：建立 `specs/{TICKET}.md` 第一版——依「/update-kb 批次化」規則記錄（pipeline 模式寫 pending 草稿；單一角色模式即時呼叫 `/update-kb`）
 - **交給下一個 Stage**：`specs/{TICKET}.md` 第一版 → Spec 轉化
 
 ---
@@ -264,8 +308,8 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
   1. 依 `{{flow_sa}}` 執行 SA 過程，補足技術文件落差
   2. 依 `{{flow_consultant}}` 逐一識別決策點，查詢現有 ADR 與技術棧
 - **Decision**：
-  - auto：自行分析各決策點，每個確定後呼叫 `/update-kb` 記錄 ADR
-  - confirm：每個決策點呈現選項，等待使用者確認後呼叫 `/update-kb` 記錄 ADR
+  - auto：自行分析各決策點，每個確定後記錄 ADR（依「/update-kb 批次化」規則）
+  - confirm：每個決策點呈現選項，等待使用者確認後記錄 ADR（依「/update-kb 批次化」規則）
 - **Output**：更新完整 `specs/{TICKET}.md`；若此時已有部分實作，同步建立 `specs/impls/{TICKET}-impls.md`
 - **交給下一個 Stage**：完整 `specs/{TICKET}.md` + 已記錄的 ADR → Spec-Driven 實作
 
@@ -281,23 +325,24 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
   - auto：自行選擇最佳方案直接實作
   - confirm：呈現建議方案，等待使用者選擇後實作
 - **Output**：
-  1. 產出完整程式碼，並執行 `/code-architect` 驗證架構合規，有違規項則修正後重新驗證
+  1. 產出完整程式碼，並執行 `/code-architect` 驗證架構合規，有違規項則修正後重新驗證；程式碼驗證依「測試執行分層」規則**只跑受異動影響的測試**
   2. 執行 `/diagram <主要入口類別> 的完整流程`，輸出至 `{$PROJECT_KB}/source-codex/services/{service}/flow-diagram-{TICKET}.md`
-  3. 呼叫 `/update-kb` 記錄實作產出；若 `specs/impls/{TICKET}-impls.md` 尚未建立，一併建立
+  3. 記錄實作產出（依「/update-kb 批次化」規則）；若 `specs/impls/{TICKET}-impls.md` 尚未建立，一併建立
 - **交給下一個 Stage**：程式碼異動 + 流程圖 → Code Review
 
 ---
 
 **Code Review**（REVIEWER）
 
-- **Input**：此次異動的所有程式碼（依 `$SOURCE_ROOTS` 定位服務本機路徑）
-- **工作內容**：依 `{{flow_reviewer}}` 審查此次異動的所有程式碼
+- **Input**：此次異動的所有程式碼（依 `$SOURCE_ROOTS` 定位服務本機路徑）；**若為 QA 回圈修正輪**，縮小為本輪修正的 diff——首輪已全量審過，回圈輪只審修正範圍及其直接呼叫點
+- **工作內容**：依 `{{flow_reviewer}}` 審查 Input 範圍內的程式碼
 - **Decision**：
   - auto：直接套用所有修正
   - confirm：逐一呈現發現的問題，等待使用者確認後修正
 - **Output**：
-  1. 所有修正完成後執行 `/diagram sync`，更新 `{$PROJECT_KB}/source-codex/services/{service}/flow-diagram-{TICKET}.md`
-  2. 呼叫 `/update-kb` 記錄 review 結果與修正紀錄
+  1. 修正後的驗證依「測試執行分層」規則**只跑受修正影響的測試**
+  2. 所有修正完成後執行 `/diagram sync`，更新 `{$PROJECT_KB}/source-codex/services/{service}/flow-diagram-{TICKET}.md`；**QA 回圈修正輪跳過此步**，於 QA 最終通過後、流程完成總結前補執行一次（涵蓋所有回圈輪的累積異動）
+  3. 記錄 review 結果與修正紀錄（依「/update-kb 批次化」規則）
 - **交給下一個 Stage**：修正後程式碼 + review 記錄 → QA
 
 ---
@@ -308,7 +353,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 - **工作內容**：
   1. 依 `{{flow_qa}}` 從 spec AC 生成測試策略與完整測試案例表
   2. 逐條核對測試結果是否對齊 PM / SA 階段產生的 AC 與 Gherkin 範本
-  3. 執行三類驗測：unit test、integration test、本機啟動驗證（此為本機驗測，非部署——依 `source-codex/services/{service}/sop-service-startup-verification-internal.md` 執行；專案尚未建立此 SOP 時標注 `[待補充]`，不因此卡住流程）
+  3. 執行三類驗測：unit test、integration test、本機啟動驗證（此為本機驗測，非部署——依 `source-codex/services/{service}/sop-service-startup-verification-internal.md` 執行；專案尚未建立此 SOP 時標注 `[待補充]`，不因此卡住流程）。測試範圍依「測試執行分層」規則：第 1 輪全套，回圈第 2 輪起只跑失敗案例 + 受修正影響者，通過後補跑最終全套
 - **Decision**：
   - auto：自動撰寫並執行單元與整合測試、依 SOP 執行本機啟動驗證，回報結果
   - confirm：呈現測試策略，等待使用者確認後撰寫與執行
@@ -318,7 +363,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
     - AC 本身模糊無法判定 → 停下向使用者確認 AC 語意
     - 通過（三類驗測皆過，且對齊 AC/Gherkin）→ 交給下一個 Stage（pipeline 終點）
     - 功能確實有誤 → 回圈至 Spec-Driven 實作修正（見下方「例外」說明；連續 3 輪未通過則暫停與使用者討論）
-- **Output**：呼叫 `/update-kb` 記錄測試案例表、測試範圍、三類驗測結果；若判定回圈，記錄本輪失敗原因、對應的 AC/Gherkin 落差與目前輪數
+- **Output**：記錄測試案例表、測試範圍、三類驗測結果（依「/update-kb 批次化」規則）；若判定回圈，記錄本輪失敗原因、對應的 AC/Gherkin 落差與目前輪數
 - **交給下一個 Stage**：
   - 通過 → （pipeline 終點）測試結果彙總 → 流程完成總結（見下方「Stage 間銜接格式」）
   - 不通過 → 回到 **Spec-Driven 實作（含 ADR 驗證）**，帶入本輪 QA 發現的具體缺陷描述，修正 → Code Review → QA 重複執行

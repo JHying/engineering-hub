@@ -4,6 +4,54 @@
 
 ---
 
+## [2.16] — 2026-07-12
+
+### Added
+- Step 0「啟動參數直通」：呼叫時可帶 KB 編號/名稱、模式、角色、起點 stage、A/C 字串（如 `CAAAA`）跳過對應問答，`/my-work-agent 1 full CAAAA` 零問答直接開跑
+- Step P2 顯示建議預設 `C A A A A`（spec 成形時人工把關一次、其後全自動；需求判斷錯誤是後面階段補不回來的錯），空輸入直接採用；起點非需求企劃時建議首 stage 為 C
+- auto 模式「降級決策點批次呈現」：同 stage 內降級為 confirm 的決策點收集後以單次 AskUserQuestion 一次呈現（最多 4 題），相依決策點例外仍即時詢問
+
+### Changed
+- QA 回圈修正輪瘦身：Code Review 只審本輪修正 diff 及直接呼叫點（首輪已全量審過）；`/diagram sync` 回圈輪跳過、QA 最終通過後補執行一次；本機啟動驗證回圈輪跳過（修正涉及啟動設定除外）、併入最終全套終驗
+- 五個 stage Output 的「呼叫 /update-kb」措辭統一改為「依『/update-kb 批次化』規則記錄」，消除與批次化規則的字面矛盾（read-back 驗證發現，避免逐字執行時仍每 stage spawn 子代理）
+
+### Context
+- 起因：使用者詢問是否建議預設 AAAAA。分析結論為否——auto 已有 KB 無依據時的降級安全閥，但 PM 階段的 AC 誤判會讓整條 pipeline「正確地做出錯的東西」（QA 依錯誤 spec 全綠），故唯一人工閘門放在 spec 成形點成本最低、槓桿最大。另盤點出回圈輪的全量 review、每輪 diagram sync 與啟動驗證為剩餘浪費點
+
+---
+
+## [2.15] — 2026-07-12
+
+### Added
+- Step 5-PIPELINE 新增「/update-kb 批次化」強制規則（僅 pipeline 模式）：各 stage 的 `/update-kb` 項目改為將產出草稿直寫 `{$PROJECT_KB}/pending/{TICKET}-{stage 代號}.md`（主線輕量直寫、不派子代理）；pipeline 終點一次性觸發 `/update-kb` 正式入庫並清理 pending
+- 中斷保護網：pipeline 中途中斷時，pending/ 草稿由 update-kb 排程模式（Mode A）原生掃描撿回入庫
+- Output 動作追蹤對應調整：stage 的 /update-kb task 以「pending 草稿已寫入」為完成標準，終點另建「正式入庫」task
+
+### Changed
+- auto 模式：stage 完成後由「直接呼叫 /update-kb」改為「草稿直寫 pending/」
+- confirm 模式：stage 完成後的 /update-kb 詢問移至 pipeline 終點只問一次（預設 Y），草稿寫入免詢問
+- `/diagram`、`/code-architect` 不在批次範圍，維持即時執行；單一角色模式不適用批次化，維持即時 /update-kb（跨 session 依賴磁碟上的正式 KB 檔案）
+
+### Context
+- 起因：v2.14 後 auto 模式剩餘的最大 token 消耗為每 stage 各 spawn 一次 /update-kb 子代理（單次約 40–100k tokens，五個 stage 五次）。經確認 stage 間交接依賴對話 context 與磁碟程式碼，不依賴讀回 KB 檔案，/update-kb 屬記帳而非運輸，批次化不影響 pipeline 依賴；中斷耐久性以 pending/ 草稿承接
+
+---
+
+## [2.14] — 2026-07-12
+
+### Added
+- Step 5-PIPELINE 新增「測試執行分層」強制規則：全套 test suite 在整條 pipeline 只完整執行一次（QA 第 1 輪）——Spec-Driven 實作與 Code Review 的驗證只跑受本次異動/修正影響的測試（`-Dtest` / `--tests` 指定範圍）；QA 回圈第 2 輪起只重跑失敗案例 + 受修正影響者，判定通過後補跑最終全套確認無迴歸；無法圈定影響範圍時退回全套並標註原因
+- Step 4 載入規則新增「共用參考文件不重讀」：master_index、REVIEW_GUIDE、服務文檔、spec/impls 等非角色/流程類文件，pipeline 中第一次讀取後沿用 context 內容，後續 stage 不重讀；檔案中途被寫入/變更才重讀
+
+### Changed
+- Spec-Driven 實作、Code Review、QA 三個 stage 的 Output/工作內容同步引用測試分層規則
+- 單一角色模式比照對應 stage 的測試範圍（QA 單獨執行視同第 1 輪跑全套）
+
+### Context
+- 起因：使用者反映 auto 模式非常耗 token、且自 Spec-Driven 實作起幾乎每個階段都重跑全部 unit test 很耗時。追查確認全套 suite 在一條 pipeline 中會執行 3 次以上（實作驗證、review 修正驗證、QA 三類驗測，回圈再乘輪數），且 master_index / REVIEW_GUIDE / 服務文檔在 BACKEND、REVIEWER、QA 各 stage 的流程文件中被重複要求讀取
+
+---
+
 ## [2.13] — 2026-07-06
 
 ### Changed

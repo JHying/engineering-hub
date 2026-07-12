@@ -51,12 +51,13 @@
 | 2026-06-27 | Message Broker 選型（RabbitMQ / Kafka / RocketMQ）與 RabbitMQ AMQP 核心概念 | [message-broker-comparison.md](message-broker-comparison.md) | Message Broker, RabbitMQ, Kafka, AMQP, Exchange, Queue, 解耦, 削峰 |
 | 2026-06-27 | Redis 核心概念：資料結構、快取設計、Cluster 架構與 Hash Slot | [redis-fundamentals.md](redis-fundamentals.md) | Redis, In-Memory, Cache Stampede, Consistent Hash, Cluster, Gossip, Hash Slot |
 | 2026-07-04 | WebSocket API 文件自動生成：選型比較（AsyncAPI/Springwolf/Postman）與 Jakarta WebSocket + API Gateway 整合架構 | [websocket-api-doc-generation.md](websocket-api-doc-generation.md) | WebSocket, API 文件生成, AsyncAPI, Springwolf, STOMP, Jakarta WebSocket, Swagger, API Gateway |
+| 2026-07-12 | 訊息協議 vs 自有協議平台：MQTT/STOMP/AMQP、Kafka 與 Redis Pub/Sub | [messaging-protocols-vs-platforms.md](messaging-protocols-vs-platforms.md) | MQTT, STOMP, AMQP, Kafka, RabbitMQ, Redis Pub/Sub, Redis Streams, 訊息佇列, 選型 |
 
 ## 網路基礎
 
 | 日期 | 主題 | 檔案 | 關鍵字 |
 |------|------|------|--------|
-| 2026-06-27 | 網路協議棧：DNS、CDN 加速原理、OSI/TCP/IP 分層與 TLS | [network-protocol-stack.md](network-protocol-stack.md) | OSI, TCP/IP, DNS, CDN, TLS, HTTPS, 三次握手, DDoS |
+| 2026-06-27 | 網路協議棧：DNS、CDN 加速原理、OSI/TCP/IP 分層與 TLS | [network-protocol-stack.md](network-protocol-stack.md) | OSI, TCP/IP, DNS, CDN, TLS, HTTPS, 三次握手, DDoS, VIP, L4/L7, WebSocket, STOMP |
 | 2026-06-27 | 密碼學基礎：Hash、對稱/非對稱加密、數字簽名與 CA 憑證 | [cryptography-digital-certificates.md](cryptography-digital-certificates.md) | Hash, AES, RSA, 數字簽名, 數字證書, CA, JWT, PKI |
 | 2026-06-27 | HTTP vs MQTT：應用層通訊協議比較（IoT 選型、QoS、Pub/Sub） | [http-vs-mqtt-protocols.md](http-vs-mqtt-protocols.md) | MQTT, HTTP, IoT, Pub/Sub, QoS, Broker, Topic, 低功耗, 即時通訊 |
 
@@ -81,6 +82,7 @@
 | 2026-07-03 | JSP/Servlet + Quartz + 傳統 JDBC Web 應用遷移至 Spring Boot：分層架構對比、Servlet 重構 9 步驟 | [servlet-jsp-to-springboot-web-migration.md](servlet-jsp-to-springboot-web-migration.md) | Spring Boot, JSP, Servlet, Quartz, log4j2, Spring Data JPA, 分層架構重構, SpringBootServletInitializer, Connection Pool |
 | 2026-07-04 | 從零建置技術基礎設施：治理骨幹決策與任務拆解方法論（微服務治理骨幹、平台工程雙案例） | [infra-buildout-governance-methodology.md](infra-buildout-governance-methodology.md) | 微服務治理骨幹, 平台工程, Spring Cloud, Vault, Kubernetes, GitOps, 任務拆解, 架構決策 |
 | 2026-07-05 | Spring AOP 代理機制、Processor 體系（執行期/編譯期）與 WebSocket @OnOpen 時序陷阱 | [spring-aop-processor-mechanism-and-websocket-lazy-timing.md](spring-aop-processor-mechanism-and-websocket-lazy-timing.md) | Spring AOP, JDK Dynamic Proxy, CGLIB, BeanPostProcessor, BeanFactoryPostProcessor, AspectJ, Compile-Time Weaving, Load-Time Weaving, Jakarta WebSocket, ServerEndpoint, SpringConfigurator, @Lazy, self-invocation |
+| 2026-07-12 | Consul Headless Service 與 Istio 不導流的節點故障事故（StatefulSet DNS 拓樸、Passthrough Cluster、Failover 責任歸屬） | [consul-headless-service-istio-routing-gap.md](consul-headless-service-istio-routing-gap.md) | Consul, Helm, Headless Service, StatefulSet, Istio, Envoy, PassthroughCluster, Service Discovery, Kubernetes, DNS, Failover |
 
 ## 區塊鏈 / 分散式帳本
 

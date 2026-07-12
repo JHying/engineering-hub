@@ -12,6 +12,8 @@ keywords: Message Broker, RabbitMQ, Kafka, AMQP, MQ, 訊息佇列, Exchange, 解
 
 微服務架構中服務間通訊有同步（HTTP/gRPC）與非同步（MQ）兩種模式。MQ 解決的核心問題是解耦、異步與削峰，但不同 MQ 產品在吞吐量、延遲、可靠性上各有取捨，需依場景選型。
 
+協議層面的定位（MQTT/STOMP/AMQP 家族 vs Kafka/Redis 自有協議、選型思考順序）見 [messaging-protocols-vs-platforms.md](messaging-protocols-vs-platforms.md)。（2026-07-12 註記）
+
 ---
 
 ## 研究結論

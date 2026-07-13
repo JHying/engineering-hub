@@ -1,39 +1,49 @@
-# setup-host.ps1 — 新主機一鍵接線（Windows）
+# setup-host.ps1 — One-click setup for new host (Windows)
 #
-# 用途：把本 repo 的可攜資產接回 Claude Code 的本機讀取位置：
-#   1. memory/  → junction 至 ~/.claude/projects/{本 repo 的專案目錄名}/memory
-#   2. skills/  → junction 至 ~/.claude/skills
-#   （.claude/agents/ 由 Claude Code 直接從 repo 讀取，無需接線）
+# Purpose:
+#   Link this repository's portable assets back to Claude Code's local directories:
+#     1. memory/ -> junction to ~/.claude/projects/{project-name}/memory
+#     2. skills/ -> junction to ~/.claude/skills
+#   (.claude/agents/ is loaded directly from the repository, so no junction is required.)
 #
-# 用法：clone repo 後，在任意位置執行
+# Usage:
 #   powershell -ExecutionPolicy Bypass -File <repo>\setting\setup-host.ps1
 #
-# 注意：Claude Code 專案目錄名 = repo 絕對路徑中 [:\/] 全部換成 '-'
-#       （例 D:\Work\engineering-hub → D--Work-engineering-hub）。
-#       若未來 Claude Code 改變命名規則，調整 $projName 推導即可。
+# Note:
+#   Claude Code project name = repository absolute path with all [:\/] replaced by '-'.
 
 $ErrorActionPreference = 'Stop'
+
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path.TrimEnd('\')
 $projName = ($repo -replace '[:\\/]', '-')
+
 $claudeDir = Join-Path $env:USERPROFILE '.claude'
-$projDir = Join-Path $claudeDir "projects\$projName"
+$projDir   = Join-Path $claudeDir "projects\$projName"
+
 New-Item -ItemType Directory -Force $projDir | Out-Null
 
 function Connect-Link([string]$linkPath, [string]$target) {
     if (Test-Path $linkPath) {
         $item = Get-Item $linkPath -Force
-        if ($item.LinkType -eq 'Junction') { Write-Host "已接線，略過：$linkPath"; return }
+
+        if ($item.LinkType -eq 'Junction') {
+            Write-Host "Already linked, skipping: $linkPath"
+            return
+        }
+
         $bak = "$linkPath.pre-link.bak"
-        Write-Host "原位置已有資料，移至 $bak（如需合併請手動處理後刪除備份）"
+        Write-Host "Existing path detected. Moving it to $bak"
         Move-Item $linkPath $bak
     }
+
     New-Item -ItemType Junction -Path $linkPath -Target $target | Out-Null
-    Write-Host "已接線：$linkPath → $target"
+    Write-Host "Linked: $linkPath -> $target"
 }
 
 Connect-Link (Join-Path $projDir 'memory') (Join-Path $repo 'memory')
 Connect-Link (Join-Path $claudeDir 'skills') (Join-Path $repo 'skills')
 
-Write-Host ''
-Write-Host "完成。專案目錄名：$projName"
-Write-Host '請開啟 Claude Code 於 repo 目錄下驗證 memory 與 skills 皆可讀取。'
+Write-Host ""
+Write-Host "Setup completed."
+Write-Host "Project name: $projName"
+Write-Host "Please open Claude Code in the repository and verify that both memory and skills are available."

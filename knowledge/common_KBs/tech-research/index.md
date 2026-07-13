@@ -84,6 +84,7 @@
 | 2026-07-04 | 從零建置技術基礎設施：治理骨幹決策與任務拆解方法論（微服務治理骨幹、平台工程雙案例） | [infra-buildout-governance-methodology.md](infra-buildout-governance-methodology.md) | 微服務治理骨幹, 平台工程, Spring Cloud, Vault, Kubernetes, GitOps, 任務拆解, 架構決策 |
 | 2026-07-05 | Spring AOP 代理機制、Processor 體系（執行期/編譯期）與 WebSocket @OnOpen 時序陷阱 | [spring-aop-processor-mechanism-and-websocket-lazy-timing.md](spring-aop-processor-mechanism-and-websocket-lazy-timing.md) | Spring AOP, JDK Dynamic Proxy, CGLIB, BeanPostProcessor, BeanFactoryPostProcessor, AspectJ, Compile-Time Weaving, Load-Time Weaving, Jakarta WebSocket, ServerEndpoint, SpringConfigurator, @Lazy, self-invocation |
 | 2026-07-12 | Consul Headless Service 與 Istio 不導流的節點故障事故（StatefulSet DNS 拓樸、Passthrough Cluster、Failover 責任歸屬） | [consul-headless-service-istio-routing-gap.md](consul-headless-service-istio-routing-gap.md) | Consul, Helm, Headless Service, StatefulSet, Istio, Envoy, PassthroughCluster, Service Discovery, Kubernetes, DNS, Failover |
+| 2026-07-13 | `@Transactional` 放置層級與連線池成本排序的決策脈絡（self-invocation 修法比較、分層交易邊界、優先序） | [transactional-boundary-placement-tradeoffs.md](transactional-boundary-placement-tradeoffs.md) | Spring, AOP, Transactional, self-invocation, 連線池, 交易邊界, HikariCP, TransactionTemplate, AspectJ |
 
 ## 區塊鏈 / 分散式帳本
 

@@ -3,3 +3,4 @@
 - [Narrate-then-act](feedback_narrate-then-act.md) — pair "I will do X" statements with the actual tool call in the same reply, don't just narrate it
 - [待辦:demo_KBs 煙霧測試](project_pending-demo-smoke-test.md) — 使用者已核准、下次 session 執行;防 skill 介面漂移的端到端測試機制
 - [使用者日常跑 Sonnet 5 high](user-default-model-sonnet5-xhigh.md) — 2026-07-13 由 xhigh 調降;主線非最貴模型,無費率套利;xhigh 保留給臨時難題 session
+- [專案狀態進 KB 不進記憶](feedback_project-state-goes-to-kb.md) — 進度/決策/專案紀律寫進該專案 KB 的 MASTER_INDEX 進度快照節;記憶只留跨專案偏好

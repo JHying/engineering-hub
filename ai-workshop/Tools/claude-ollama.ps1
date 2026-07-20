@@ -28,10 +28,14 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$models = docker exec ollama ollama list 2>$null |
-    Select-Object -Skip 1 |
-    ForEach-Object { ($_ -split '\s+')[0] } |
-    Where-Object { $_ }
+# @() is required: with a single model installed the pipeline returns a bare
+# string, and $models[0] would then index into its characters instead of the list.
+$models = @(
+    docker exec ollama ollama list 2>$null |
+        Select-Object -Skip 1 |
+        ForEach-Object { ($_ -split '\s+')[0] } |
+        Where-Object { $_ }
+)
 
 if (-not $models) {
     Write-Host 'No Ollama models found. Pull one first, e.g.:'

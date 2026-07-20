@@ -65,19 +65,17 @@ docker compose down
 
 ## 四、在 host 設定 Ollama 指令 (docker安裝下可選)
 
-powershell 綁定 ollama = docker exec -it ollama ollama，不用每次都輸入一長串前綴
+docker-compose 只在 container 內跑 ollama，host 上沒有原生 ollama.exe，直接打 `ollama` 會 command not found。
+`Tools/ollama.cmd` 是一支包裝腳本，把 `ollama <args>` 轉發成 `docker exec -it ollama ollama <args>`。
+跑完 `docker compose up -d` 後，執行這支腳本把 `Tools/` 加進使用者層級的 PATH：
 
 ```powershell
-# 打開 powershell 開啟 profile
-notepad $PROFILE
+powershell -ExecutionPolicy Bypass -File .\setup-ollama-path.ps1
+```
 
-# 在檔案中加入這行
-function ollama { docker exec -it ollama ollama $args }
+之後開新的終端機視窗（cmd.exe / PowerShell / Git Bash 都可以）就能直接用 `ollama`，不需要改動任何 shell 的 profile。腳本是冪等的，重複執行不會在 PATH 裡加重複項。若 `RemoteSigned` 執行原則被擋，用系統管理員身份執行:
 
-# 存檔後重新載入
-. $PROFILE
-
-# 權限問題: 用系統管理員身份執行這個指令解鎖
+```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
@@ -183,9 +181,27 @@ n8n 可暴露 MCP（Model Context Protocol）端點，讓 Claude 介面直接透
 
 ---
 
+## 八、用 Claude Code CLI 呼叫本機 Ollama Model
+
+Ollama v0.14+ 內建 Anthropic Messages API 相容端點（`/v1/messages`），Claude Code 可以透過改 `ANTHROPIC_BASE_URL` 直接連本機 Ollama，不需要額外的轉換層。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Tools\claude-ollama.ps1
+```
+
+腳本會列出 `docker exec ollama ollama list` 目前有的 model 讓你選（或直接帶 `-Model <name>` 跳過選單），選完設定 `ANTHROPIC_BASE_URL` / `ANTHROPIC_AUTH_TOKEN` 後啟動 `claude --model <name>`。
+
+**限制**：多數本機 model 的 tool calling（讀檔、跑指令、套用修改等 Claude Code 的核心能力）支援很弱或完全不支援，這代表大部分互動可能只能拿到建議、無法真的自動執行。官方文件建議用 `qwen3-coder`、`glm-4.7:cloud`、`gpt-oss:20b` 這類有標註 tool-calling 支援的 model。
+
+**純 CPU（無獨立顯卡）的機器要注意**：Claude Code 本身固定的 system prompt + tool schema 開銷就有數萬 tokens，純 CPU 處理這麼大的 prefill 非常慢。Claude Code 預設有一個 5 分鐘的閒置逾時（收不到任何 streaming byte 就判定卡住、直接 abort），純 CPU 推理很容易撐不過這個時間而直接失敗——腳本已經加上 `API_FORCE_IDLE_TIMEOUT=0`（關閉這個逾時）跟 `API_TIMEOUT_MS=1800000`（總逾時拉到 30 分鐘），實測一個 2B 等級的小 model 光回一句「hi」都跑了 22 分鐘。這代表純 CPU 機器上這個組合技術上可行、但不具備日常互動的實用性，適合當一次性驗證，不建議拿來做真正的開發工作流。
+
+---
+
 ## 參考資源
 
 - [Ollama 官方文件](https://ollama.com)
+- [Ollama Anthropic API 相容性](https://docs.ollama.com/api/anthropic-compatibility)
+- [Claude Code Model Configuration](https://code.claude.com/docs/en/model-config)
 - [Open WebUI 文件](https://docs.openwebui.com)
 - [n8n 文件](https://docs.n8n.io)
 - [Continue.dev 文件](https://docs.continue.dev)

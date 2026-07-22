@@ -4,7 +4,7 @@ description: >
   多專案軟體開發 AI Agent，支援單一角色執行、部分流程（從指定 stage 起依序執行至 QA）或完整 Spec-Driven 開發流程。
   每個 pipeline stage 可獨立設定 auto（自動執行）或 confirm（與使用者確認後執行）。
   觸發關鍵字：my-work-agent、分析 story、分析 jira、code review
-version: "2.13"
+version: "2.17"
 ---
 
 # Dev Work Agent
@@ -219,7 +219,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 流程文件中若引用 `$master_index`，使用 `$master_indexes` 中對應 KB 的路徑；
 若引用 `$review_guide`，使用 `{{review_guide}}`（即 `$KB_ROOT/knowledge/common_KBs/guideline/REVIEW_GUIDE.md`）。
 
-**QA 角色的例外**：單一角色模式的定位是「只執行該階段」，因此 QA 判定功能有誤時**不自動跳去執行 BACKEND**；改為僅提示使用者「建議執行 BACKEND 角色修正後重跑 QA」，由使用者自行決定是否切換角色。Pipeline 模式（部分流程 / 完整流程）才會觸發 Step 5-PIPELINE 的自動回圈。
+**QA 角色的例外**：單一角色模式的 QA 是全套 test suite 的唯一執行點，**一律執行完整三類驗測**（全套 unit + integration + 本機啟動驗證），與本次 diff 範圍無關（見「測試執行分層」）。另外，單一角色模式的定位是「只執行該階段」，因此 QA 判定功能有誤時**不自動跳去執行 BACKEND**；改為僅提示使用者「建議執行 BACKEND 角色修正後重跑 QA」，由使用者自行決定是否切換角色。Pipeline 模式（部分流程 / 完整流程）才會觸發 Step 5-PIPELINE 的自動回圈。
 
 ---
 
@@ -264,17 +264,19 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 
 #### 測試執行分層（強制，適用 Spec-Driven 實作起的所有 stage）
 
-驗證義務不變，改變的是**範圍**——全套 test suite 在整條 pipeline 中只完整執行一次（QA 第 1 輪）：
+驗證義務不變，改變的是**範圍**——**全套 test suite 只在「單一角色模式的 QA」執行；pipeline 模式全程不跑全套**：
 
 | 執行時機 | 測試範圍 |
 |---------|---------|
 | Spec-Driven 實作完成時（含回圈修正輪） | 只跑**受本次異動影響的測試**：本次新增/修改的測試類別 + 直接呼叫異動程式碼的既有測試（以 `mvn test -Dtest=...` / `gradle test --tests ...` 等指定範圍），不跑全套 |
 | Code Review 修正完成時 | 同上，只跑受修正影響的測試 |
-| QA 第 1 輪 | **完整三類驗測**（全套 unit + integration + 本機啟動驗證）——整條 pipeline 唯一的全套執行點 |
-| QA 回圈第 2 輪起 | 只重跑上一輪失敗的案例 + 受本輪修正影響的測試；**本機啟動驗證亦跳過**（修正若涉及啟動設定/依賴注入則例外）；判定通過後**補跑一次最終全套**（含本機啟動驗證）確認無迴歸，通過才標記 pipeline 完成 |
+| QA 第 1 輪（pipeline 模式） | 三類驗測，但 unit / integration **限縮為本 ticket 累積異動的影響範圍**：本 ticket 期間新增或修改的全部測試類別 + 直接呼叫這些異動程式碼的既有測試；**本機啟動驗證照常完整執行** |
+| QA 回圈第 2 輪起（pipeline 模式） | 只重跑上一輪失敗的案例 + 受本輪修正影響的測試；**本機啟動驗證亦跳過**（修正若涉及啟動設定/依賴注入則例外）；判定通過即標記 pipeline 完成，**不補跑全套** |
+| **單一角色模式的 QA** | **完整三類驗測（全套 unit + integration + 本機啟動驗證）——這是唯一的全套執行點**，不論本次有無 diff、diff 範圍多大都跑全套 |
 
 - 無法圈定影響範圍時（如異動橫切多模組的共用元件、修改建置設定）→ 該次退回全套執行，並在輸出中標註原因。
-- 單一角色模式比照對應 stage 的範圍規則（QA 單獨執行時視同「QA 第 1 輪」跑全套）。
+- 其餘單一角色模式（QA 以外的角色）比照對應 stage 的範圍規則，只跑受異動影響的測試。
+- **全套回歸的責任轉移給使用者**：pipeline 完成時不含全套回歸驗證，因此流程完成總結必須提示「本次未執行全套回歸，如需完整驗證請單獨執行 `/my-work-agent QA`」（見「Stage 間銜接格式」總結範本）。
 
 #### /update-kb 批次化（強制，僅 Pipeline 模式）
 
@@ -353,7 +355,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 - **工作內容**：
   1. 依 `{{flow_qa}}` 從 spec AC 生成測試策略與完整測試案例表
   2. 逐條核對測試結果是否對齊 PM / SA 階段產生的 AC 與 Gherkin 範本
-  3. 執行三類驗測：unit test、integration test、本機啟動驗證（此為本機驗測，非部署——依 `source-codex/services/{service}/sop-service-startup-verification-internal.md` 執行；專案尚未建立此 SOP 時標注 `[待補充]`，不因此卡住流程）。測試範圍依「測試執行分層」規則：第 1 輪全套，回圈第 2 輪起只跑失敗案例 + 受修正影響者，通過後補跑最終全套
+  3. 執行三類驗測：unit test、integration test、本機啟動驗證（此為本機驗測，非部署——依 `source-codex/services/{service}/sop-service-startup-verification-internal.md` 執行；專案尚未建立此 SOP 時標注 `[待補充]`，不因此卡住流程）。測試範圍依「測試執行分層」規則：pipeline 模式第 1 輪限縮為本 ticket 累積異動的影響範圍（本機啟動驗證照常完整執行），回圈第 2 輪起只跑失敗案例 + 受修正影響者且不補跑全套；單一角色模式的 QA 才跑全套
 - **Decision**：
   - auto：自動撰寫並執行單元與整合測試、依 SOP 執行本機啟動驗證，回報結果
   - confirm：呈現測試策略，等待使用者確認後撰寫與執行
@@ -417,7 +419,10 @@ QA 回圈次數：{N}（無回圈則寫「0」）
   - 實作程式碼（經 /code-architect 驗證架構合規）
   - 流程圖（/diagram + /diagram sync）
   - review-history/{...}（review 記錄）
-  - 測試案例表 + 測試結果（unit / integration / 本機啟動驗證）
+  - 測試案例表 + 測試結果（unit / integration 限本 ticket 影響範圍 / 本機啟動驗證）
+
+⚠️ 本次未執行全套回歸測試（pipeline 模式限縮於異動影響範圍）。
+   如需完整驗證，請單獨執行 `/my-work-agent QA`（單一角色模式會跑全套三類驗測）。
 ```
 
 ---

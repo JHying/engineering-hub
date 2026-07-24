@@ -98,7 +98,7 @@
 | 日期 | 主題 | 檔案 | 關鍵字 |
 |------|------|------|--------|
 | 2026-06-30 | 常見 Web 攻擊方式全覽（XSS、CSRF、SQL Injection、DDoS、MITM、Phishing、Broken Authentication） | [web-security-attacks-overview.md](web-security-attacks-overview.md) | XSS, CSRF, SQL Injection, DDoS, MITM, Phishing, Broken Authentication, Web Security, 資安 |
-| 2026-07-22 | Spring Security CSRF 實作決策：憑證傳輸方式判準、SameSite 實際邊界、SPA/無狀態 API 設定模式 | [spring-security-csrf-implementation.md](spring-security-csrf-implementation.md) | CSRF, Spring Security, SameSite, Bearer Token, XorCsrfTokenRequestAttributeHandler, Double Submit Cookie, Synchronizer Token, BREACH, 資安 |
+| 2026-07-22 | Spring Security CSRF 實作決策：憑證傳輸方式判準、SameSite 實際邊界、SPA/無狀態 API 設定模式 | [spring-security-csrf-implementation.md](spring-security-csrf-implementation.md) | CSRF, Spring Security, SameSite, Bearer Token, XorCsrfTokenRequestAttributeHandler, Double Submit Cookie, Synchronizer Token, BREACH, 資安, OAuth2, PAR, SSRF, CORS |
 
 ## 前端開發
 

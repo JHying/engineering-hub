@@ -4,6 +4,30 @@
 
 ---
 
+## [2.6] — 2026-07-23
+
+### Added
+- **新增跨層章節「查無資料的表達方式（null / Optional / 例外）」**：原本只寫在 Infra Rules 底下的 `Optional` 規則，提升為適用所有層的獨立章節。內容包含——
+  - 三種表達方式的選擇表（正常業務 → `Optional`；系統異常 → 拋例外；集合 → 空集合；任何情境都不回 `null`）
+  - 逐層檢查點表（Infra / Manager / Domain Service / **Utils 靜態查表** / Mapper），標注各層最容易犯的錯
+  - 4 組違規範例（Infra 回 null、Manager 把 `Optional` 拆成 null、Utils 靜態查表回 null、查無屬異常卻回 `Optional`）
+  - **空集合 /「部分存在」陷阱**：查到但內容為空 vs 完全查不到，語意相同卻常被寫成一個放行一個報錯，附 `.filter(...).orElseThrow(...)` 的合併寫法
+  - **例外型別選擇**：業務例外 vs 系統例外的分型表與判準句「這是使用者做錯了，還是我們的資料壞了？」
+- **Manager Rules / DomainService Rules / Utils Rules** 各補一行指向新章節，並標注該層最常見的違規樣態
+- **Quick Reference** 補 3 組範例：Manager 拆 `Optional`、Utils 靜態查表回 null、服務端資料不完整誤拋業務例外
+
+### Changed
+- **Infra Rules**：原本的三行 `Optional` 規則收斂為一行指向新章節，避免規則分散在兩處各說一半
+
+### Context
+- 起因：某專案一次 code review 中，三個回傳 null 的方法全數通過本 skill 的檢查——`XxxManager`（Manager 層）、`XxxCategoryMapping`（Utils 靜態查表）、`XxxDomainService`（Domain Service），因為舊規則只寫在 Infra Rules 底下，這三層都不適用。最後是由使用者人工指出「有機會是 null 就丟 optional，不要讓上層猜」才被抓到
+- 同一輪 review 還暴露第二個缺口：規則只講「該不該用 `Optional`」，沒講「決定拋例外之後該拋哪種」。該專案原先把「服務端設定資料不完整」包成業務例外回傳失敗訊息，導致使用者看到錯誤的失敗原因、故障混進業務失敗統計、監控上看起來一切正常——同樣由使用者指出「屬系統異常吧?」才修正
+- 第三個缺口是「部分存在」：整份設定查無會拋例外，但查到卻是空 Map 時反而放行，兩者語意相同處置卻相反——由 reviewer 追問後才收斂為同一道守門
+- 對應的通用規範 REVIEW_GUIDE 已同步新增 2-5 節（version 2026-07-23），兩份文件內容一致，本 skill 為執行面、REVIEW_GUIDE 為原則面
+- 本規則目前無對應 ArchUnit 測試，屬 Code Review 階段檢查項
+
+---
+
 ## [2.5] — 2026-07-07
 
 ### Fixed / Clarified

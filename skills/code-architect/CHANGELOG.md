@@ -4,6 +4,17 @@
 
 ---
 
+## [2.7] — 2026-07-27
+
+### Changed
+- Manager Rules 與跨層「查無資料」逐層檢查點表釐清 Manager 的例外邊界：**禁的是回 `null` 與拋業務例外**；對「必要資料查無」的必然系統故障，Manager `orElseThrow` 系統例外（`NoSuchElementException`/`IllegalStateException`）是允許的 fail-fast，非只能透傳 `Optional`（查無「有時正常」才透傳 Optional 讓 Domain Service 決定）
+- 校正 frontmatter 版號漂移（原停留 `2.4`，CHANGELOG 已至 2.6），本次一併校正為 `2.7`
+
+### Context
+- 起因：原「Manager 不拋例外」偏絕對，REVIEWER 照字面可能誤判 Manager 對必要資料的 `orElseThrow` 系統例外為違規。與 `role-flows/flow-backend.md` Step 5 及 `common_KBs/guideline/REVIEW_GUIDE.md`（2-4 / 2-5）同步同一區分
+
+---
+
 ## [2.6] — 2026-07-23
 
 ### Added

@@ -53,6 +53,7 @@
 | 2026-06-27 | Redis 核心概念：資料結構、快取設計、Cluster 架構與 Hash Slot | [redis-fundamentals.md](redis-fundamentals.md) | Redis, In-Memory, Cache Stampede, Consistent Hash, Cluster, Gossip, Hash Slot |
 | 2026-07-04 | WebSocket API 文件自動生成：選型比較（AsyncAPI/Springwolf/Postman）與 Jakarta WebSocket + API Gateway 整合架構 | [websocket-api-doc-generation.md](websocket-api-doc-generation.md) | WebSocket, API 文件生成, AsyncAPI, Springwolf, STOMP, Jakarta WebSocket, Swagger, API Gateway |
 | 2026-07-12 | 訊息協議 vs 自有協議平台：MQTT/STOMP/AMQP、Kafka 與 Redis Pub/Sub | [messaging-protocols-vs-platforms.md](messaging-protocols-vs-platforms.md) | MQTT, STOMP, AMQP, Kafka, RabbitMQ, Redis Pub/Sub, Redis Streams, 訊息佇列, 選型 |
+| 2026-07-27 | Kafka 投遞語意（at-least-once）與處理語意（idempotent/exactly-once）的區分與實作配置 | [kafka-delivery-vs-processing-semantics.md](kafka-delivery-vs-processing-semantics.md) | Kafka, delivery semantics, processing semantics, idempotency, exactly-once, transactional.id, isolation.level, sendOffsetsToTransaction |
 
 ## 網路基礎
 

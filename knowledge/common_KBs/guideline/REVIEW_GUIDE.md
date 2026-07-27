@@ -111,8 +111,24 @@ version: 2026-07-07（新增 @Transactional 邊界／Deadlock／Connection Leak�
 | 魔術數字 | 所有 literal 數字提取為具名常數 |
 | 註解 | 只寫「為什麼」，不寫「做什麼」（程式碼自解釋） |
 | 例外處理 | 不吞異常、不用 Exception 做流程控制、分層邊界轉譯 |
+| 旗標參數 | 禁止用 `boolean` 參數在方法內 `if` 選行為（flag argument / 控制耦合）；拆成兩個語意明確的方法 |
 
 > **查無資料的表達方式**：見下方 2-5 專節。此規則適用範圍不限 Infra 層，凡是對外提供查詢的方法都適用。
+
+> **旗標參數（flag argument / 控制耦合）**：方法簽名出現 `boolean` 開關、且方法體以該開關 `if/else` 切兩條路徑，即為控制耦合——呼叫端讀 `foo(x, true)` 無法一眼看出語意，且兩條路徑被硬綁在同一方法。應拆成兩個語意明確的方法，把共用部分抽成 private helper。
+> ```java
+> // ❌ 控制耦合：boolean 選行為
+> public void applyStock(Item item, boolean add) {
+>     var delta = compute(item);
+>     if (add) { repo.increase(delta); } else { repo.decrease(delta); }
+> }
+>
+> // ✅ 拆兩個方法，共用計算抽成 helper
+> public void increaseStock(Item item) { repo.increase(compute(item)); }
+> public void decreaseStock(Item item) { repo.decrease(compute(item)); }
+> private Delta compute(Item item) { ... }
+> ```
+> 例外：該 boolean 是**資料屬性**（如 `setEnabled(boolean)`、DTO 欄位）而非**行為開關**時不適用。
 
 ### 2-3 SOLID
 
@@ -134,7 +150,7 @@ version: 2026-07-07（新增 @Transactional 邊界／Deadlock／Connection Leak�
 | Value Object | 無識別符、以值相等、不可變 | 確認 immutable，不應有 setter |
 | Aggregate | 一致性邊界，只透過 Aggregate Root 修改內部狀態 | 外部不應直接操作 Aggregate 內部 Entity |
 | Domain Service | 跨多個 Aggregate 的業務邏輯，無狀態 | 不應含持久化操作（交給 Repository） |
-| Manager | 包裝 Infra 操作、回傳技術結果（boolean / Optional / 數值） | **不應拋業務例外、不做業務判斷**；業務規則解讀屬 Domain Service 職責 |
+| Manager | 包裝 Infra 操作、回傳技術結果（boolean / Optional / 數值） | **不拋業務例外、不做業務判斷**（業務規則解讀屬 Domain Service）；但**必要資料查無**（必然的系統故障）可 fail-fast 拋**系統**例外（`orElseThrow(NoSuchElementException/IllegalStateException)`）——見 2-5 |
 | — | Manager 職責的完整判準與 ✅/❌ 範例以 `/code-architect` skill 為準，本表僅作概念摘要 | — |
 | Repository | 持久化抽象，Domain 層不知道 DB 實作 | 不在 Domain Service 直接呼叫 JPA/Mongo API |
 | Anti-Corruption Layer | 外部系統整合邊界轉譯 | 外部 DTO 不應滲透到 Domain 內部 |
@@ -161,7 +177,7 @@ version: 2026-07-07（新增 @Transactional 邊界／Deadlock／Connection Leak�
 | 類型 | 檢查點 |
 |------|--------|
 | Infra（Repository / Client / RedisClient） | 查詢方法回傳型別；是否有 `return null;` |
-| Manager | 透傳 Infra 結果時是否把 `Optional` 拆成 `null` 再往上丟 |
+| Manager | 透傳 Infra 結果時是否把 `Optional` 拆成 `null` 再往上丟。**禁的是回 `null` 與拋業務例外**——對「必要資料查無」的系統故障，Manager `orElseThrow` 系統例外是允許的 fail-fast，非只能透傳 Optional |
 | Domain Service | 對外查詢方法；內部私有方法若跨越多個判斷分支也適用 |
 | **靜態對照表 / Utility 查表方法** | 最常被漏掉——`Map.get()` 的結果直接 return 就是回 null |
 | Mapper | 來源為 null 時的輸出行為是否明確 |
@@ -211,7 +227,20 @@ public Map<String, Integer> getSettings(int id) {
 public Optional<Map<String, Integer>> getSettings(int id) {
     return repository.findById(id).map(Xxx::getSettings);
 }
+
+// ✅ 也可：查無屬必然的系統故障（必要主檔 / 設定）→ Manager 直接 fail-fast 拋系統例外，
+//    不必硬回 Optional 讓每個呼叫端重複 orElseThrow
+public Map<String, Integer> getRequiredSettings(int id) {
+    return repository.findById(id).map(Xxx::getSettings)
+        .orElseThrow(() -> new NoSuchElementException("Settings not found: id=" + id));
+}
+// 判準：查無「永遠是故障」→ Manager fail-fast；查無「有時正常」→ 透傳 Optional 讓 Domain Service 決定。
+// Manager 禁的是「回 null」與「拋業務例外」，不是禁 orElseThrow 系統例外。
 ```
+
+> **為何是 Manager fail-fast 而非層層透傳**：歸類在系統層級異常的無資料，應在資料層立刻 fail fast（資料層限制）。考量點是**不需要多傳一層**——若 Manager 硬回 `Optional`，每一個業務層呼叫端收到後都得自己 `orElseThrow` 同一種系統例外，是無意義的重複，且容易有人漏寫或用錯例外型別。把 fail-fast 收斂到 Manager，呼叫端直接拿到值即可。
+>
+> 反面辨識：若不同呼叫端對「查無」有不同處置（有的當正常、有的當故障），代表這不是「必然故障」，就該回 `Optional` 讓各自決定——別為了 DRY 硬把有情境差異的判斷塞進 Manager。
 
 #### 空集合 / 空字串的「部分存在」陷阱
 

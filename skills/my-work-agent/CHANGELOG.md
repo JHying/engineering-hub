@@ -4,6 +4,32 @@
 
 ---
 
+## [2.19] — 2026-07-27
+
+### Added
+- Spec-Driven 實作 Output 加入「明顯壞味道快篩」自捕步驟：`/code-architect` 前先掃 flag argument / 魔術數字 / 多步驟原子性 / 分層職責 / 命名重複 / 查無資料，並明確標註「廉價自捕、不取代 Code Review stage 的完整 sweep」。清單本體寫在 `role-flows/flow-backend.md` Step 5（單一真相源），skill.md 只引用＋列項名
+
+### Context
+- 起因：實作階段自審不夠徹底、把顯而易見的壞味道（flag argument、int 狀態碼、Redis 非原子多寫）留給後續才被抓到。折衷設計：BACKEND 只做廉價高 ROI 快篩（地板），深掃仍留給 REVIEWER stage（fresh eyes + 完整 REVIEW_GUIDE sweep），避免掏空 review 或重複耗 token
+- **同步規則**：`flow-backend.md`（清單本體）與 skill.md 實作 Output（引用）為對應內容，其一異動時另一自動同步，不需使用者提醒
+
+---
+
+## [2.18] — 2026-07-27
+
+### Added
+- SA stage 新增「回寫 Jira 描述」步驟（詳細行為定義於 `role-flows/flow-sa.md` Step 8，skill.md 於 Spec 轉化 Output 加註指向）：
+  - 僅當有指定 Jira 單號、於 KB 入庫後執行；無單號略過
+  - 只回寫「功能目標 / 商業規則 / 驗收條件與邊界情境 / Gherkin」四區段，RD 內部細節（資料流、影響範圍等）不回寫
+  - **confirm 模式先問使用者要不要回寫、不直接做**；auto 模式可直接回寫
+  - **強制去識別化**：移除只有 KB 語境看得懂的專有名詞（ADR 編號與引用、KB 內部檔案路徑、KB 專屬流程術語），保留 LS 單號、程式碼類別/方法名、業務規則、AC、Gherkin
+- Spec 轉化 stage 的 **Output 由單一長條 bullet 拆為編號式多項**（1 更新 spec／2 建 impls／3 回寫 Jira），與 Spec-Driven 實作 stage 的編號 Output 一致——每項各自可被「Output 動作追蹤」建 task，避免多步驟擠一條而漏做
+
+### Context
+- 起因：使用者指出 Jira 是全團隊/跨團隊閱讀媒介，SA 產出的 spec 四區段回寫 Jira 有助跨團隊溝通，但 KB 專有名詞（如 ADR-????）只有維護 KB 的人看得懂，須先去識別化；且回寫屬外部動作，confirm 模式應先徵詢
+
+---
+
 ## [2.17] — 2026-07-22
 
 ### Changed

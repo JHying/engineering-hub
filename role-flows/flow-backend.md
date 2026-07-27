@@ -141,6 +141,17 @@ description: >
 - Kafka 事件依專案 toolbox 規範管理，不手動建 KafkaTemplate bean
 - 實作需自審：品質（OOP / SOLID / DDD）、效能（對照 `{{review_guide}}` 系統現狀門檻）、設計模式（避免過度設計）
 
+### 明顯壞味道快篩（送 REVIEWER 前自捕）
+
+實作完成、呼叫 `/code-architect` 前，快速掃過下列高頻壞味道並就地修掉。**這是廉價自捕，不取代 Code Review stage 對 `{{review_guide}}` 的完整 sweep**——只求不把顯而易見的味道丟給下一關：
+
+- **Flag argument**：`boolean` 參數在方法內 `if` 選行為 → 拆兩個語意明確的方法（`{{review_guide}}` 2-2）
+- **魔術數字**：literal `0/1/2` 等狀態碼 → 具名常數 / enum，並在產生處就近轉換（`{{review_guide}}` 2-2）
+- **多步驟原子性**：同一邏輯內的連續多寫（如 Redis `INCR` + `EXPIRE`、多筆 DB 寫入）→ 合成單一 Lua / 交易（`{{review_guide}}` 3-3）
+- **分層職責**：資料層轉換（貨幣轉美金、時區轉 UTC）誤放 DomainService？Manager 沒返回 `null`、不拋**業務**例外（屬 DomainService）——但「**必然存在的必要資料**」查無時 Manager **可** fail-fast 拋**系統**例外（`orElseThrow`），非一律硬回 Optional；查無「有時正常」才透傳 Optional 讓 DomainService 決定（`{{review_guide}}` 2-3 / 2-5 + Manager 鐵則）
+- **命名 / 重複**：方法名是否自解釋、有無明顯可抽的重複邏輯
+- **查無資料**：對外查詢回 `null` 還是 `Optional` / 空集合 / 例外，語意是否明確（`{{review_guide}}` 2-5）
+
 ### Manager 層分層鐵則（勿犯）
 Manager 只包裝 Infra 操作、回傳技術結果；**不拋業務例外、不做業務判斷**。
 

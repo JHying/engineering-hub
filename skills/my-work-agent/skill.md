@@ -4,7 +4,7 @@ description: >
   多專案軟體開發 AI Agent，支援單一角色執行、部分流程（從指定 stage 起依序執行至 QA）或完整 Spec-Driven 開發流程。
   每個 pipeline stage 可獨立設定 auto（自動執行）或 confirm（與使用者確認後執行）。
   觸發關鍵字：my-work-agent、分析 story、分析 jira、code review
-version: "2.17"
+version: "2.19"
 ---
 
 # Dev Work Agent
@@ -312,7 +312,10 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
 - **Decision**：
   - auto：自行分析各決策點，每個確定後記錄 ADR（依「/update-kb 批次化」規則）
   - confirm：每個決策點呈現選項，等待使用者確認後記錄 ADR（依「/update-kb 批次化」規則）
-- **Output**：更新完整 `specs/{TICKET}.md`；若此時已有部分實作，同步建立 `specs/impls/{TICKET}-impls.md`
+- **Output**：
+  1. 更新完整 `specs/{TICKET}.md`（依「/update-kb 批次化」規則記錄）
+  2. 若此時已有部分實作，同步建立 `specs/impls/{TICKET}-impls.md`
+  3. **若有指定 Jira 單號**：於 KB 入庫後依 `{{flow_sa}}` Step 8 回寫 Jira 描述——僅「功能目標 / 商業規則 / 驗收條件與邊界情境 / Gherkin」四區段、強制去識別化 KB 專有名詞（ADR 編號等）；**confirm 模式先問、不直接做**，auto 模式可直接回寫
 - **交給下一個 Stage**：完整 `specs/{TICKET}.md` + 已記錄的 ADR → Spec-Driven 實作
 
 ---
@@ -327,7 +330,7 @@ ADR 溝通為跨階段角色，隨 Spec 轉化與 Spec-Driven 實作的設定一
   - auto：自行選擇最佳方案直接實作
   - confirm：呈現建議方案，等待使用者選擇後實作
 - **Output**：
-  1. 產出完整程式碼，並執行 `/code-architect` 驗證架構合規，有違規項則修正後重新驗證；程式碼驗證依「測試執行分層」規則**只跑受異動影響的測試**
+  1. 產出完整程式碼；**執行 `/code-architect` 前先做 `{{flow_backend}}` Step 5「明顯壞味道快篩」自捕**（flag argument / 魔術數字 / 多步驟原子性 / 分層職責 / 命名重複 / 查無資料——廉價自捕，**不取代 Code Review stage 的完整 sweep**），再執行 `/code-architect` 驗證架構合規，有違規項則修正後重新驗證；程式碼驗證依「測試執行分層」規則**只跑受異動影響的測試**
   2. 執行 `/diagram <主要入口類別> 的完整流程`，輸出至 `{$PROJECT_KB}/source-codex/services/{service}/flow-diagram-{TICKET}.md`
   3. 記錄實作產出（依「/update-kb 批次化」規則）；若 `specs/impls/{TICKET}-impls.md` 尚未建立，一併建立
 - **交給下一個 Stage**：程式碼異動 + 流程圖 → Code Review

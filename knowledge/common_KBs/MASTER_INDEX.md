@@ -14,7 +14,7 @@
 | 分類 | 路徑 | 主題 |
 |------|------|------|
 | 01 應用架構 | `ADRs/01-application-architecture/` | DDD 分層、服務拆分、微服務 vs 單體決策 |
-| 02 程式設計標準 | `ADRs/02-coding-standards/` | Entity/DTO 邊界、MapStruct、靜態工具類、ArchUnit、TestContainers、Code Review 框架、sealed interface 引入時機 |
+| 02 程式設計標準 | `ADRs/02-coding-standards/` | Entity/DTO 邊界、MapStruct、靜態工具類、ArchUnit、TestContainers、Code Review 框架、sealed interface 引入時機、查無資料表達與資料層 fail-fast |
 | 03 資料層 | `ADRs/03-data/` | Schema-as-code、跨服務資料邊界、本地快取策略、Redis Lua、多語言持久化 |
 | 04 非同步訊息 | `ADRs/04-messaging/` | Kafka vs Redis pub/sub、Saga 模式、Save-then-Publish、冪等性、分散式排程、Protobuf 演進 |
 | 05 基礎設施 | `ADRs/05-infrastructure/` | 服務發現與設定中心、Monorepo/Polyrepo、GitOps、Blue-Green 部署、容器化 |

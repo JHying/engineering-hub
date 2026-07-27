@@ -1,7 +1,7 @@
 ---
 name: code-architect
 description: Review Java code or a file path against the project's ArchUnit-enforced architecture rules and report violations with fix suggestions.
-version: "2.4"
+version: "2.7"
 ---
 
 You are a strict code architecture reviewer enforcing the layered DDD architecture rules below. These rules are authoritative — do NOT read external ArchUnit files or CLAUDE.md; all rules are embedded here.
@@ -206,7 +206,7 @@ switch (eventMsgType) {
 - Must NOT depend on `..service..` or `..controller..`.
 - Constructor dependencies ≤ 6.
 - Public methods: same return type and parameter rules as DomainService. Exception: external framework types (non `com.example.project`) do not count toward parameter total.
-- 查無資料的回傳方式：見下方跨層章節「查無資料的表達方式（null / Optional / 例外）」。**Manager 最常見的違規是把 Infra 回傳的 `Optional` 拆成 `null` 再往上丟**，等於抵銷 Infra 層的規則。
+- 查無資料的回傳方式：見下方跨層章節「查無資料的表達方式（null / Optional / 例外）」。**Manager 最常見的違規是把 Infra 回傳的 `Optional` 拆成 `null` 再往上丟**，等於抵銷 Infra 層的規則。**Manager 禁的是回 `null` 與拋業務例外**；對「必要資料查無」的必然系統故障，Manager `orElseThrow` 系統例外（`NoSuchElementException`/`IllegalStateException`）是允許的 fail-fast，非只能透傳 `Optional`（查無「有時正常」才透傳 Optional 讓 Domain Service 決定）。
 - Must NOT contain business logic — no calculations based on business rules (fees, discounts), no business validation (balance checks), no domain-state branching (membership tier), no business status transitions. *（慣例；業務邏輯屬語意判斷，ArchUnit 無法強制偵測，需由 Code Review 依下方職責定義與範例確認）*
 
 ### Manager 職責定義
@@ -433,7 +433,7 @@ public class InvoiceManager {
 | 層 | 檢查什麼 |
 |----|---------|
 | Infra（`*Repository` / `*Client` / `*RedisClient`） | 查詢方法回傳型別；是否有 `return null;` 或未包裝的可空表達式 |
-| Manager | **是否把 Infra 回傳的 `Optional` 拆成 `null` 再往上丟**——這是最常見的違規，等於抵銷 Infra 層的規則 |
+| Manager | **是否把 Infra 回傳的 `Optional` 拆成 `null` 再往上丟**——這是最常見的違規，等於抵銷 Infra 層的規則。禁的是回 `null` 與拋業務例外；「必要資料查無」的必然系統故障可 `orElseThrow` 系統例外 fail-fast，非只能透傳 Optional |
 | Domain Service | 對外查詢方法；「查無 → 拋例外」時的例外型別是否選對（見下方分型） |
 | **Utils（靜態查表）** | `Map.get()` / `HELPER.get()` 的結果是否直接 return——**不在 Infra 層卻同樣回 null，最常被漏掉** |
 | Mapper | source 為 null 時的輸出行為是否明確 |

@@ -14,8 +14,9 @@
 
 **修法(可直接照做)**:
 - 只在「使用者要求撰寫或修改『呼叫 Claude API 的程式碼』」時才觸發 `claude-api` skill。
-- 只是要查模型 ID、價格、effort 值 → 先查 [model-dispatch.md](model-dispatch.md) 的已查證表,不要觸發 skill。
-- 表上沒有、又必須即時查證 → 派 `claude-code-guide` subagent(model: haiku)去查,主線不觸發。
+- 只是要查模型 ID、價格、effort 值 → 照 [model-dispatch.md](model-dispatch.md) §0 的查證路由:
+  subagent 介面表直接抄;模型 ID/價格派 `claude-code-guide`(haiku)查官方文件,主線不觸發 skill。
+  (2026-07-28 起 model-dispatch 不再維護價格數值,但「主線不觸發 claude-api」的原則不變。)
 
 **正例**:使用者說「幫我寫一支 Python 腳本呼叫 Claude API 做批次分類」→ 觸發 skill。
 **反例**:使用者說「派個 sonnet subagent 去掃 repo」→ 這只是調度,查 model-dispatch.md 即可,觸發 skill 就是漏 token。
@@ -47,7 +48,7 @@
 
 ### 1. 「說了但沒做」——承諾句取代工具呼叫
 
-**現象**:長回覆結尾寫「我會在背景同步到 KB」「稍後處理」,然後什麼工具都沒呼叫。這是本環境已被使用者糾正過的實際教訓(見 memory:`feedback_narrate-then-act`),CLAUDE.md 也已有紀律條款。弱模型在長輸出後特別容易犯。
+**現象**:長回覆結尾寫「我會在背景同步到 KB」「稍後處理」,然後什麼工具都沒呼叫。這是本環境已被使用者糾正過的實際教訓(見 memory:`feedback_narrate-then-act`)。2026-07-28 起 CLAUDE.md 對應硬規則已移除(Claude 5 世代 harness 原生承擔此紀律),但弱模型在長輸出後仍特別容易犯,本條保留。
 
 **修法**:寫下任何「我會/我將」之前,檢查同一則回覆內是否已包含對應的工具呼叫。做不到當下派發(例如還要先分類),就先 `TaskCreate` 佔位(注意:它是延遲載入工具,先用 ToolSearch `select:TaskCreate,TaskUpdate` 載入;環境沒有就在回覆中明列待辦文字),完成後才標 completed。回覆送出前自查最後一段:若是承諾句而無工具呼叫,回去補上。
 
@@ -71,7 +72,7 @@
 
 **現象**:訓練資料裡的模型名(如 `claude-3-5-sonnet-20241022`)多數已退役;自行拼裝帶日期後綴的 ID 會 404。effort、thinking 等參數在新模型上已多次改版。
 
-**修法**:模型 ID、價格、effort 值一律抄 [model-dispatch.md](model-dispatch.md) 的已查證表;表上沒有的,派 `claude-code-guide`(haiku)查官方文件,查不到就對使用者標註「未查證」,**絕不編造**。
+**修法**:模型 ID、價格、effort 值一律照 [model-dispatch.md](model-dispatch.md) §0 的查證路由(subagent 介面表直接抄;模型 ID/價格派 `claude-code-guide`(haiku)查官方文件);查不到就對使用者標註「未查證」,**絕不編造**。
 
 ### 2. Windows 雙 shell 混用出錯
 
@@ -92,3 +93,21 @@
 - 程式碼類:實際執行測試或跑起來看行為,貼輸出;測試失敗就照實說失敗。
 - 高風險判斷(架構決策、對外發布):第二意見——派另一個 subagent 用相同輸入獨立作答,比對分歧點。
 - 詳細判準見 [judgment-rubrics.md](judgment-rubrics.md) 的「品質底線怎麼驗」。
+
+---
+
+## 四、2026-07-28 健檢後的結構現況(對齊 Claude 5 context engineering 指南)
+
+依 Anthropic 官方指南全面健檢後的落地結果,後續 session 依此認知作業:
+
+- **7 個 skill 已 progressive disclosure 化**:SKILL.md 一律為 ≤150 行流程骨幹(拆檔前後:
+  code-architect 691→72、my-work-agent 580→147、db-object-rules 416→84、update-kb 410→120、
+  quiz 317→66、mapper-test 304→111、diagram 303→92),明細在各 skill `references/*.md`。
+  **用 skill 時只讀當下步驟需要的 references 檔,不要一次全讀**(否則等於退回拆檔前);
+  **修 skill 時**骨幹與對應 references 檔一起改,CHANGELOG 照舊必更。
+- **skill 檔名一律大寫 `SKILL.md`**,小寫 `skill.md` 已絕跡(大小寫敏感檔案系統的可攜性)。
+- **CLAUDE.md 硬規則降為 4 條**:「說要做就同回覆做」已移除,由 harness 原生承擔(見二-1)。
+- **model-dispatch.md §0 不再維護價格數值**:模型 ID/價格派 `claude-code-guide`(haiku)查官方文件;
+  「主線不觸發 claude-api skill」原則不變(見一-1)。
+- **教訓**:統一資訊來源時,先 grep governance/ 其他檔對同一規則的交叉引用,一起改,
+  否則會製造新的規則衝突(本次 model-dispatch 改法第一版就與一-1 抵觸,靠追加 diagnosis 時才發現)。

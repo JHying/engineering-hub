@@ -4,6 +4,29 @@
 
 ---
 
+## [1.2] — 2026-07-28
+
+### Changed
+- SKILL.md 拆分為骨幹＋references/（progressive disclosure）：主檔僅保留
+  frontmatter、觸發條件、審查流程步驟骨幹（Step 1-4）與硬性約束摘要，
+  細節規則表、語法範例、審查報告格式移至同目錄 `references/` 子目錄：
+  - `references/apply-process.md`（申請流程規則）
+  - `references/naming-syntax.md`（命名與語法規則）
+  - `references/table-rules.md`（Table 規則與語法範例）
+  - `references/index-rules.md`（Index 規則與語法範例）
+  - `references/sequence-rules.md`（Sequence 規則與語法範例）
+  - `references/dml-rules.md`（DML 規則與語法範例）
+  - `references/review-report-format.md`（審查報告輸出格式）
+  - `references/common-violations.md`（常見違規速查表）
+  - `references/reference-resources.md`（外部參考資源清單）
+
+### Context
+- 起因：對齊 context engineering 原則——skill 觸發時 SKILL.md 全文會載入
+  context，長檔案造成不必要的 token 消耗；改為主檔留流程骨幹、
+  細節檔在實際需要時才由子代理讀取
+
+---
+
 ## [1.1] — 2026-07-05
 
 ### Changed

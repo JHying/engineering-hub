@@ -4,6 +4,27 @@
 
 ---
 
+## [2.20] — 2026-07-28
+
+### Changed
+- 檔名由 `skill.md` 統一改為 `SKILL.md`（檔名大小寫統一，已由主線作業完成，本次僅記錄）
+- `SKILL.md` 拆分為骨幹 + `references/`（progressive disclosure）：主檔只留 pipeline stage 骨幹（名稱、編號、1-3 行摘要）、觸發條件與使用方式摘要、auto/confirm 設定機制、回答規則等硬性約束；各 Step 詳細規則、選單文字、輸出格式範例、邊角案例移至同目錄 `references/` 下的主題檔（逐字搬移、內容不改寫）：
+  - `references/step0-param-passthrough.md` — 啟動參數解析對照表與範例
+  - `references/kb-selection.md` — 專案知識庫選單與載入細節
+  - `references/execution-mode-setup.md` — 單一角色選單、Pipeline 起點與 auto/confirm 逐 stage 設定模板
+  - `references/path-resolution.md` — 路徑解析與動態注入規則
+  - `references/role-flow-loading.md` — 角色/流程文件載入對照表與懶載入規則
+  - `references/single-role-execution.md` — 單一角色模式執行細節
+  - `references/pipeline-forced-rules.md` — Output 動作追蹤、測試執行分層、/update-kb 批次化、Stage 間銜接格式
+  - `references/pipeline-stages.md` — 五個 pipeline stage 的 Input／工作內容／Decision／Output／交給下一個 Stage 完整規則
+  - `references/preview-mode.md` — PREVIEW 模式並行分析步驟與 subagent prompt 模板
+
+### Context
+- 起因：對齊 context engineering 原則——skill 觸發時 SKILL.md 會整份載入 context，長檔（原約 580 行）造成固定成本浪費；拆分後主檔約 150 行，細節檔僅在對應 Step 實際執行時才被讀取
+- 修改前已備份原檔至 `governance/backup/`；pipeline stage 名稱與編號維持不變，僅搬移細節內容，不影響既有呼叫方式
+
+---
+
 ## [2.19] — 2026-07-27
 
 ### Added

@@ -4,6 +4,21 @@
 
 ---
 
+## [1.3] — 2026-07-28
+
+### Changed
+- SKILL.md 拆分為骨幹＋`references/`（progressive disclosure）：主檔僅保留 frontmatter、觸發方式與範圍描述範例、兩種模式（生成／同步）各 1-3 行摘要、檔案輸出規範（呼叫方引用的輸出路徑格式不變）、硬性約束清單；其餘明細逐字搬移至同目錄新建的 `references/` 子目錄，內容不改寫
+- 新增 `references/participant-config.md`：專案 participant 設定檔（`diagram-participants.md`）路徑與維護規則
+- 新增 `references/metadata-format.md`：流程圖檔頂部 metadata 格式
+- 新增 `references/color-scheme.md`：通用顏色規範全文
+- 新增 `references/diagram-type-selection.md`：圖表類型自動判斷表
+- 新增 `references/generate-mode.md`：模式一（生成圖表）完整 Step 0-5
+- 新增 `references/sync-mode.md`：模式二（同步）完整 Step 1-5
+- 新增 `references/sequence-diagram-conventions.md`：sequenceDiagram 結構慣例、步驟編號規則、常見語法陷阱
+- 新增 `references/flowchart-conventions.md`：flowchart 結構慣例
+
+---
+
 ## [1.2] — 2026-07-08
 
 ### Fixed

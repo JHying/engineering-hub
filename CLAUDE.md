@@ -24,18 +24,14 @@
 
 ## 硬規則(常駐,無條件遵守)
 
-1. **模型 ID 與 API 參數不憑記憶填**:先抄 `governance/model-dispatch.md` 的已查證表;
-   表上沒有→派 `claude-code-guide`(haiku)查官方文件;查不到→標「未查證」,不編造。
+1. **模型 ID 與 API 參數不憑記憶填**:照 `governance/model-dispatch.md` §0 的查證路由
+   (表上有就抄;沒有→派 `claude-code-guide`(haiku)查官方文件);查不到→標「未查證」,不編造。
 2. **大量讀取派 subagent**:要讀 3 個以上檔案、單檔超過 300 行、或不知道目標在哪
    →派 Explore / general-purpose,主線只收「結論+檔案:行號」。
-3. **說要做就同回覆做**:任何「我會/我將/稍後」都必須在同一則回覆內附上對應工具呼叫;
-   當下派不了就先 `TaskCreate` 佔位,派發完成才標 completed。
-   (TaskCreate 是延遲載入工具:先用 ToolSearch 查 `select:TaskCreate,TaskUpdate` 載入 schema;
-   若此環境確實沒有該工具,改為在回覆中明列待辦清單文字,下一則回覆優先補派。)
-4. **改檔先備份**:修改 CLAUDE.md、governance/、skill 前,
+3. **改檔先備份**:修改 CLAUDE.md、governance/、skill 前,
    先複製到 `governance/backup/{原檔名}.{YYYY-MM-DD}.bak`。
    (例外:maintenance-protocol.md 權限表標 ✅ 的操作——lessons.md 追加、查證表更新——免備份。)
-5. **產出不自驗**:宣告完成前,檔案用 fresh-context subagent read-back、
+4. **產出不自驗**:宣告完成前,檔案用 fresh-context subagent read-back、
    程式碼用測試或實跑、高風險判斷加第二意見。詳見 judgment-rubrics.md。
 
 ## Skill 開發規範
@@ -59,7 +55,7 @@ KB 分兩類:**專案 KB**(特定專案的規範/架構/業務邏輯)與**通用
 | guideline(`common_KBs/guideline/`) | 不主動觸發,僅使用者明確指示才處理 |
 | 分不出類、或橫跨多類 | 比照風險較高者:先問 |
 
-執行紀律同硬規則 3:觸發同步的工具呼叫必須與判斷在同一則回覆內,否則 TaskCreate 佔位。
+執行紀律:觸發同步的工具呼叫必須與判斷在同一則回覆內,當下派不了就先 TaskCreate 佔位。
 
 **需要先載入 KB context 再做事時**:先問使用者要讀哪類 KB(專案 KB 指定專案、通用 KB 直接載入),
 確認後用 `/my-work-agent consultant` 模式載入。

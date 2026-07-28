@@ -7,14 +7,11 @@
 
 ## 0. 已查證事實表(不憑記憶,抄這裡)
 
-### 模型 ID 與價格(來源:claude-api skill 模型表,cached 2026-06-24)
+### 模型 ID 與價格
 
-| 模型 | Model ID | 輸入 $/1M | 輸出 $/1M | 定位 |
-|---|---|---|---|---|
-| Claude Fable 5 | `claude-fable-5` | $10.00 | $50.00 | 最強;稀缺,僅特殊 session 可用 |
-| Claude Opus 4.8 | `claude-opus-4-8` | $5.00 | $25.00 | 最強常駐 Opus |
-| Claude Sonnet 5 | `claude-sonnet-5` | $3.00(至 2026-08-31 前 $2.00) | $15.00(前 $10.00) | 日常主力 |
-| Claude Haiku 4.5 | `claude-haiku-4-5` | $1.00 | $5.00 | 快、便宜、簡單任務 |
+本檔自 2026-07-28 起不再維護數值(消除第二份會過期的來源)。需要時:
+派 `claude-code-guide`(haiku)subagent 查官方模型文件(URL 見 §7);
+**主線不觸發 `claude-api` skill**(一次載入數萬 token,見 diagnosis.md 一-1)。
 
 注意:**不要自行在 ID 後面加日期後綴**(如 `claude-sonnet-5-20260101`),會 404。
 
@@ -99,6 +96,6 @@
 
 ## 7. 查證方法(當本表過期)
 
-1. 模型 ID/價格:派 `claude-code-guide`(haiku)查 `platform.claude.com/docs/en/about-claude/models/overview.md`。
-2. subagent 欄位:同上查 `code.claude.com/docs/en/sub-agents.md`。
+1. 模型 ID/價格:派 `claude-code-guide`(haiku)查 `platform.claude.com/docs/en/about-claude/models/overview.md`,不維護於本檔。
+2. subagent 欄位:派 `claude-code-guide`(haiku)查 `code.claude.com/docs/en/sub-agents.md`。
 3. 查回來後更新本檔第 0 節,並更新查證日期(維護規則見 maintenance-protocol.md)。

@@ -4,6 +4,27 @@
 
 ---
 
+## [1.16] — 2026-07-28
+
+### Changed
+- **檔名大小寫統一**：`skill.md` 改名為 `SKILL.md`
+- **SKILL.md 拆分為骨幹 + `references/`（progressive disclosure）**：原本約 410 行的單一檔案，改為 SKILL.md 只留 frontmatter、啟動模式觸發說明、硬性約束摘要、各 Step（含 Step 4-1～4-4、5-1～5-2）1-3 行摘要與指向連結；Step 編號與原檔完全一致，不重編號。內容全文逐字搬移至同目錄新建的 `references/`（不改寫、錯字不修），共 9 個主題檔：
+  - `references/permission-rules.md`（權限規則）
+  - `references/content-rules.md`（內容限制規則 + 表格欄位可讀性規則）
+  - `references/deidentification-checklist.md`（去識別化檢查清單——原本被 `governance/maintenance-protocol.md` §2 引用，引用路徑需同步更新為此檔案）
+  - `references/step0-setup.md`（Step 0、0.5、0.7）
+  - `references/step1-2-routing.md`（Step 1、2）
+  - `references/step3-dispatch.md`（Step 3 調度表）
+  - `references/step4-aggregation.md`（Step 4，含 4-1～4-4）
+  - `references/step5-pending-log.md`（Step 5，含 5-1、5-2、log 範例）
+  - `references/step6-summary-output.md`（Step 6）
+  - `templates/` 目錄未變動
+
+### Context
+- 起因：對齊 context engineering 原則——skill 觸發時 SKILL.md 會整份載入 context，長檔案造成不必要的 token 成本；拆分後主檔約 120 行，僅在需要對應 Step 細節時才由子代理或主流程按需讀取 `references/` 檔案
+
+---
+
 ## [1.15] — 2026-07-28
 
 ### Added

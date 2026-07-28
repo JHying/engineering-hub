@@ -7,7 +7,7 @@
 
 ## 何時要跑
 
-- 修改任何 `skills/*/SKILL.md`（或 `skill.md`）本體規則後
+- 修改任何 `skills/*/SKILL.md` 本體規則後（2026-07-28 起檔名已統一大寫，不再有 `skill.md` 例外）
 - 修改任何 `skills/update-kb/templates/*.md` 後
 - 修改任何 `role-flows/*.md` 或 `roles/*.md` 後
 - 覺得「這個改動應該不影響別的 skill」但改動涉及**檔案路徑、路由規則、或另一個 skill 的呼叫方式**時——這種「應該沒事」的直覺正是過去踩雷的來源，優先跑一次
@@ -26,7 +26,7 @@
    - 檔案是否真的寫進 `demo_KBs/{對應目錄}/`（不是誤寫進其他專案 KB）
    - `MASTER_INDEX.md` 對應章節是否同步（依 2026-07-28 起的新規則：**只放筆數 + 連結指標，不逐條複製進 MASTER_INDEX**——若子代理把整條記錄複製進 MASTER_INDEX，代表 Step 4-1 或對應模板檔的指示又跑掉了）
    - 個別 index.md（`review-history/index.md`、`qa-records/index.md`）是否正確新增/更新條目
-4. **驗證 `/code-architect`、`/diagram` 的路徑聲明**：不需要在 demo_KBs 跑（無真實原始碼），改為對照 `my-work-agent` skill.md 裡對這兩個 skill 的行為描述，跟該 skill 自己 SKILL.md 的實際輸出規則逐句核對；或直接引用最近一次真實專案 pipeline 執行的實測結果作為佐證（見下方 2026-07-28 紀錄）
+4. **驗證 `/code-architect`、`/diagram` 的路徑聲明**：不需要在 demo_KBs 跑（無真實原始碼），改為對照 `my-work-agent` SKILL.md 裡對這兩個 skill 的行為描述，跟該 skill 自己 SKILL.md 的實際輸出規則逐句核對；或直接引用最近一次真實專案 pipeline 執行的實測結果作為佐證（見下方 2026-07-28 紀錄）
 
 ## 驗收標準：故意注入漂移，確認測試會抓到
 

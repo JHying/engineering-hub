@@ -4,6 +4,31 @@
 
 ---
 
+## [2.8] — 2026-07-28
+
+### Changed
+- **SKILL.md 拆分為骨幹 + references/（progressive disclosure）**：原檔約 691 行、觸發時整份載入 context，改為 SKILL.md 只留 frontmatter、觸發條件、審查流程步驟與輸出格式、以及一份 reference 索引表 + 精簡版硬性約束摘要；規則明細依主題搬移到同目錄 `references/` 下，內容逐字搬移、不改寫語意：
+  - `references/layer-structure.md` — Package 結構、分層依賴方向、命名與 annotation 規則
+  - `references/controller-rules.md` — Controller 規則
+  - `references/appservice-rules.md` — AppService / InitAppService / InitService 規則
+  - `references/domainservice-rules.md` — DomainService 規則
+  - `references/manager-rules.md` — Manager 規則
+  - `references/infra-rules.md` — Infra 規則、infra.data 規則
+  - `references/mapper-rules.md` — Mapper 規則
+  - `references/vo-dto-entity-cache-rules.md` — VO/DTO、Entity、Cache 規則
+  - `references/constants-config-utils-rules.md` — Constants、Config、Utils 規則
+  - `references/anti-corruption-layer.md` — Anti-Corruption Layer（外部型別隔離）規則
+  - `references/null-optional-exception-handling.md` — 查無資料的表達方式（null / Optional / 例外）跨層規則
+  - `references/field-addition-data-flow.md` — 新增欄位的資料流追蹤規則
+  - `references/toolbox-library-workflow.md` — Toolbox 函式庫修改流程
+  - `references/common-violations.md` — Common Violation Quick Reference
+
+### Context
+- 起因：對齊 context engineering 原則——skill 觸發時 SKILL.md 會整份載入 context，長檔案在多數審查情境下載入了用不到的其他層規則，浪費 context；拆分後主檔僅留流程骨幹與索引，明細依審查目標層級按需讀取
+- frontmatter 除版號外未變動；審查步驟編號、輸出格式、硬性約束（分層方向、業務邏輯歸屬、null 禁令、ACL、MongoTemplate.save 禁令）維持在主檔可見
+
+---
+
 ## [2.7] — 2026-07-27
 
 ### Changed

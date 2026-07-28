@@ -58,6 +58,8 @@
 | 檔案 | 門檻 | 動作 |
 |---|---|---|
 | `lessons.md` | >100 行或 >15 條 | 提議使用者做一次整併:重複合併、已寫入規則檔的刪除、僅存活躍教訓 |
+| `skills/*/references/` 單檔 | >250 行 | 下次修改該 skill 時提議拆分該檔(`setting/check-skills.ps1|.sh` 會 WARN;防拆檔後的結構長回 inline) |
+| `skills/*/SKILL.md` | >150 行 | 同上時機提議將明細外移 references/(2026-07-28 拆檔基線) |
 | `CLAUDE.md` | >150 行 | 立即精簡(硬上限),長內容移到 governance/ 並留路由列 |
 | governance/ 其他單檔 | >250 行 | 下次修改時提議拆分或精簡 |
 | memory(`MEMORY.md` 索引) | >30 行 | 整併重複、刪過時 |

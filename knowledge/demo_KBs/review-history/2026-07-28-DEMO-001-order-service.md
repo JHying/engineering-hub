@@ -94,3 +94,63 @@ mode: ticket 模式
 |------|---------|
 | 本記錄為 update-kb 路由煙霧測試產出，非真實 Code Review 結果，demo_KBs 無實際可審查的原始碼 | 僅供驗證 Review History 路由與檔案/索引格式正確性，不作為真實審查依據 |
 | `InventoryDomainService.lock()` 高並發下鎖等待時間未實測 | 若日後有真實效能數據，補充至此記錄或另開專項效能審查 |
+
+---
+
+# R2 複審記錄（2026-07-28）
+
+> round: R2（第二輪複審）｜reviewer: 未知（合成資料）｜service: order-service
+> ⚠️ 同為 update-kb Review History 路由回歸驗證用的合成測試資料，非真實 Code Review 結果。
+
+## 審查範圍
+
+| 類別 | Class |
+|------|-------|
+| AppService | `OrderAppService`（order-service） |
+| DTO | 訂單建立請求 DTO（order-service） |
+
+---
+
+## 品質問題（Quality Issues）
+
+### OrderAppService
+- **[已修]** DDD 分層違規：金額驗證邏輯誤置於 AppService 層，違反 DDD 分層規範（業務驗證應下沉至 Domain Service 層）→ 修正：金額驗證邏輯移至 Domain Service，`OrderAppService` 僅保留編排職責
+
+### DTO（訂單建立請求）
+- **[已修]** 命名慣例：欄位 `orderAmt` 為縮寫，不符全名慣例 → 修正：改名為 `orderAmount`
+
+---
+
+## 效能瓶頸 / 資料原子性（Performance & Atomicity Issues）
+
+✅ 無效能 / 原子性問題
+
+---
+
+## 設計模式（Design Pattern Review）
+
+✅ 無設計模式問題
+
+---
+
+## 本次修改檔案
+
+| 檔案 | 類型 | 異動摘要 |
+|------|------|---------|
+| `OrderAppService.java` | 修改 | 移除誤置的金額驗證邏輯，改為呼叫 Domain Service，僅保留編排 |
+| `OrderDomainService.java` | 修改 | 新增金額驗證邏輯（下沉自 AppService） |
+| 訂單建立請求 DTO | 修改 | 欄位 `orderAmt` 改名為 `orderAmount` |
+
+---
+
+## 相關 ADR
+
+- 無（demo_KBs 目前無 DDD 分層規範專屬 ADR）
+
+---
+
+## 未解決 / 後續追蹤
+
+| 項目 | 建議行動 |
+|------|---------|
+| 無未解決項目，R2 兩項發現（DDD 分層違規、DTO 命名）皆已修復並複審通過 | — |

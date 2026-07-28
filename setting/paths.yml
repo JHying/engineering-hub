@@ -1,4 +1,4 @@
-# knowledge-hub path configuration
+﻿# knowledge-hub path configuration
 #
 # All documents under kb reference the path constants defined here via {{key}}.
 # If kb moves location, only the kb key needs to change; no other documents need updating.
@@ -55,3 +55,4 @@ regulations:
   review_guide:   "@kb/knowledge/common_KBs/guideline/REVIEW_GUIDE.md"
   adrs:           "@kb/knowledge/common_KBs/ADRs"
   tech-research:  "@kb/knowledge/common_KBs/tech-research"
+

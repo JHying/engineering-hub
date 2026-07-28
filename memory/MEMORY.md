@@ -1,7 +1,6 @@
 - [Knowledge Hub 根路徑](reference_knowledge_base.md) — 實際路徑因主機而異，見同目錄 `reference_knowledge_base.local.md`（setup-host.ps1 產生，不進 git）
 - [/diagram 依 AppService 拆檔](feedback_diagram_split_by_appservice.md) — 不同 AppService 驅動的流程不可合併同一份 flow.md，即使共用同一 Controller
 - [Narrate-then-act](feedback_narrate-then-act.md) — pair "I will do X" statements with the actual tool call in the same reply, don't just narrate it
-- [待辦:demo_KBs 煙霧測試](project_pending-demo-smoke-test.md) — 使用者已核准、下次 session 執行;防 skill 介面漂移的端到端測試機制
 - [使用者日常跑 Sonnet 5 high](user-default-model-sonnet5-xhigh.md) — 2026-07-13 由 xhigh 調降;主線非最貴模型,無費率套利;xhigh 保留給臨時難題 session
 - [專案狀態進 KB 不進記憶](feedback_project-state-goes-to-kb.md) — 進度/決策/專案紀律寫進該專案 KB 的 MASTER_INDEX 進度快照節;記憶只留跨專案偏好
 - [Commit Message 格式](feedback_commit_message_format.md) — `type(TICKET): 業務語句摘要` + bullet，不點名 class/method；專案客製化另存該專案 KB

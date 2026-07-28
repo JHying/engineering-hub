@@ -1,13 +1,14 @@
 # Skill 生態系煙霧測試 Checklist
 
 > 目的：`my-work-agent`／`update-kb` 等 skill 彼此呼叫時，orchestrator 對被呼叫 skill 的描述容易跟該 skill 實際介面/輸出路徑「各自看沒問題、合起來才現形」的漂移。單一 skill 的單元檢查抓不到這類問題，只有真的跑一次跨 skill 的鏈路才會現形。
-> 起源：2026-07-05 skill 體檢發現 `update-kb` 缺 QA 路由、`my-work-agent` 誤述 `code-architect`、`diagram` 路徑對不上（詳見 `governance/lessons.md`）。本 checklist 回應待辦 `project_pending-demo-smoke-test.md`。
+> 起源：2026-07-05 skill 體檢發現 `update-kb` 缺 QA 路由、`my-work-agent` 誤述 `code-architect`、`diagram` 路徑對不上（詳見 `governance/lessons.md`）。本 checklist 回應待辦 `project_pending-demo-smoke-test.md`（該待辦已於 2026-07-28 首跑後結案，記憶檔已移除，本檔即為機制的常駐落點）。
 
 ---
 
 ## 何時要跑
 
-- 修改任何 `skills/*/SKILL.md` 本體規則後（2026-07-28 起檔名已統一大寫，不再有 `skill.md` 例外）
+- 修改「參與跨 skill 呼叫鏈」的 skill（orchestrator 與被呼叫方：my-work-agent、update-kb、code-architect、diagram）的**介面相關內容**後——觸發方式、輸入參數、輸出路徑、路由規則、對其他 skill 的行為描述；純內部內容（出題規則、範例、規則明細）不觸發
+- 獨立 skill（quiz、mapper-test、contract-test、db-object-rules）**不適用本 checklist**：以 per-skill read-back + 三點一致（frontmatter version = CHANGELOG 最新條目 = 內容實況）驗證即可；前兩點+references 斷鏈/孤兒/檔名大小寫已有機械檢查 `setting/check-skills.ps1|.sh`，跑一次全綠即過（2026-07-28 範圍修正：原寫「任何 SKILL.md」，與第 3 行的跨 skill 漂移原始目的不符）
 - 修改任何 `skills/update-kb/templates/*.md` 後
 - 修改任何 `role-flows/*.md` 或 `roles/*.md` 後
 - 覺得「這個改動應該不影響別的 skill」但改動涉及**檔案路徑、路由規則、或另一個 skill 的呼叫方式**時——這種「應該沒事」的直覺正是過去踩雷的來源，優先跑一次
@@ -17,6 +18,7 @@
 
 - **測試票**：`demo_KBs/specs/DEMO-001.md`（訂單建立功能）+ `specs/impls/DEMO-001-impls.md`——PM/SA/BACKEND 產出已固定存在，不需重建
 - **目標 KB**：`demo_KBs`（示範用，無真實原始碼，Code Review／QA 內容為合成但格式真實的資料，不代表真實審查結果）
+- **一次性測試票（首次建立路徑專用）**：`DEMO-9nn`（執行當次自編，如 DEMO-901），不預存任何檔案。專測「無既有檔案可比對」的首次建立路徑——PM specs 首建、SA/Backend impls 首建、或任何 KB 類型的第一筆落地（回應下方方法論註記：子代理對既有內容有環境自救能力，首建路徑才是漂移最會現形的地方）。測驗完成後刪除該票全部產出、還原 index 與 MASTER_INDEX 筆數，確認 demo_KBs 與基線 diff 為零（用 `git status` 驗）
 
 ## 執行步驟
 
@@ -27,6 +29,7 @@
    - `MASTER_INDEX.md` 對應章節是否同步（依 2026-07-28 起的新規則：**只放筆數 + 連結指標，不逐條複製進 MASTER_INDEX**——若子代理把整條記錄複製進 MASTER_INDEX，代表 Step 4-1 或對應模板檔的指示又跑掉了）
    - 個別 index.md（`review-history/index.md`、`qa-records/index.md`）是否正確新增/更新條目
 4. **驗證 `/code-architect`、`/diagram` 的路徑聲明**：不需要在 demo_KBs 跑（無真實原始碼），改為對照 `my-work-agent` SKILL.md 裡對這兩個 skill 的行為描述，跟該 skill 自己 SKILL.md 的實際輸出規則逐句核對；或直接引用最近一次真實專案 pipeline 執行的實測結果作為佐證（見下方 2026-07-28 紀錄）
+5. **首次建立路徑測試（PM/SA/Backend 必用此步）**：用一次性票 `DEMO-9nn` 走對應路由，內容合成但格式真實、且**不在指示中點名 KB 類型**（讓 Step 2 路由表自己判，一併驗證路由判斷本身）。驗證：檔案建立於正確目錄、index.md 新增條目、MASTER_INDEX 指標筆數 +1。驗畢刪除該票全部產出並還原索引，`git status` 確認 demo_KBs 回到基線
 
 ## 驗收標準：故意注入漂移，確認測試會抓到
 
@@ -54,6 +57,10 @@
 **補測 PM KB 路由**（同日稍後，使用者追問「PM/SA/BACKEND 產出也要一起測試，而且跟 Review History、QA Records 一樣有 index 問題」）：比對後確認某專案 KB 的 `MASTER_INDEX.md` PM Knowledge Base 區塊確實有相同問題，且更嚴重——逐條累加的「已建立 Spec」「已建立 Impl」表格單一儲存格塞入 3000+ 字元完整決策歷程。修正方式同一套：新建 `specs/index.md` 為唯一真相源、`templates/pm-spec.md` 新增 Step D 維護該索引、MASTER_INDEX 改為只放指標（詳見 `update-kb` CHANGELOG `[1.15]`）。
 
 修正後對 `demo_KBs` 執行一次真實驗證（非本身即為 spec 首次建立，而是既有 DEMO-001 spec 的技術澄清補充，藉此驗證 Step A 更新既有 spec 時，Step D 不會誤觸發重複列）：子代理正確在 `specs/DEMO-001.md` 補上澄清段落，`specs/index.md` 與 `MASTER_INDEX.md` PM 區塊皆維持原樣、未產生任何重複列或逐條複製——驗證通過。過程中子代理主動發現我在測試指示中誤植的 AC 編號（誤稱 AC3，實際應為 AC2），依原始碼核實後自行修正並回報，屬子代理善用工具自我修正的又一例證（見下方「方法論註記」）。
+
+**首次建立路徑首跑（同日稍後，DEMO-901，本節新增的步驟 5 首次執行）**：起因是使用者指出「PM/SA/Backend 因 DEMO-001 檔案已存在，永遠只測到更新分支」。以一次性票 DEMO-901（訂單取消，Story 設 IN PROGRESS）走 PM 路由，指示中不點名 KB 類型：Step 2 路由表以「需求/AC」正確判定 PM KB；spec 首建落地正確、`specs/index.md` 新增一列且 Impl 欄留 `—`、MASTER_INDEX 筆數 2→3、Step B 正確跳過 impl 建立。加分發現：子代理主動比對 `facts.md`，把需求誤用的 `CREATED` 狀態修正為既有狀態機的 `PENDING`，並標注 AC2 屬既有規則收緊——首建路徑下環境交叉核實依然有效。驗畢清理：刪 spec、還原 index 與筆數，`git status` 確認 specs 相關 diff 為零。**結論：首建 + 路由判斷 + Step B 三個先前未覆蓋的分支一次補齊，全數通過。**
+
+（本輪同日另一條 route 1 紀錄：拆檔重構後首次執行期驗證——SKILL.md 骨幹 → references/ → templates/ 三層載入正常、Review History 追加分支正確，詳見 `demo_KBs/pending/logs/update-2026-07-28.md`。）
 
 ---
 

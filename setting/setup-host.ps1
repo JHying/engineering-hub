@@ -120,10 +120,11 @@ if (-not ($settings.hooks.PSObject.Properties.Name -contains 'SessionStart')) {
     $settings.hooks | Add-Member -NotePropertyName 'SessionStart' -NotePropertyValue @()
 }
 
-$memoryLinkAdded = Register-SessionStartHook $settings (Join-Path $repo 'setting\check-memory-link.ps1')
-$projectKbAdded  = Register-SessionStartHook $settings (Join-Path $repo 'setting\check-project-kb.ps1')
+$memoryLinkAdded  = Register-SessionStartHook $settings (Join-Path $repo 'setting\check-memory-link.ps1')
+$projectKbAdded   = Register-SessionStartHook $settings (Join-Path $repo 'setting\check-project-kb.ps1')
+$checkSkillsAdded = Register-SessionStartHook $settings (Join-Path $repo 'setting\check-skills.ps1')
 
-if ($memoryLinkAdded -or $projectKbAdded) {
+if ($memoryLinkAdded -or $projectKbAdded -or $checkSkillsAdded) {
     ($settings | ConvertTo-Json -Depth 10) | Set-Content -Path $settingsPath -Encoding UTF8
     Write-Host "Updated $settingsPath"
 }

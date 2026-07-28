@@ -92,7 +92,7 @@ echo "Wrote global KB root anchor: $kb_root_anchor"
 # since hand-rolled JSON editing in shell is too fragile for a file that also
 # holds unrelated user settings.
 settings_path="$claude_dir/settings.json"
-chmod +x "$repo/setting/check-memory-link.sh" "$repo/setting/check-project-kb.sh" 2>/dev/null || true
+chmod +x "$repo/setting/check-memory-link.sh" "$repo/setting/check-project-kb.sh" "$repo/setting/check-skills.sh" 2>/dev/null || true
 
 if ! command -v jq >/dev/null 2>&1; then
     echo "jq not found - skipping SessionStart hook registration."
@@ -126,6 +126,7 @@ else
 
     register_hook "$repo/setting/check-memory-link.sh"
     register_hook "$repo/setting/check-project-kb.sh"
+    register_hook "$repo/setting/check-skills.sh"
 fi
 
 echo ""

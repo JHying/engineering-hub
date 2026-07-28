@@ -5,4 +5,4 @@
 
 | 日期 | Ticket / 主題 | 服務 | 模式 | 檔案 |
 |------|-------------|------|------|------|
-| 2026-07-28 | DEMO-001 訂單建立功能（Review History 路由回歸驗證煙霧測試） | order-service, payment-service | ticket 模式 | [2026-07-28-DEMO-001-order-service.md](2026-07-28-DEMO-001-order-service.md) |
+| 2026-07-28 | DEMO-001 訂單建立功能（R1 路由回歸驗證煙霧測試 + R2 複審：DDD 分層 / DTO 命名修正） | order-service, payment-service | ticket 模式 | [2026-07-28-DEMO-001-order-service.md](2026-07-28-DEMO-001-order-service.md) |

@@ -1,6 +1,16 @@
-- [Knowledge Hub 根路徑](reference_knowledge_base.md) — KB root 是 knowledge-hub repo 自身，setting/paths.yml 已指向此路徑
+- [Knowledge Hub 根路徑](reference_knowledge_base.md) — 實際路徑因主機而異，見同目錄 `reference_knowledge_base.local.md`（setup-host.ps1 產生，不進 git）
 - [/diagram 依 AppService 拆檔](feedback_diagram_split_by_appservice.md) — 不同 AppService 驅動的流程不可合併同一份 flow.md，即使共用同一 Controller
 - [Narrate-then-act](feedback_narrate-then-act.md) — pair "I will do X" statements with the actual tool call in the same reply, don't just narrate it
 - [待辦:demo_KBs 煙霧測試](project_pending-demo-smoke-test.md) — 使用者已核准、下次 session 執行;防 skill 介面漂移的端到端測試機制
 - [使用者日常跑 Sonnet 5 high](user-default-model-sonnet5-xhigh.md) — 2026-07-13 由 xhigh 調降;主線非最貴模型,無費率套利;xhigh 保留給臨時難題 session
 - [專案狀態進 KB 不進記憶](feedback_project-state-goes-to-kb.md) — 進度/決策/專案紀律寫進該專案 KB 的 MASTER_INDEX 進度快照節;記憶只留跨專案偏好
+- [Commit Message 格式](feedback_commit_message_format.md) — `type(TICKET): 業務語句摘要` + bullet，不點名 class/method；專案客製化另存該專案 KB
+- [DDD 分層鐵則](feedback_ddd_layering.md) — Manager 只透傳技術結果，業務例外拋出必須在 Domain Service 層
+- [flow↔skill 自動同步](feedback_flow_skill_autosync.md) — flow-*.md 與 skill.md 對應 stage 內容互為同步對，改一方自動更新另一方 + CHANGELOG，不需提醒
+- [QA 收尾移除多餘註解](feedback_qa_comment_cleanup.md) — QA 判定通過後、輸出總結前，固定掃描本輪異動移除多餘註解；已寫入各專案 flow-qa.md
+- [SA 回寫 Jira 描述](feedback_sa_jira_writeback.md) — SA 完成且有單號時回寫四區段，confirm 先問、去識別化 ADR 等 KB 專有名詞；已寫入 flow-sa.md Step 8
+- [Filter 方法副作用判斷](feedback_side_effect_filter_method.md) — 方法名已隱含過濾語意時，就地 mutate 入參不視為 Side Effect 違規
+- [原始碼優先於文件](feedback_source_over_docs.md) — CLAUDE.md 與既有文件都可能有誤，關鍵事實一律回原始碼核實
+- [回覆不用解釋為什麼](feedback_terse_no_rationale.md) — 只講做了什麼/結果，不主動附理由說明
+- [Skill CHANGELOG 規則](feedback_skill_changelog.md) — 每次修改 SKILL.md 都必須同步更新對應 CHANGELOG.md
+- [腳本預設全英文/ASCII](feedback_scripts_ascii_english.md) — PowerShell 等腳本內容(註解/字串/輸出訊息)預設英文，避免 Big5/BOM 亂碼；不影響對話語言

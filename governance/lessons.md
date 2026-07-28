@@ -29,3 +29,8 @@
 - 情境:使用者主線 session 為 sonnet xhigh,子代理繼承 xhigh,機械性派工也燒高推理預算;Agent 工具本身無 effort 參數。
 - 教訓:固定低 effort 的派工角色只能靠 `.claude/agents/*.md` 定義檔(model-dispatch §3 既有結論,本次落實)。
 - 以後怎麼做:批次機械修改/模板套用派 `worker-mechanical`(sonnet, low);read-back 驗證/搜尋定位派 `worker-readback`(haiku, low);兩檔隨 repo 攜帶(`.claude/agents/`),新主機執行 `setting/setup-host.ps1|.sh` 接線 memory 與 skills。
+
+## 2026-07-28 有工具的子代理對單點文字漂移有天生抵抗力，煙霧測試注入漂移沒那麼容易
+- 情境：執行 demo_KBs 端到端煙霧測試（待辦 project_pending-demo-smoke-test.md）的驗收步驟，故意在 update-kb 的 qa-records 模板改錯目標路徑，想證明煙霧測試抓得到。連續 3 次才成功定位問題：第 1 次是自己手動轉抄 prompt 時留了矛盾線索；第 2 次發現模板裡同一路徑字串寫死在 5 個地方，改 1 處子代理跟多數；第 3 次改成單一來源後，子代理仍靠 Read/Glob 探索到目標資料夾已有既有檔案，用環境證據覆蓋了寫錯的文字指示。
+- 教訓：這類「子代理能自己探索環境」的抵抗力，代表煙霧測試若鎖定「已有既有內容的 KB 類型」測路徑漂移，很難测出真陽性；2026-07-05 那次真實 bug 性質上更可能是 Step 2 路由表整條缺漏（子代理根本沒被建立），不是「建立了但寫錯路徑」。
+- 以後怎麼做：往後要驗證漂移偵測能力，優先測「全新 KB 類型第一次建立」（無既有檔案可比對）或「Step 2 路由判斷本身」，不要只測「已有內容的資料夾路徑寫錯」這種子代理容易自救的情境。

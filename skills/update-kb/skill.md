@@ -5,7 +5,7 @@ description: >
   1. 排程自啟動：掃描各專案 KB 的 pending/ 目錄、每日 git 更新，自動判斷涉及的 KB 並派發子代理並行更新。
   2. 使用者自啟動：使用者輸入要更新的內容（ticket/檔案/描述），手動選擇目標專案 KB 後觸發更新流程。
   觸發關鍵字：update-kb、更新知識庫、kb更新、同步知識庫、寫到KB、review history
-version: "1.14"
+version: "1.15"
 ---
 
 # Update Knowledge Base
@@ -172,9 +172,10 @@ version: "1.14"
    - `site-reliability/index.md` 及 `site-reliability/` 下所有 `.md`
    - `source-codex/cross/index.md`、`source-codex/cross/service-map.md`
    - `ADRs/index.md`（`demo_KBs/ADRs/` 目前僅含 `index.md` 與示範 ADR `0001-service-communication-protocol.md`，後者屬示範內容、依下方「不複製」規則排除，不隨 index.md 一併複製）
-   - `review-history/index.md`、`review-history/YYYY-MM-DD-TICKET-service-name.md`（模板檔）
+   - `review-history/index.md`、`review-history/YYYY-MM-DD-TICKET-service-name.md`（模板檔）——**只複製表頭結構**（標題 + 欄位列），不含 `demo_KBs` 自身因執行煙霧測試累積的實際條目列
+   - `qa-records/index.md`（同上，只複製表頭結構，不含 `demo_KBs` 自身的煙霧測試條目）、`qa-records/qa-format.md`（若 `{$PROJECT_KB}/qa-records/` 目錄不存在，一併建立）
+   - `specs/index.md`（同上，只複製表頭結構，不含 `demo_KBs` 自身的 DEMO-001／DEMO-002 條目）
    - `pending/README.md`、`pending/jira.txt`、`pending/logs/.gitkeep`
-   - `qa-records/qa-format.md`（若 `{$PROJECT_KB}/qa-records/` 目錄不存在，一併建立）
 
    **複製後清空示範資料（保留結構，替換內容）：**
    - `MASTER_INDEX.md`：複製結構，將服務清單、AI 路由規則、系統定位等示範文字改為 `[待補充]`；保留各章節標題與說明段落
@@ -288,10 +289,11 @@ version: "1.14"
 ### 4-1 同步各 PROJECT_KB 的 MASTER_INDEX.md
 
 對每個更新過的 `$PROJECT_KB`，確認 MASTER_INDEX 是否完整反映：
-- PM KB：已建立 Spec / Impl 清單
+- PM KB：比照下方 Review History KB，MASTER_INDEX **不重複列出個別條目**，只維護一個指標段落（筆數 + 指向 `specs/index.md` 的連結）；個別條目的建立/更新只寫入 `specs/index.md`（子代理模板 Step D 已涵蓋）
 - RD KB：AI 文件路由規則是否有新關鍵字
 - SRE KB：site-reliability 文件清單是否有新增
-- Review History KB：`review-history/` 目錄是否已列入 MASTER_INDEX（首次建立時需補充）
+- Review History KB：MASTER_INDEX **不重複列出個別條目**，只維護一個指標段落（筆數 + 指向 `review-history/index.md` 的連結 + 格式規範連結）；個別條目的建立/更新只寫入 `review-history/index.md`（子代理模板 Step C 已涵蓋）
+- QA Records KB：比照上一列，MASTER_INDEX 只維護指標段落，個別條目寫入 `qa-records/index.md`（不存在時視同首次建立，建立時依 `review-history/index.md` 的既有格式：日期｜Ticket｜判定｜檔案 四欄，`判定` 欄僅放通過/未通過 + 極短註記，完整過程留在 `qa-records/{TICKET}-qa.md` 本體，不重複塞進索引儲存格——見「表格欄位可讀性規則」）
 
 ### 4-2 同步 setting/paths.yml
 

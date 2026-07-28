@@ -31,7 +31,6 @@
 1. 若有 Jira 單號，用 Jira MCP 拉取完整內容（summary / description / AC / api provider by / is implemented by / status）
 2. 依 spec-format.md 格式建立或更新 `{$PROJECT_KB}/specs/{TICKET}.md`
 3. 若 spec 已存在，比對現有內容，僅補充缺少的區段，不覆蓋已確認內容
-4. 更新 MASTER_INDEX PM KB 的「已建立 Spec」清單
 
 ### Step B — 自動判斷是否建立 Impl
 
@@ -51,10 +50,29 @@
    - 第二章：code-like-facts 系統流程（每個涉及的 service 獨立區塊）
    - 第三章：驗測方式
    - 第四章：SA 系統需求規格（無異動時明確寫「無新增」）
-5. 更新 MASTER_INDEX PM KB 的「已建立 Impl」清單
+
+### Step D — 更新目標路徑下的 specs/index.md
+
+若 `{$PROJECT_KB}/specs/index.md` 存在，找到本 ticket 對應的列：
+- Step A 建立/更新了 spec → 確保該列「Spec」欄位有連結
+- Step C 建立了 impl → 確保該列「Impl」欄位有連結
+- 尚無對應列 → 新增一列
+若不存在，建立 index.md：
+
+```
+# PM Knowledge Base 索引（specs / impls）
+
+> 每個 ticket 的完整決策歷程（多輪追加調整、ADR 關聯、commit/測試細節）記錄在各自的 spec／impl 檔案本體，本索引只負責定位，不重複摘要內容。
+
+| Ticket | 標題 | Spec | Impl |
+|--------|------|------|------|
+| {TICKET} | {標題} | [{TICKET}.md]({TICKET}.md) | [impls/{TICKET}-impls.md](impls/{TICKET}-impls.md) |
+```
+
+尚未建立 impl 時，「Impl」欄位留空或標示 `—`，不得預先放入尚不存在的連結。**不要把 spec/impl 的完整內容或決策歷程複製進 MASTER_INDEX 或 index.md**：MASTER_INDEX 對應章節只維護筆數 + 指向本檔案的連結，index.md 只放「標題 + 連結」定位資訊，完整內容的唯一真相源是各自的 spec/impl 檔案本體。
 
 ## 輸出格式
 - ✅ 已建立 / 更新的檔案清單
 - ⚠️ 需人工補充的區段（標注 [待補充] 的位置）
-- 📋 MASTER_INDEX 異動摘要
+- 📋 目標路徑下 `specs/index.md` 異動摘要
 ```

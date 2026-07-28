@@ -4,6 +4,23 @@
 
 ---
 
+## [1.15] — 2026-07-28
+
+### Added
+- **Step 4-1 同步規則改為「MASTER_INDEX 只放指標，不複製個別條目」**：Review History KB、QA Records KB 兩類的個別條目唯一真相源分別是 `review-history/index.md`、`qa-records/index.md`；MASTER_INDEX 對應章節只維護筆數 + 連結，不再逐條同步
+- **`templates/qa-records.md` 新增 Step C**：比照既有 `templates/review-history.md` 的 Step C，子代理建立/更新 QA 記錄後同步維護 `qa-records/index.md`（日期｜Ticket｜判定｜檔案 四欄，判定欄僅放結論 + 極短註記，不塞完整過程）
+- **`templates/review-history.md` Step C 補上一句提醒**：不要把索引表另外複製一份到 MASTER_INDEX
+- **Step 0.7 scaffolding 清單新增 `qa-records/index.md`**：與既有 `review-history/index.md` 一致，皆改為「只複製表頭結構，不含 `demo_KBs` 自身因執行煙霧測試累積的實際條目列」
+- **`templates/qa-records.md` 目標路徑改為單一來源**：原本 `qa-records/` 這個資料夾名獨立寫死在檔案內 5 處（開頭說明句、必讀文件、Step C 兩處、輸出格式），改為只在「## 目標路徑」欄位宣告一次，其餘章節一律用「目標路徑」代稱引用
+- **PM KB 比照同一套指標化修正**：`templates/pm-spec.md` 移除 Step A／Step C 內「更新 MASTER_INDEX PM KB 已建立 Spec / Impl 清單」的指示，新增 Step D 改為維護 `specs/index.md`（Ticket｜標題｜Spec｜Impl 四欄，尚未建立 impl 時該欄留空或標示 `—`）；Step 4-1 PM KB 檢查項比照 Review History/QA Records 改為「MASTER_INDEX 只放指標」；Step 0.7 scaffolding 清單新增 `specs/index.md`（只複製表頭結構，不含 `demo_KBs` 自身的 DEMO-001／DEMO-002 條目）
+
+### Context
+- 起因：對 `demo_KBs` 執行一次端到端煙霧測試（回應待辦 `project_pending-demo-smoke-test.md`）時發現，某專案 KB 的 `MASTER_INDEX.md`「QA Knowledge Base」表格漏了最新一筆 QA 記錄；追查發現 Step 4-1 的同步檢查清單只列了 PM / RD / SRE / Review History 四類，從未列過 QA Records——每次 QA Records 子代理建立記錄後，主流程沒有清單項目提醒去同步 MASTER_INDEX，因此持續遺漏，非單次疏忽而是清單本身的設計缺口
+- 修正過程中進一步發現：MASTER_INDEX 裡逐條複製 Review History/QA 條目的做法本身就有問題——(1) 與各自的 `index.md` 重複維護、且已經漂移不同步（`review-history/index.md` 18 筆，MASTER_INDEX 當時只有 9 筆）；(2) 多輪 QA/Review 的敘述常塞成一個密集儲存格，違反本檔案自己訂的「表格欄位可讀性規則」；(3) MASTER_INDEX 是每個 role 起手必讀的檔案，逐條累加內容會讓這份高頻讀取檔案隨專案歷史無上限變胖。改為「MASTER_INDEX 只放指標」從根本解決，而非只補一次遺漏的條目
+- 使用者接著追問「PM/SA/BACKEND 產出也要一起測試，而且跟 Review History、QA Records 一樣有 index 問題」——比對後確認某專案 KB `MASTER_INDEX.md` 的 PM Knowledge Base 區塊有相同（甚至更嚴重）的問題：逐條累加的「已建立 Spec」「已建立 Impl」表格內單一儲存格塞入 3000+ 字元的完整決策歷程，且與各 ticket 自己的 spec/impl 檔案內容重複；修正方式與 Review History/QA Records 同一套：新建 `specs/index.md` 作為唯一真相源，MASTER_INDEX 只留指標
+
+---
+
 ## [1.14] — 2026-07-08
 
 ### Added

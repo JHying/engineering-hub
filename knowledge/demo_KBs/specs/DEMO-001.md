@@ -83,3 +83,4 @@ POST /orders → api-gateway → OrderController.createOrder(req)
 - 庫存鎖定必須使用 DB 行鎖（SELECT FOR UPDATE），禁止 Redis 樂觀鎖（高並發下有競態）
 - `price_snapshot` 在訂單建立時寫死，不能用 FK 關聯商品表（防止商品改價污染）
 - payment-service 的 Kafka consumer 需實作冪等（`orderId` 去重），因 Kafka at-least-once 語義
+- **AC2 併發澄清**：同一商品同時有兩筆請求搶最後一件庫存時，`InventoryDomainService.lock` 的 SELECT FOR UPDATE 行鎖將兩筆請求序列化處理；後到的請求於行鎖釋放後讀取到庫存已被前一筆扣減，判定不足並回傳 AC2 的 `INSUFFICIENT_STOCK`（HTTP 400），不會發生超賣

@@ -43,6 +43,7 @@
 | 2026-06-27 | OLTP vs OLAP 與 ACID 四大特性 | [oltp-vs-olap.md](oltp-vs-olap.md) | OLTP, OLAP, ACID, 資料倉庫, BigQuery, ETL, 列式儲存 |
 | 2026-06-27 | DB Cluster 讀寫分離與 Data Sharding 三大策略 | [db-sharding-cluster.md](db-sharding-cluster.md) | Sharding, 分庫分表, 讀寫分離, Hash-based, Range-based, Master-Slave |
 | 2026-06-27 | NoSQL vs RDBMS 選型：CAP 定理、MongoDB vs Oracle 適用場景 | [nosql-vs-rdbms.md](nosql-vs-rdbms.md) | NoSQL, RDBMS, CAP, MongoDB, Oracle, 選型, 分散式 |
+| 2026-07-28 | AWS 跨地理區域（Multi-Region）資料庫選型比較：Oracle vs MongoDB vs DynamoDB vs Cassandra，與 CAP/PACELC/ACID/NewSQL 的關聯 | [multi-region-database-selection.md](multi-region-database-selection.md) | AWS, Oracle, MongoDB, DynamoDB, Cassandra, CAP, PACELC, ACID, NewSQL, 跨區, multi-region, Global Tables, Global Clusters |
 
 ## 應用整合
 

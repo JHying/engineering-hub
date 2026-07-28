@@ -132,14 +132,20 @@ SRE 知識庫路由索引：`site-reliability/index.md`
 ## Review History（code-review 記錄）
 
 > 根目錄：`review-history/`
-> 入口索引：`review-history/index.md`
+> 入口索引與完整條目清單：`review-history/index.md`（**唯一真相源，MASTER_INDEX 不重複列出個別條目**）
 > 說明：每次 Code Review 後的結構化記錄（品質問題、效能問題、設計模式建議、修改清單、相關 ADR）。
 > 命名規則：`{YYYY-MM-DD}-{ticket-or-topic}-{service}.md`
 > 模板檔：`review-history/YYYY-MM-DD-TICKET-service-name.md`（複製後改名使用）
+> 目前筆數：1（見 `review-history/index.md`）
 
-| 日期 | Ticket / 主題 | 服務 | 模式 | 檔案 |
-|------|-------------|------|------|------|
-| （尚無）| | | | |
+---
+
+## QA Knowledge Base（qa-records）
+
+> 根目錄：`qa-records/`
+> 入口索引與完整條目清單：`qa-records/index.md`（**唯一真相源，MASTER_INDEX 不重複列出個別條目**）
+> 格式規範：`qa-records/qa-format.md`
+> 目前筆數：1（見 `qa-records/index.md`）
 
 ---
 
@@ -158,6 +164,8 @@ AI 待整理清單，新內容進 KB 前先放此處。
 
 > 根目錄：`specs/`
 > 入口：`specs/README.md`
+> 入口索引與完整條目清單：`specs/index.md`（**唯一真相源，MASTER_INDEX 不重複列出個別條目**）
+> 目前筆數：2（見 `specs/index.md`）
 
 | 文件類型 | 路徑格式 | 說明 |
 |---------|---------|------|
@@ -165,17 +173,3 @@ AI 待整理清單，新內容進 KB 前先放此處。
 | Impl 格式規範 | `specs/impls/impls-format.md` | 撰寫 impl 的標準格式 |
 | Spec（需求） | `specs/{TICKET}.md` | 各 ticket 初始需求（要做什麼） |
 | Impl（實作） | `specs/impls/{TICKET}-impls.md` | 各 ticket 實作知識（做了什麼，實作後建立） |
-
-### 已建立 Spec
-
-| Ticket | 標題 | 檔案 |
-|--------|------|------|
-| DEMO-001 | 訂單建立功能 | `specs/DEMO-001.md` |
-| DEMO-002 | 採購申請驗證（多步驟驗證 + 批次核准） | `specs/DEMO-002.md` |
-
-### 已建立 Impl
-
-| Ticket | 說明 | 檔案 |
-|--------|------|------|
-| DEMO-001 | 訂單建立 | `specs/impls/DEMO-001-impls.md` |
-| DEMO-002 | 採購申請多步驟驗證 + 批次核准（Playwright MCP workflow 示範） | `specs/impls/DEMO-002-impls.md` |

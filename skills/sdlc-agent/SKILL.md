@@ -1,13 +1,16 @@
 ---
-name: my-work-agent
+name: sdlc-agent
 description: >
   多專案軟體開發 AI Agent，支援單一角色執行、部分流程（從指定 stage 起依序執行至 QA）或完整 Spec-Driven 開發流程。
   每個 pipeline stage 可獨立設定 auto（自動執行）或 confirm（與使用者確認後執行）。
-  觸發關鍵字：my-work-agent、分析 story、分析 jira、code review
-version: "2.20"
+  觸發關鍵字：sdlc-agent；角色直通短語——分析 story／分析 jira（→PM）、
+  寫 spec／spec 轉化（→SA）、KB 諮詢／查知識庫（→CONSULTANT）、實作 ticket／spec-driven 實作（→BACKEND）、
+  code review／審查程式碼（→REVIEWER）、補測試／驗測／測試策略（→QA）、維運檢查／部署驗證（→SRE），
+  角色直通短語觸發時進入單一角色模式並選定該角色。
+version: "2.23"
 ---
 
-# Dev Work Agent
+# SDLC Agent
 
 > 本檔為骨幹（pipeline stage 流程 + 觸發/設定機制），各 Step 詳細規則、選單文字、範例移至 `references/`，依需要才讀取對應檔案。
 
@@ -15,7 +18,7 @@ version: "2.20"
 
 ### Step 0 — 啟動參數直通（有參數時）
 
-呼叫時若帶參數（KB 編號/名稱、模式、角色、起始 stage、A/C 字串），依規則解析並跳過對應問答；解析不出的部分照常詢問。完整參數對照表與範例見 `references/step0-param-passthrough.md`。
+呼叫時若帶參數（KB 編號/名稱、模式、角色、角色觸發短語、起始 stage、A/C 字串），依規則解析並跳過對應問答；解析不出的部分照常詢問。完整參數對照表與範例見 `references/step0-param-passthrough.md`。
 
 ### Step 1 — 初始化 Knowledge Hub 根路徑（靜默）
 

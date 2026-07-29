@@ -32,6 +32,15 @@ Chosen option: "{option N}", because {justification — e.g., it is the only
 option that meets a must-have driver, or it resolves the most drivers, or it
 is the best trade-off}.
 
+### Decision matrix（若適用）
+
+| 場景 | 機制 | 原因 |
+|------|------|------|
+
+### Case N: {具體情境說明}（若適用）
+
+{詳細說明 + 程式碼範例（若有）}
+
 ### Consequences
 
 * Good, because {positive consequence}

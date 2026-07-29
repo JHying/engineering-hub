@@ -1,13 +1,13 @@
 # Skill 生態系煙霧測試 Checklist
 
-> 目的：`my-work-agent`／`update-kb` 等 skill 彼此呼叫時，orchestrator 對被呼叫 skill 的描述容易跟該 skill 實際介面/輸出路徑「各自看沒問題、合起來才現形」的漂移。單一 skill 的單元檢查抓不到這類問題，只有真的跑一次跨 skill 的鏈路才會現形。
-> 起源：2026-07-05 skill 體檢發現 `update-kb` 缺 QA 路由、`my-work-agent` 誤述 `code-architect`、`diagram` 路徑對不上（詳見 `governance/lessons.md`）。本 checklist 回應待辦 `project_pending-demo-smoke-test.md`（該待辦已於 2026-07-28 首跑後結案，記憶檔已移除，本檔即為機制的常駐落點）。
+> 目的：`sdlc-agent`／`update-kb` 等 skill 彼此呼叫時，orchestrator 對被呼叫 skill 的描述容易跟該 skill 實際介面/輸出路徑「各自看沒問題、合起來才現形」的漂移。單一 skill 的單元檢查抓不到這類問題，只有真的跑一次跨 skill 的鏈路才會現形。
+> 起源：2026-07-05 skill 體檢發現 `update-kb` 缺 QA 路由、`sdlc-agent` 誤述 `code-architect`、`diagram` 路徑對不上（詳見 `governance/lessons.md`）。本 checklist 回應待辦 `project_pending-demo-smoke-test.md`（該待辦已於 2026-07-28 首跑後結案，記憶檔已移除，本檔即為機制的常駐落點）。
 
 ---
 
 ## 何時要跑
 
-- 修改「參與跨 skill 呼叫鏈」的 skill（orchestrator 與被呼叫方：my-work-agent、update-kb、code-architect、diagram）的**介面相關內容**後——觸發方式、輸入參數、輸出路徑、路由規則、對其他 skill 的行為描述；純內部內容（出題規則、範例、規則明細）不觸發
+- 修改「參與跨 skill 呼叫鏈」的 skill（orchestrator 與被呼叫方：sdlc-agent、update-kb、code-architect、diagram）的**介面相關內容**後——觸發方式、輸入參數、輸出路徑、路由規則、對其他 skill 的行為描述；純內部內容（出題規則、範例、規則明細）不觸發
 - 獨立 skill（quiz、mapper-test、contract-test、db-object-rules）**不適用本 checklist**：以 per-skill read-back + 三點一致（frontmatter version = CHANGELOG 最新條目 = 內容實況）驗證即可；前兩點+references 斷鏈/孤兒/檔名大小寫已有機械檢查 `setting/check-skills.ps1|.sh`，跑一次全綠即過（2026-07-28 範圍修正：原寫「任何 SKILL.md」，與第 3 行的跨 skill 漂移原始目的不符）
 - 修改任何 `skills/update-kb/templates/*.md` 後
 - 修改任何 `role-flows/*.md` 或 `roles/*.md` 後
@@ -28,7 +28,7 @@
    - 檔案是否真的寫進 `demo_KBs/{對應目錄}/`（不是誤寫進其他專案 KB）
    - `MASTER_INDEX.md` 對應章節是否同步（依 2026-07-28 起的新規則：**只放筆數 + 連結指標，不逐條複製進 MASTER_INDEX**——若子代理把整條記錄複製進 MASTER_INDEX，代表 Step 4-1 或對應模板檔的指示又跑掉了）
    - 個別 index.md（`review-history/index.md`、`qa-records/index.md`）是否正確新增/更新條目
-4. **驗證 `/code-architect`、`/diagram` 的路徑聲明**：不需要在 demo_KBs 跑（無真實原始碼），改為對照 `my-work-agent` SKILL.md 裡對這兩個 skill 的行為描述，跟該 skill 自己 SKILL.md 的實際輸出規則逐句核對；或直接引用最近一次真實專案 pipeline 執行的實測結果作為佐證（見下方 2026-07-28 紀錄）
+4. **驗證 `/code-architect`、`/diagram` 的路徑聲明**：不需要在 demo_KBs 跑（無真實原始碼），改為對照 `sdlc-agent` SKILL.md 裡對這兩個 skill 的行為描述，跟該 skill 自己 SKILL.md 的實際輸出規則逐句核對；或直接引用最近一次真實專案 pipeline 執行的實測結果作為佐證（見下方 2026-07-28 紀錄）
 5. **首次建立路徑測試（PM/SA/Backend 必用此步）**：用一次性票 `DEMO-9nn` 走對應路由，內容合成但格式真實、且**不在指示中點名 KB 類型**（讓 Step 2 路由表自己判，一併驗證路由判斷本身）。驗證：檔案建立於正確目錄、index.md 新增條目、MASTER_INDEX 指標筆數 +1。驗畢刪除該票全部產出並還原索引，`git status` 確認 demo_KBs 回到基線
 
 ## 驗收標準：故意注入漂移，確認測試會抓到
@@ -52,7 +52,7 @@
 
 **驗收（注入漂移）**：三次嘗試才成功注入出真正的失敗，過程本身是比「一次成功」更有價值的發現，見下方「驗收紀錄」與方法論註記。
 
-**佐證 `/code-architect`／`/diagram` 路徑聲明**：2026-07-28 同日稍早在某真實專案 KB 跑過一次完整 `my-work-agent` pipeline，`/code-architect` 產出的違規報告格式與 `my-work-agent` skill.md 描述一致，`/diagram` 實際寫入路徑 `source-codex/services/{service}/flow-diagram-{TICKET}.md` 與宣稱一致——當次為真實跑法非本 checklist 產出，列於此作為同日交叉佐證。
+**佐證 `/code-architect`／`/diagram` 路徑聲明**：2026-07-28 同日稍早在某真實專案 KB 跑過一次完整 `sdlc-agent` pipeline，`/code-architect` 產出的違規報告格式與 `sdlc-agent` skill.md 描述一致，`/diagram` 實際寫入路徑 `source-codex/services/{service}/flow-diagram-{TICKET}.md` 與宣稱一致——當次為真實跑法非本 checklist 產出，列於此作為同日交叉佐證。
 
 **補測 PM KB 路由**（同日稍後，使用者追問「PM/SA/BACKEND 產出也要一起測試，而且跟 Review History、QA Records 一樣有 index 問題」）：比對後確認某專案 KB 的 `MASTER_INDEX.md` PM Knowledge Base 區塊確實有相同問題，且更嚴重——逐條累加的「已建立 Spec」「已建立 Impl」表格單一儲存格塞入 3000+ 字元完整決策歷程。修正方式同一套：新建 `specs/index.md` 為唯一真相源、`templates/pm-spec.md` 新增 Step D 維護該索引、MASTER_INDEX 改為只放指標（詳見 `update-kb` CHANGELOG `[1.15]`）。
 

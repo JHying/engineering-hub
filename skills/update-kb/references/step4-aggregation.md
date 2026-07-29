@@ -39,3 +39,14 @@
 | 更新知識庫章節（支援的更新類型清單） | 本次更新涉及的 KB 類型 |
 
 若發現不一致，直接更新 README.md（中英文兩個區段同步修改）。若無須異動，跳過。
+
+### 4-5 執行 KB 格式漂移檢查
+
+執行 `$KB_ROOT/setting/check-kb-formats.ps1`（或 `.sh`），比對各 `_KBs` 的格式檔複本
+（`spec-format.md` / `impls-format.md` / `qa-format.md`）與 `skills/update-kb/templates/formats/` 正典的章節結構：
+
+- 全部 `[OK]` → 不需回報，繼續 Step 5
+- 有 `[WARN]` → 逐條列入 Step 6 輸出摘要，並附處理選項：
+  - 複本非刻意改動 → 以正典覆蓋收斂（需先向使用者確認）
+  - 刻意客製 → 在該複本 frontmatter 加 `customized: true` 後重跑確認轉 `[OK]`
+  - 正典本身要改 → 依 maintenance-protocol 修改 skill（備份 + CHANGELOG），再同步各未客製複本

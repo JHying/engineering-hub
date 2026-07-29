@@ -1,8 +1,38 @@
-# Changelog — my-work-agent
+# Changelog — sdlc-agent
 
 所有版本異動依時間倒序排列。
 
 ---
+
+## [2.23] — 2026-07-29
+
+### Removed
+- 觸發關鍵字移除 `my-work-agent（舊名）` 別名，僅保留 `sdlc-agent`（使用者指示不需向後相容）
+
+---
+
+## [2.22] — 2026-07-29
+
+### Added
+- 角色直通短語：description 觸發關鍵字加入各角色的自然語言短語（分析 story／分析 jira→PM、寫 spec／spec 轉化→SA、KB 諮詢／查知識庫→CONSULTANT、實作 ticket／spec-driven 實作→BACKEND、code review／審查程式碼→REVIEWER、補測試／驗測／測試策略→QA、維運檢查／部署驗證→SRE）
+- Step 0 參數對照表新增「角色觸發短語」列：命中即模式 1 並選定對應角色，跳過 Step 2 與角色選單；與明確角色名/模式參數並存時以後者優先
+- `references/step0-param-passthrough.md` 補兩個短語直通範例
+
+### Context
+- 起因：原觸發關鍵字只能叫起 skill，角色仍要走選單；改為短語即帶角色，等於自然語言版的參數直通
+
+---
+
+## [2.21] — 2026-07-29
+
+### Changed
+- Skill 改名：`my-work-agent` → `sdlc-agent`（資料夾、SKILL.md `name`、主標題、`~/.claude/skills/` symlink 一併更新）
+- 觸發關鍵字保留 `my-work-agent（舊名）` 作為別名，舊叫法仍可路由
+- 同步更新所有引用處：CLAUDE.md、governance/（diagnosis、smoke-test-checklist）、README、setting/check-project-kb.ps1|.sh、role-flows/flow-qa.md、diagram skill、memory 檔
+- 歷史 CHANGELOG 條目維持原文（記錄當時名稱），僅本檔標題改名
+
+### Context
+- 起因：`my-work-agent` 名稱不描述功能；skill 實際涵蓋 PM → SA → 實作 → Review → QA 全流程，改以 SDLC 命名
 
 ## [2.20] — 2026-07-28
 

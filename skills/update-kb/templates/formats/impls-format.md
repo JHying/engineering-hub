@@ -2,22 +2,22 @@
 
 **建立時機：** 實作完成後，更新知識庫時。
 **資料來源：** git diff + 對應 service 現有 KB（index.md + facts.md）+ 對應 spec（AC 清單）。
-**實際範例：** `specs/impls/DEMO-001-impls.md`
+**實際範例：** `specs/impls/{TICKET}-impls.md`
 
 ---
 
 ## 檔案命名
 
-`DEMO-{ticket號}-impls.md`（例：`DEMO-001-impls.md`）
+`{TICKET}-impls.md`（例：`{TICKET}-impls.md`）
 
 ---
 
 ## 文件結構
 
 ```markdown
-# DEMO-XXX 實作概述
+# {TICKET} 實作概述
 
-> 對應 spec：`knowledge/specs/DEMO-XXX.md`
+> 對應 spec：`knowledge/specs/{TICKET}.md`
 > 涉及服務：{service-name}（後端）、{FE framework}（前端，若有）
 > 同步 commit：{commit hash}（KB 對應版本）
 

@@ -44,14 +44,22 @@
 
 2. 在 `{$PROJECT_KB}/` 下依以下分類規則處理每個檔案：
 
-   **直接複製（格式規範 / 空白模板）：**
-   - `specs/spec-format.md`、`specs/README.md`
-   - `specs/impls/impls-format.md`、`specs/impls/README.md`
+   **格式規範（從本 skill 的正典複製，不從 demo_KBs）：**
+   - `specs/spec-format.md`、`specs/impls/impls-format.md`、`qa-records/qa-format.md`
+     一律從 `skills/update-kb/templates/formats/` 複製（該目錄為格式**正典**；
+     demo_KBs 與各專案 KB 內的同名檔皆為其複本）
+   - KB 複本要客製化時：直接改該 KB 的複本，並在檔案 frontmatter 加 `customized: true`；
+     `setting/check-kb-formats.ps1|.sh` 會比對各 KB 複本與正典的**章節結構**，
+     結構不一致且未標 `customized` 即 WARN
+
+   **直接複製（來自 demo_KBs 的空白模板）：**
+   - `specs/README.md`
+   - `specs/impls/README.md`
    - `site-reliability/index.md` 及 `site-reliability/` 下所有 `.md`
    - `source-codex/cross/index.md`、`source-codex/cross/service-map.md`
    - `ADRs/index.md`（`demo_KBs/ADRs/` 目前僅含 `index.md` 與示範 ADR `0001-service-communication-protocol.md`，後者屬示範內容、依下方「不複製」規則排除，不隨 index.md 一併複製）
    - `review-history/index.md`、`review-history/YYYY-MM-DD-TICKET-service-name.md`（模板檔）——**只複製表頭結構**（標題 + 欄位列），不含 `demo_KBs` 自身因執行煙霧測試累積的實際條目列
-   - `qa-records/index.md`（同上，只複製表頭結構，不含 `demo_KBs` 自身的煙霧測試條目）、`qa-records/qa-format.md`（若 `{$PROJECT_KB}/qa-records/` 目錄不存在，一併建立）
+   - `qa-records/index.md`（同上，只複製表頭結構，不含 `demo_KBs` 自身的煙霧測試條目；若 `{$PROJECT_KB}/qa-records/` 目錄不存在，一併建立）
    - `specs/index.md`（同上，只複製表頭結構，不含 `demo_KBs` 自身的 DEMO-001／DEMO-002 條目）
    - `pending/README.md`、`pending/jira.txt`、`pending/logs/.gitkeep`
 
@@ -63,6 +71,6 @@
    - `source-codex/services/` 下所有子目錄（示範服務：order-service / payment-service / notification-service 等）
    - `ADRs/` 下編號 `0001` 以上的 `.md`（示範 ADR，非格式說明文件）
 
-3. 完成後告知使用者：「已從 demo_KBs 初始化 KB 結構（格式規範已複製，示範內容已排除），繼續更新流程。」
+3. 完成後告知使用者：「已初始化 KB 結構（格式規範自 skill 正典複製、目錄結構自 demo_KBs，示範內容已排除），繼續更新流程。」
 
 > **重要**：scaffolding 後立即繼續 Step 1，不等待使用者操作。

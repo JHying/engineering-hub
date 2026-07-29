@@ -4,6 +4,31 @@
 
 ---
 
+## [1.18] — 2026-07-29
+
+### Added
+- Step 4-5「KB 格式漂移檢查」：Step 4 彙整時執行 `setting/check-kb-formats.ps1|.sh`；全 OK 不回報，有 WARN 逐條列入 Step 6 摘要並附三種處理選項（覆蓋收斂／標 `customized: true`／改正典）
+
+### Context
+- 起因：漂移檢查掛在消費點（update-kb 流程內）而非 SessionStart hook——format 檔只在 scaffolding/人工改動時可能漂移，屬低頻事件，不值得每次啟動付檢查與輸出成本
+
+---
+
+## [1.17] — 2026-07-29
+
+### Added
+- `templates/formats/` 目錄：KB 格式規範**正典**（`spec-format.md`、`impls-format.md`、`qa-format.md`，去識別化、`{TICKET}` 佔位）；各 KB 內同名檔改定位為正典的複本
+- `setting/check-kb-formats.ps1|.sh` 漂移檢查（與本版同步新增）：比對各 `_KBs` 複本與正典的章節結構，KB 複本缺檔、或結構不一致且 frontmatter 未標 `customized: true` 即 WARN
+
+### Changed
+- Step 0.7 Scaffolding：三個格式規範改從 `templates/formats/` 正典複製（不再從 `demo_KBs`）；目錄結構與其餘空白模板照舊從 `demo_KBs` 複製；完成訊息同步修改
+- KB 複本客製化規則：直接修改該 KB 複本並於 frontmatter 標 `customized: true`，漂移檢查即略過該檔
+
+### Context
+- 起因：三個 KB 的格式檔已實際發生內容漂移（同日稍早以 lcs_v2 版人工收斂一次）。以 AI 維護性考量，格式 default 收進 skill 治理範圍（備份 + CHANGELOG + check 腳本），KB 內複本維持必存在（子代理讀取行為不變、缺檔即異常可偵測），防漂移由紀律轉為機械檢查
+
+---
+
 ## [1.16] — 2026-07-28
 
 ### Changed

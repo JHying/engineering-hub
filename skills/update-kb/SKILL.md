@@ -5,12 +5,13 @@ description: >
   1. 排程自啟動：掃描各專案 KB 的 pending/ 目錄、每日 git 更新，自動判斷涉及的 KB 並派發子代理並行更新。
   2. 使用者自啟動：使用者輸入要更新的內容（ticket/檔案/描述），手動選擇目標專案 KB 後觸發更新流程。
   觸發關鍵字：update-kb、更新知識庫、kb更新、同步知識庫、寫到KB、review history
-version: "1.16"
+version: "1.18"
 ---
 
 # Update Knowledge Base
 
-> 本檔只留流程骨幹，各 Step 明細與規則全文見 `references/` 對應檔案；`templates/` 為子代理 prompt 模板，不在本檔涵蓋範圍。
+> 本檔只留流程骨幹，各 Step 明細與規則全文見 `references/` 對應檔案；`templates/` 為子代理 prompt 模板、
+> `templates/formats/` 為 KB 格式規範正典（spec / impls / qa），除下述 Step 0.7 引用外不在本檔涵蓋範圍。
 
 ## 啟動模式
 
@@ -57,7 +58,7 @@ git-tracked 路徑只允許標準技術術語與無語意佔位符；專案 KB�
 
 ## Step 0.7 — 新 KB Scaffolding（自動偵測）
 
-`MASTER_INDEX.md` 不存在時視為新 KB，自動從 `demo_KBs` 複製格式規範、排除示範內容後立即進入 Step 1。
+`MASTER_INDEX.md` 不存在時視為新 KB，自動初始化：格式規範自本 skill `templates/formats/` 正典複製、目錄結構與空白模板自 `demo_KBs`、排除示範內容後立即進入 Step 1。
 明細見 `references/step0-setup.md`。
 
 ---
@@ -98,6 +99,10 @@ KB 結構或路由規則異動時，檢查對應 flow 文件（flow-pm / flow-ba
 
 ### 4-4 確認 README.md 是否需要更新
 比對目錄結構、共用知識路徑、KB 類型清單，若不一致直接更新（中英文同步）。
+
+### 4-5 執行 KB 格式漂移檢查
+跑 `setting/check-kb-formats.ps1|.sh` 比對各 KB 格式檔複本與 `templates/formats/` 正典；
+全 OK 不回報，有 WARN 列入 Step 6 摘要並附處理選項。
 
 ---
 

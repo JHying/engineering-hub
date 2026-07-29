@@ -101,7 +101,7 @@
 依 Anthropic 官方指南全面健檢後的落地結果,後續 session 依此認知作業:
 
 - **7 個 skill 已 progressive disclosure 化**:SKILL.md 一律為 ≤150 行流程骨幹(拆檔前後:
-  code-architect 691→72、my-work-agent 580→147、db-object-rules 416→84、update-kb 410→120、
+  code-architect 691→72、sdlc-agent 580→147、db-object-rules 416→84、update-kb 410→120、
   quiz 317→66、mapper-test 304→111、diagram 303→92),明細在各 skill `references/*.md`。
   **用 skill 時只讀當下步驟需要的 references 檔,不要一次全讀**(否則等於退回拆檔前);
   **修 skill 時**骨幹與對應 references 檔一起改,CHANGELOG 照舊必更。

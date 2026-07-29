@@ -39,10 +39,10 @@ bash setting/setup-host.sh                                        # macOS / Linu
 
 ## 專案知識庫
 
-- 專案 KB 以 **`_KBs`** 後綴命名，`/my-work-agent` 與 `/update-kb` 啟動時自動掃描供選擇；`common_KBs/` 為共用知識、自動載入不需選擇。
+- 專案 KB 以 **`_KBs`** 後綴命名，`/sdlc-agent` 與 `/update-kb` 啟動時自動掃描供選擇；`common_KBs/` 為共用知識、自動載入不需選擇。
 - 建新 KB：複製 `demo_KBs/` 改名後替換 `【DEMO】` 內容，或直接執行 `/update-kb` 選新 KB 由 skill 自動初始化結構。
 
-## 開發工作流程 — `/my-work-agent`
+## 開發工作流程 — `/sdlc-agent`
 
 支援完整 Spec-Driven 開發生命週期：
 
@@ -63,7 +63,7 @@ bash setting/setup-host.sh                                        # macOS / Linu
 **執行模式**：單一角色（固定 confirm）／部分流程（指定 stage 起跑到 QA）／完整流程／PREVIEW（BACKEND + QA 子代理並行分析同一 story）。
 
 - Pipeline 中每個 stage 可獨立設 **auto** 或 **confirm**（建議預設 `C A A A A`：spec 把關一次、其後全自動）。
-- 支援參數直通：`/my-work-agent 1 full CAAAA` 零問答直接開跑。
+- 支援參數直通：`/sdlc-agent 1 full CAAAA` 零問答直接開跑。
 - Pipeline 模式下各 stage 產出先暫存 `pending/` 草稿，終點一次性 `/update-kb` 正式入庫；中斷時草稿由排程模式撿回。
 
 ## 共用知識 — `knowledge/common_KBs/`
@@ -131,10 +131,10 @@ The script links `memory/` and `skills/` back into `~/.claude`; `.claude/agents/
 
 ## Project Knowledge Bases
 
-- Project KBs use the **`_KBs`** suffix; `/my-work-agent` and `/update-kb` scan and offer them on startup. `common_KBs/` is shared knowledge, auto-loaded without selection.
+- Project KBs use the **`_KBs`** suffix; `/sdlc-agent` and `/update-kb` scan and offer them on startup. `common_KBs/` is shared knowledge, auto-loaded without selection.
 - New KB: copy `demo_KBs/`, rename, replace `【DEMO】` content — or run `/update-kb` on the new KB and let it scaffold the structure automatically.
 
-## Development Workflow — `/my-work-agent`
+## Development Workflow — `/sdlc-agent`
 
 Drives a full Spec-Driven development lifecycle:
 
@@ -155,7 +155,7 @@ Requirements → Spec Conversion → Spec-Driven Development → Code Review →
 **Modes**: Single Role (always confirm) / Partial Pipeline (any stage through QA) / Full Pipeline / PREVIEW (parallel BACKEND + QA analysis of one story).
 
 - Each pipeline stage can be set to **auto** or **confirm** (recommended default `C A A A A`: gate the spec once, then hands-off).
-- Argument pass-through: `/my-work-agent 1 full CAAAA` starts with zero prompts.
+- Argument pass-through: `/sdlc-agent 1 full CAAAA` starts with zero prompts.
 - In pipeline mode, stage outputs are drafted to `pending/` and committed to the KB by a single `/update-kb` at the end; drafts survive interruptions and are picked up by the scheduled mode.
 
 ## Shared Knowledge — `knowledge/common_KBs/`

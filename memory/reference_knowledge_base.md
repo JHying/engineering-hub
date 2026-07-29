@@ -1,6 +1,6 @@
 ---
 name: reference-knowledge-base
-description: Knowledge Hub 根路徑，供 my-work-agent skill Step 1 作為預設值
+description: Knowledge Hub 根路徑，供 sdlc-agent skill Step 1 作為預設值
 metadata: 
   node_type: memory
   type: reference

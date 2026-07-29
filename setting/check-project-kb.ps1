@@ -68,7 +68,7 @@ $suggestion = $matchedKBs -join ', '
     systemMessage      = "[project-kb-check] ran - suggested default project KB: $suggestion (derived by matching local paths in service-map.md; suggestion only)"
     hookSpecificOutput = @{
         hookEventName     = 'SessionStart'
-        additionalContext = "[project-kb-check] By matching local paths in each _KBs folder's service-map.md under the Knowledge Hub, the current working directory ($cwd) appears to correspond to project KB: $suggestion. When running my-work-agent or similar flows that require selecting a project KB, if the user hasn't specified one explicitly, proactively suggest this value for confirmation - but always defer to the user's actual choice; do not auto-skip the question."
+        additionalContext = "[project-kb-check] By matching local paths in each _KBs folder's service-map.md under the Knowledge Hub, the current working directory ($cwd) appears to correspond to project KB: $suggestion. When running sdlc-agent or similar flows that require selecting a project KB, if the user hasn't specified one explicitly, proactively suggest this value for confirmation - but always defer to the user's actual choice; do not auto-skip the question."
     }
 } | ConvertTo-Json -Depth 5 -Compress
 

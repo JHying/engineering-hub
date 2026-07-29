@@ -1,12 +1,12 @@
 ---
 name: feedback-sa-jira-writeback
-description: my-work-agent SA 完成後回寫 Jira 描述的規則——confirm 先問、去識別化 KB 專有名詞
+description: sdlc-agent SA 完成後回寫 Jira 描述的規則——confirm 先問、去識別化 KB 專有名詞
 metadata:
   node_type: memory
   type: feedback
 ---
 
-my-work-agent 的 SA stage，在完成 KB pending / 入庫之後、且**有指定 Jira 單號**時，新增「回寫 Jira 描述」步驟：只回寫「功能目標 / 商業規則 / 驗收條件與邊界情境 / Gherkin」四區段（資料流、影響範圍等 RD 內部細節不回寫）。
+sdlc-agent 的 SA stage，在完成 KB pending / 入庫之後、且**有指定 Jira 單號**時，新增「回寫 Jira 描述」步驟：只回寫「功能目標 / 商業規則 / 驗收條件與邊界情境 / Gherkin」四區段（資料流、影響範圍等 RD 內部細節不回寫）。
 
 **Confirm 模式：不直接做，先問使用者要不要回寫**；auto 模式可直接做。原描述為空才直接新增，非空要先確認覆蓋/追加。
 

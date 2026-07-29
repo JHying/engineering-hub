@@ -1,7 +1,7 @@
 ---
 name: diagram
 description: 統一 Mermaid 圖表工具：依描述範圍生成圖表（套用通用顏色規範 + 專案 participant alias）、依 git diff 同步更新。
-version: "1.3"
+version: "1.4"
 ---
 
 # diagram
@@ -19,7 +19,7 @@ version: "1.3"
 
 ### 輸出路徑參數（選填）
 
-呼叫方（例如 `/my-work-agent`）可額外指定完整輸出路徑，覆蓋預設輸出位置：
+呼叫方（例如 `/sdlc-agent`）可額外指定完整輸出路徑，覆蓋預設輸出位置：
 - `/diagram <範圍描述> --output <完整檔案路徑>`
 - 未指定時，維持預設輸出路徑規則（見「檔案輸出規範」）
 
@@ -47,7 +47,7 @@ sequenceDiagram / flowchart 各自的結構慣例、步驟編號規則、語法�
 
 ## 檔案輸出規範
 
-存放路徑：預設 `docs/<功能名稱>-flow.md`；呼叫方（如 `/my-work-agent`）有指定輸出路徑時，寫入該指定路徑，其父目錄不存在則自動建立。
+存放路徑：預設 `docs/<功能名稱>-flow.md`；呼叫方（如 `/sdlc-agent`）有指定輸出路徑時，寫入該指定路徑，其父目錄不存在則自動建立。
 
 ```markdown
 <!-- synced: {commit-hash} -->

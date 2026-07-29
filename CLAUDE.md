@@ -58,4 +58,4 @@ KB 分兩類:**專案 KB**(特定專案的規範/架構/業務邏輯)與**通用
 執行紀律:觸發同步的工具呼叫必須與判斷在同一則回覆內,當下派不了就先 TaskCreate 佔位。
 
 **需要先載入 KB context 再做事時**:先問使用者要讀哪類 KB(專案 KB 指定專案、通用 KB 直接載入),
-確認後用 `/my-work-agent consultant` 模式載入。
+確認後用 `/sdlc-agent consultant` 模式載入。

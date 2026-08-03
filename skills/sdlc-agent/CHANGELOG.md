@@ -4,6 +4,18 @@
 
 ---
 
+## [2.27] — 2026-08-03
+
+### Changed
+- `{{flow_reviewer}}` Step 5 Standards Subagent prompt：改為主線在 Step 3 從 `{{master_index}}` 萃取「系統規格基準」章節純文字，直接貼進 prompt；Standards Subagent 不再拿到 `{{master_index}}` 檔案路徑自行 Read，並在「限制」明文禁止其自行開啟任何 MASTER_INDEX.md
+- Step 3 ticket 模式新增第 5 點：主線萃取「系統規格基準」純文字供 Step 5 使用
+
+### Context
+- 起因：對雙軸平行審查機制（`[2.25]`）第一次真的做 smoke test（此前只有 read-back 靜態核對，從未實際跑過）——用合成 spec + 一段刻意寫壞的 Java 檔，真的平行派發 Spec-Compliance / Standards 兩個 subagent。多數行為符合設計，但意外發現：Standards Subagent 的 prompt 原本指示「讀取 `{{master_index}}` 的系統規格基準章節」，實際執行時它用 Read 工具讀了整份 MASTER_INDEX.md，連帶看到微服務清單、跨服務通訊拓撲等業務脈絡；子代理誠實回報有看到但「自律」沒有拿來做判斷。這只是靠子代理自覺、不是結構性隔離，不可靠——遂改為主線先萃取單一章節純文字再交給 subagent，並明文禁止其自行讀取整份檔案
+- 這次 smoke test 同時驗證了設計意圖成立：Standards Subagent 明確回報「N+1 本身違規不依賴系統規格基準數字，只有嚴重度分級依賴」，且能用 master_index 的具體數字（而非業務目的）判斷嚴重度為 High；Spec-Compliance Subagent 則在未讀 review_guide 的情況下獨立抓到一個真實的目的偏離，交叉驗證雙軸機制的價值成立
+
+---
+
 ## [2.26] — 2026-08-03
 
 ### Changed

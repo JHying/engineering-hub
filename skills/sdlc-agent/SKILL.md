@@ -7,7 +7,7 @@ description: >
   寫 spec／spec 轉化（→SA）、KB 諮詢／查知識庫（→CONSULTANT）、實作 ticket／spec-driven 實作（→BACKEND）、
   code review／審查程式碼（→REVIEWER）、補測試／驗測／測試策略（→QA）、維運檢查／部署驗證（→SRE），
   角色直通短語觸發時進入單一角色模式並選定該角色。
-version: "2.26"
+version: "2.27"
 ---
 
 # SDLC Agent

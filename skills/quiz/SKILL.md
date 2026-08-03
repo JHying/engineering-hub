@@ -1,7 +1,7 @@
 ---
 name: quiz
 description: 從 tech-research 知識庫隨機抽題，以面試考題風格出題（選擇題或簡答題），協助溫故知新、讓眼睛休息。另有 interview 模式：模擬科技大廠面試官深入追問架構、微服務、Spring、Java 底層、高併發實務、ADR 決策復盤，可指定領域；interview design 為多階段 system design 長題模擬。支援獨立呼叫或由 /loop 定時觸發。
-version: "1.7.0"
+version: "1.7.1"
 ---
 
 # quiz
@@ -35,7 +35,7 @@ version: "1.7.0"
 
 ## 模式 A — KB 溫習模式（`/quiz`）
 
-無參數時：讀取 `setting/paths.yml` 取得 KB 路徑，以 timestamp 對 tech-research 檔案數取餘數隨機選題（30 分鐘一區間），依 timestamp 奇偶決定選擇題／簡答題，回答後附解析與來源章節引用。
+無參數時：讀 memory 的 `reference_knowledge_base.md`→`reference_knowledge_base.local.md` 取得 `$KB_ROOT`，以 timestamp 對 tech-research 檔案數取餘數隨機選題（30 分鐘一區間），依 timestamp 奇偶決定選擇題／簡答題，回答後附解析與來源章節引用。
 
 明細（Step 1–4、輸出格式、範例）見 `references/mode-a-kb-quiz.md`。
 

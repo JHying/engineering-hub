@@ -56,7 +56,7 @@
 
 **現象**:舊版 CLAUDE.md 要求每個 session 開場先問兩題(KB 路徑+定時考題),KB 路徑其實幾乎永遠不變。已改為「異常才問」(見新版 CLAUDE.md),不要退回逐題詢問的寫法。
 
-**修法**:開場直接做事。只有 `setting/paths.yml` 的 `kb` 與實際工作目錄不一致時才提示。長任務進行中不啟動 `/loop` 類週期干擾。
+**修法**:開場直接做事。只有 memory 解出的 `$KB_ROOT`（`reference_knowledge_base.md`→`.local.md`）與實際工作目錄不一致時才提示（2026-08-03 起：來源由 `setting/paths.yml` 的 `kb` 欄位改為 memory,因該欄位已移除,見 skills/quiz CHANGELOG [1.7.1] 與 sdlc-agent CHANGELOG [2.26]）。長任務進行中不啟動 `/loop` 類週期干擾。
 
 ### 3. KB 同步的分類猶豫變成主線長篇討論
 

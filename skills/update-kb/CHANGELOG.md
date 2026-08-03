@@ -4,6 +4,16 @@
 
 ---
 
+## [1.19] — 2026-08-03
+
+### Added
+- Step 0.7 新 KB Scaffolding 的 `MASTER_INDEX.md` 清空規則明確補上「系統規格基準」章節（門檻類型 / 數值 / 備註 三欄表格），確保新建專案 KB 一律帶這個章節骨架（`[待補充]` 值）
+
+### Context
+- 起因：`{{flow_reviewer}}`（sdlc-agent）Code Review 雙軸審查新機制需要從專案 KB 的 `MASTER_INDEX.md` 讀取「系統規格基準」取得效能門檻；盤點發現這章節過去從未被任何專案 KB scaffolding 規則涵蓋，若不明確寫入 Step 0.7，新建的專案 KB 會漏掉這個章節
+
+---
+
 ## [1.18] — 2026-07-29
 
 ### Added

@@ -7,7 +7,7 @@ description: >
   寫 spec／spec 轉化（→SA）、KB 諮詢／查知識庫（→CONSULTANT）、實作 ticket／spec-driven 實作（→BACKEND）、
   code review／審查程式碼（→REVIEWER）、補測試／驗測／測試策略（→QA）、維運檢查／部署驗證（→SRE），
   角色直通短語觸發時進入單一角色模式並選定該角色。
-version: "2.23"
+version: "2.26"
 ---
 
 # SDLC Agent
@@ -26,7 +26,7 @@ version: "2.23"
 
 **僅當**目前實際工作目錄與 `$KB_ROOT` 不符時，才提醒使用者確認是否更新；一致就不詢問、直接沿用進入 Step 1.5，不中斷 session。
 
-若使用者確認要更新路徑，同步更新 memory 的 `reference_knowledge_base.md`，並將 `$KB_ROOT/setting/paths.yml` 的 `kb` 行更新為新路徑，告知使用者已更新。
+若使用者確認要更新路徑，同步更新 memory 的 `reference_knowledge_base.local.md` 為新路徑，告知使用者已更新（`setting/paths.yml` 不含路徑資訊，不需同步）。
 
 ### Step 1.5 — 選擇專案知識庫
 
@@ -44,14 +44,16 @@ version: "2.23"
   2. 部分流程   — 從指定 stage 開始，依序執行至 QA
   3. 完整流程   — 從需求企劃執行至 QA
   4. PREVIEW      — BACKEND + QA 並行分析同一個 Story
+  5. PM+SA        — PM → SA 依序執行至 Spec 轉化即停（不進實作），快速產出完整 spec
 
 輸入數字：
 ```
 
 - 選 1 → 進入 Step 2-SINGLE
-- 選 2 → 進入 Step 2-PIPELINE（起點由使用者指定）
-- 選 3 → 進入 Step 2-PIPELINE（起點固定為「需求企劃」）
+- 選 2 → 進入 Step 2-PIPELINE（起點由使用者指定，終點固定 QA）
+- 選 3 → 進入 Step 2-PIPELINE（起點固定為「需求企劃」，終點固定 QA）
 - 選 4 → 跳至 Step 5-PREVIEW
+- 選 5 → 進入 Step 2-PIPELINE（起點固定為「需求企劃」、終點固定為「Spec 轉化」，跳過 Step P1）
 
 ---
 
@@ -61,7 +63,7 @@ version: "2.23"
 
 ### Step 2-PIPELINE — Pipeline 流程設定
 
-Step P1 選擇起始 stage（需求企劃／Spec 轉化／Spec-Driven 實作／Code Review／QA 之一，記為 `$start_stage`）；Step P2 為篩出的 stage 逐一設定 auto（A）/confirm（C），記為 `$stage_modes`（建議預設 `C A A A A`）。完整選單模板見 `references/execution-mode-setup.md`。
+Step P1 選擇起始 stage（需求企劃／Spec 轉化／Spec-Driven 實作／Code Review／QA 之一，記為 `$start_stage`；模式 5 固定 `$start_stage`=需求企劃、`$end_stage`=Spec 轉化，跳過此步）；Step P2 為 `$start_stage` 至 `$end_stage`（未特別設定時預設 QA）間篩出的 stage 逐一設定 auto（A）/confirm（C），記為 `$stage_modes`（建議預設 `C A A A A`）。完整選單模板見 `references/execution-mode-setup.md`。
 
 ---
 
@@ -83,7 +85,7 @@ Step P1 選擇起始 stage（需求企劃／Spec 轉化／Spec-Driven 實作／C
 
 ### Step 5-PIPELINE — Pipeline 流程執行
 
-依序執行從 `$start_stage` 起的各 stage，每個 stage 完成後自動銜接下一個；開始前依 Step 4 讀取對應文件對。
+依序執行從 `$start_stage` 起、至 `$end_stage` 為止（未特別設定時預設 QA）的各 stage，每個 stage 完成後自動銜接下一個；到達 `$end_stage` 即為 pipeline 終點。開始前依 Step 4 讀取對應文件對。
 
 **auto/confirm 設定機制：**
 

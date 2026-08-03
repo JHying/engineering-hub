@@ -6,7 +6,7 @@
 
 ## Step 1 — 取得 tech-research 目錄路徑
 
-讀取 `setting/paths.yml`，取得 `kb` 欄位作為 KB 根路徑（`$KB_ROOT`）。
+讀取 memory 的 `reference_knowledge_base.md`（指向 `reference_knowledge_base.local.md`）取得 KB 根路徑（`$KB_ROOT`）。`.local.md` 不存在時，提示尚未在本機執行 `setup-host.ps1`/`.sh`，需先執行。
 
 tech-research 路徑：`$KB_ROOT/knowledge/common_KBs/tech-research/`
 

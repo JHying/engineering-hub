@@ -26,6 +26,7 @@
   2. 若此時已有部分實作，同步建立 `specs/impls/{TICKET}-impls.md`
   3. **若有指定 Jira 單號**：於 KB 入庫後依 `{{flow_sa}}` Step 8 回寫 Jira 描述——僅「功能目標 / 商業規則 / 驗收條件與邊界情境 / Gherkin」四區段、強制去識別化 KB 專有名詞（ADR 編號等）；**confirm 模式先問、不直接做**，auto 模式可直接回寫
 - **交給下一個 Stage**：完整 `specs/{TICKET}.md` + 已記錄的 ADR → Spec-Driven 實作
+  （**例外**：模式 5「PM+SA」`$end_stage`=Spec 轉化，本 stage 即為 pipeline 終點，比照「Stage 間銜接格式」中非 QA 終點的精簡總結格式輸出，不交給下一個 Stage）
 
 ---
 
@@ -49,7 +50,7 @@
 **Code Review**（REVIEWER）
 
 - **Input**：此次異動的所有程式碼（依 `$SOURCE_ROOTS` 定位服務本機路徑）；**若為 QA 回圈修正輪**，縮小為本輪修正的 diff——首輪已全量審過，回圈輪只審修正範圍及其直接呼叫點
-- **工作內容**：依 `{{flow_reviewer}}` 審查 Input 範圍內的程式碼
+- **工作內容**：依 `{{flow_reviewer}}` 審查 Input 範圍內的程式碼；ticket 模式下「目的驗證」與「品質/效能/設計模式」由兩個互不可見對方輸入的平行 subagent 分開判斷，避免知道 ticket 意圖而對違規從寬認定（機制見 `{{flow_reviewer}}` Step 5）
 - **Decision**：
   - auto：直接套用所有修正
   - confirm：逐一呈現發現的問題，等待使用者確認後修正

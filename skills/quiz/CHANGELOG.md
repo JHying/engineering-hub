@@ -4,6 +4,16 @@
 
 ---
 
+## [1.7.1] — 2026-08-03
+
+### Changed
+- 模式 A Step 1 取得 `$KB_ROOT` 的來源由「讀取 `setting/paths.yml` 的 `kb` 欄位」改為「讀 memory 的 `reference_knowledge_base.md`→`.local.md`」，與 `sdlc-agent`／`update-kb` 既有做法一致
+
+### Context
+- 起因：`setting/paths.yml` 是 git 追蹤檔案，過去由 `setup-host.ps1`/`.sh` 直接把各主機的真實絕對路徑寫回這個檔案的 `kb:` 欄位，曾造成主機路徑進 git 歷史；改為統一從 gitignored 的 `reference_knowledge_base.local.md` 取得，`paths.yml` 從此不再存放任何主機專屬資訊
+
+---
+
 ## [1.7.0] — 2026-07-28
 
 ### Added

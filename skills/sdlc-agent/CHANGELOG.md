@@ -4,6 +4,43 @@
 
 ---
 
+## [2.26] — 2026-08-03
+
+### Changed
+- `references/path-resolution.md` Step 3 移除「以 `$KB_ROOT` 取代檔案中的 `kb` key 值」這句——`setting/paths.yml` 已不再含 `kb` root key（見下方 Context），該句已無對象；`@kb/` 前綴替換規則不受影響，維持原樣
+- SKILL.md Step 1「路徑不符時的更新動作」改為只同步 memory 的 `reference_knowledge_base.local.md`，移除同步 `setting/paths.yml` 的 `kb` 行（同一原因，該行已不存在）
+
+### Context
+- 起因：`setting/paths.yml` 過去由 `setup-host.ps1`/`.sh` 把各主機真實絕對路徑寫回 git 追蹤的 `kb:` 欄位，曾造成主機路徑洩漏進 git 歷史；改為統一從 gitignored 的 `memory/reference_knowledge_base.local.md` 取得 `$KB_ROOT`，`paths.yml` 從此只保留 `@kb/` 相對路徑的 `regulations` 對照表。sdlc-agent 本身的 `$KB_ROOT` 解析（Step 1 讀 memory）本來就不受影響，本次只是清掉一句因此變得多餘、且現在會誤導的敘述
+
+---
+
+## [2.25] — 2026-08-03
+
+### Changed
+- `{{flow_reviewer}}` Step 5 ticket 模式改為雙軸平行審查：「目的驗證」（對照 spec 業務意圖敘事）與「品質/效能/設計模式」（對照 review_guide + 專案級系統規格基準）拆成兩個互不可見對方輸入的 subagent（`general-purpose` / `model: sonnet`，比照 `references/preview-mode.md` 並行派工慣例）；隔離的是「需求描述/AC/功能目標」等業務意圖敘事（避免對原則違規從寬認定），不是系統規模事實——後者的來源是 `{{master_index}}` 的「系統規格基準」章節（專案層級、與 ticket 無關，依異動檔案所屬 service 這個結構性事實對照，不需業務目的），已在 Step 1 載入，不需另向 spec 索取；範圍模式無 spec 可對照，維持單一 pass 不變
+- `demo_KBs/MASTER_INDEX.md` 新增「系統規格基準」章節骨架（依 service 列 QPS/TPS、資料量現狀、系統期望目標），落實 `{{review_guide}}` 3-1 節原本就要求、但從未真正建立的章節；尚未填入實際數字的專案，效能瓶頸判斷退回純規則型項目並標注「規模未校準」
+- `references/pipeline-stages.md` Code Review stage 工作內容一行同步補充此機制說明
+
+### Context
+- 起因：比較外部 skill 庫 mattpocock/skills 的 `code-review` skill（standard 與 spec-compliance 拆平行 subagent 審查，防止交叉污染判斷）後，發現本專案 REVIEWER 單一 pass 內先萃取目的再審品質/效能，理論上有同樣的污染風險；直接沿用本專案已驗證過的 PREVIEW 模式並行派工機制，成本最低
+- 初版把 Standards Subagent 隔離範圍設成「完全不得讀 spec/impl」過寬——使用者指出效能瓶頸/資料原子性的嚴重度判斷需要系統規模事實，完全隔離會讓判斷失去依據；第一次修正改為主線從 spec 萃取非功能需求段落傳給 Standards Subagent
+- 使用者再追問：不知道業務目的，怎麼知道萃取出的哪段規模事實適用於這段程式碼？這揭露第一次修正仍隱含「需要懂業務目的才能挑出對應規模事實」的循環依賴。回頭查證 `{{review_guide}}` 3-1 節，發現原文已明定門檻值應來自「專案 KB 的 MASTER_INDEX → 系統規格基準」——專案層級、依 service 分列、與 ticket 無關的標準值，對應到程式碼只需要「檔案屬於哪個 service」這個結構性事實，不需業務目的。改用此機制後徹底解開循環依賴；同時發現這個章節在所有專案 KB（含 demo）都從未真正建立過，一併補上骨架
+
+---
+
+## [2.24] — 2026-08-03
+
+### Added
+- Step 2 執行模式新增選項 5「PM+SA」：PM → SA（含 CONSULTANT ADR 溝通）依序執行至 Spec 轉化即停止，不進入 Spec-Driven 實作，用於快速需求轉化（確認範疇 / AC / 功能需求定義 / 邊界情境 / Gherkin / 技術功能實作規格）
+- Pipeline 機制新增 `$end_stage` 變數（預設 QA，模式 5 固定為 Spec 轉化）；`Step 2-PIPELINE`／`Step 5-PIPELINE`／`references/execution-mode-setup.md`／`references/pipeline-forced-rules.md` 一併支援非 QA 終點的 stage 篩選、auto/confirm 設定與精簡版完成總結
+- `references/step0-param-passthrough.md` 執行模式關鍵字補上 `pmsa`/`需求轉化`
+
+### Context
+- 起因：原先設計為 PM+SA 各自對同一份原始文件並行分析（比照 PREVIEW 模式），與使用者討論後改為順序執行——SA 的技術規格需建立在 PM 已審過、消除模糊的 AC 上才可靠，且需要 CONSULTANT 銜接 ADR 決策；直接重用既有 Pipeline stage 機制（新增 `$end_stage`）比另寫一份會和 `flow-pm.md` / `flow-sa.md` 內容重複、日後容易兩邊撕裂的並行 subagent prompt 更省維護成本
+
+---
+
 ## [2.23] — 2026-07-29
 
 ### Removed

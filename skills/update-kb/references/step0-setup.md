@@ -64,7 +64,7 @@
    - `pending/README.md`、`pending/jira.txt`、`pending/logs/.gitkeep`
 
    **複製後清空示範資料（保留結構，替換內容）：**
-   - `MASTER_INDEX.md`：複製結構，將服務清單、AI 路由規則、系統定位等示範文字改為 `[待補充]`；保留各章節標題與說明段落
+   - `MASTER_INDEX.md`：複製結構（含「系統規格基準」章節），將服務清單、AI 路由規則、系統定位、系統規格基準數值等示範文字改為 `[待補充]`；保留各章節標題與說明段落。「系統規格基準」章節格式：`門檻類型 / 數值 / 備註` 三欄表格（系統現狀／資料量現狀／系統期望目標三列），供 `{{flow_reviewer}}` Code Review 雙軸審查的 Standards Subagent 取得專案級效能門檻（詳見 `guideline/REVIEW_GUIDE.md` 3-1）
 
    **不複製（demo 專屬內容）：**
    - `specs/DEMO-*.md`、`specs/impls/DEMO-*.md`（示範 ticket）

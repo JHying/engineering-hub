@@ -58,8 +58,9 @@ description: >
 2. **已有相關 ADR** → 直接依 ADR 結論填補 spec，標注 `[ref: ADR-{nnnn}]`
 3. **無相關 ADR** → 作為決策點，依 `{{flow_consultant}}` 分析：
    - 確認需求、系統規模考量、現有架構限制、專案技術棧
+   - **決策複雜度高**（命中 `{{clarification_protocol}}` 觸發判準：影響 2+ service、難以回頭、或方案超過 2 個）→ 依該協定逐題收斂後再定案
    - auto 模式：自行依 KB 內容分析最佳解，確定後呼叫 `/update-kb` 記錄新 ADR
-   - confirm 模式：呈現選項，等待使用者確認後呼叫 `/update-kb` 記錄新 ADR
+   - confirm 模式：呈現選項（或依 `{{clarification_protocol}}` 逐題收斂），等待使用者確認後呼叫 `/update-kb` 記錄新 ADR
 
 ---
 

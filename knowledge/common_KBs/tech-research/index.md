@@ -115,6 +115,7 @@
 | 2026-06-27（更新 2026-07-20） | 本地 LLM 開發環境建置（Windows + Docker + Ollama + Open WebUI + n8n + Continue.dev；含 Claude Code CLI 串接本機 Ollama） | [local-llm-dev-environment.md](local-llm-dev-environment.md) | LLM, Ollama, Open WebUI, n8n, Continue.dev, Docker, Windows, 本地推論, Claude Code |
 | 2026-06-27 | n8n × LLM：AI 自動化工作流設計（AI Agent、RAG、MCP、本地 LLM 整合、進階檢索策略） | [n8n-ai-workflow-automation.md](n8n-ai-workflow-automation.md) | n8n, AI Agent, Workflow, RAG, MCP, Webhook, Schedule Trigger, LM Studio, Tavily, FAISS, Query Rewriting, HyDE, Multi-Query |
 | 2026-07-01 | Playwright MCP × Claude Code：原型頁面 → Spec / Impl KB 自動化工作流（Axshare、版本對齊、差距分析） | [playwright-mcp-spec-to-kb-workflow.md](playwright-mcp-spec-to-kb-workflow.md) | Playwright MCP, Claude Code, AI Engineering, Spec Automation, Prototype, Axshare, Knowledge Base |
+| 2026-08-03 | 私有 KB + SDLC Pipeline 工作坊 vs 公開 GitHub Skill 套件架構比較（需求澄清機制、Code Review 雙軸審查、架構腐化防護、跨 session 銜接） | [kb-workshop-vs-public-skill-repo-comparison.md](kb-workshop-vs-public-skill-repo-comparison.md) | Claude Code, Skill 架構, 需求澄清, Grilling, Code Review, SDLC Agent, Discipline Skill, Handoff |
 
 ---
 

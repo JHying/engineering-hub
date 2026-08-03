@@ -5,3 +5,4 @@
 governance/backup/
 scratch_smoketest.log
 memory/reference_knowledge_base.local.md
+setting/mcp-secrets.local.json

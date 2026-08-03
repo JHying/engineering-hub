@@ -2,7 +2,7 @@
 
 ### Step 3 — 解析路徑設定
 
-讀取 `$KB_ROOT/setting/paths.yml`，以 `$KB_ROOT` 取代檔案中的 `kb` key 值。
+讀取 `$KB_ROOT/setting/paths.yml`（此檔僅含 `@kb/` 相對路徑的 `regulations` 對照表，不含 `kb` root key——`$KB_ROOT` 一律以 Step 1 從 memory 解出的值為準）。
 
 `@kb/` 前綴替換為 `$KB_ROOT/`，`{{key}}` 符號查找 `regulations` 區段對應路徑。
 

@@ -64,19 +64,10 @@ Local Knowledge Hub root path: \`$repo\`
 EOF
 echo "Wrote host-local KB path: $local_ref_path"
 
-# Keep setting/paths.yml's `kb:` line in sync with the same $repo value.
-# This file IS git-tracked (unlike reference_knowledge_base.local.md above),
-# because two consumers (skills/quiz, this repo's own root CLAUDE.md) read
-# `kb:` directly without going through memory. Writing it from the same
-# $repo variable as the local-only memory file keeps both sources from
-# drifting apart; re-running this script on a different host simply
-# re-resolves it to that host's path.
-# (Written via a temp file + mv rather than `sed -i` so this works identically
-# on both GNU sed (Linux) and BSD sed (macOS), whose -i flags are incompatible.)
-paths_yml_path="$repo/setting/paths.yml"
-sed "s|^kb:[[:space:]]*'.*'|kb: '$repo'|" "$paths_yml_path" > "$paths_yml_path.tmp"
-mv "$paths_yml_path.tmp" "$paths_yml_path"
-echo "Synced setting/paths.yml kb: -> $repo"
+# setting/paths.yml is git-tracked and intentionally has no `kb:` root path
+# key - all consumers (CLAUDE.md, skills/quiz, skills/update-kb, sdlc-agent)
+# resolve $KB_ROOT from the memory file written above, never from paths.yml.
+# This script does not touch paths.yml.
 
 # Global, non-project-scoped anchor so other tooling (e.g. the SessionStart
 # auto-link hooks, setting/check-memory-link.sh and setting/check-project-kb.sh)

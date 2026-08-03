@@ -32,7 +32,7 @@
 `/update-kb` 在 pipeline 中是記帳而非運輸——stage 間的交接靠對話 context 與磁碟上的程式碼/流程圖，不依賴讀回 KB 檔案。因此：
 
 - **各 stage Output 中所有「呼叫 `/update-kb`」項目，在 pipeline 模式下一律改為**：將該產出的完整草稿直寫 `{$PROJECT_KB}/pending/{TICKET}-{stage 代號}.md`（主線直接 Write 的輕量檔案操作，**不派子代理**；同一 stage 多筆產出如 SA 的多個 ADR，同檔分節追加）。QA 回圈的輪數與失敗紀錄同樣追加於 QA 草稿檔。
-- **pipeline 終點**（QA 通過後、輸出「🎉 流程完成」總結前）觸發**一次** `/update-kb`，由其將 pending/ 草稿正式入庫（分類、去識別化、index/MASTER_INDEX 同步）並清理 pending；auto 模式直接觸發，confirm 模式詢問一次（預設 Y）。
+- **pipeline 終點**（`$end_stage` 完成後——預設為 QA 通過後，模式 5「PM+SA」則為 Spec 轉化完成後——輸出流程完成總結前）觸發**一次** `/update-kb`，由其將 pending/ 草稿正式入庫（分類、去識別化、index/MASTER_INDEX 同步）並清理 pending；auto 模式直接觸發，confirm 模式詢問一次（預設 Y）。
 - **中斷保護網**：pipeline 中途死掉時，pending/ 草稿仍在磁碟上，update-kb 排程模式（Mode A）原生掃描 pending/ 會將其撿回入庫，或下次手動觸發時處理。
 - `/diagram`、`/code-architect` **不在批次範圍**，照各 stage 原定時機即時執行。
 - **單一角色模式不適用本規則**：維持該角色完成後即時 `/update-kb`（跨 session 執行下一角色時依賴磁碟上的正式 KB 檔案）。
@@ -91,4 +91,17 @@ QA 回圈次數：{N}（無回圈則寫「0」）
 
 ⚠️ 本次未執行全套回歸測試（pipeline 模式限縮於異動影響範圍）。
    如需完整驗證，請單獨執行 `/sdlc-agent QA`（單一角色模式會跑全套三類驗測）。
+```
+
+`$end_stage` 非 QA（例如模式 5「PM+SA」終點為 Spec 轉化）時，該 stage 完成即為 pipeline 終點，改輸出精簡總結（不列尚未執行 stage 的產出項目，無 QA 回圈次數與全套回歸提示）：
+
+```
+🎉 流程完成（PM+SA 需求轉化）
+
+完成的 stage：{清單}
+產出摘要：
+  - specs/{TICKET}.md（完整規格：範疇 / AC / 功能需求 / 邊界情境 / Gherkin / 技術功能實作規格）
+  - ADRs：{建立 / 更新的 ADR 清單}（無則寫「無」）
+
+如需繼續往下實作，執行 `/sdlc-agent`，選「2. 部分流程」，起點選「Spec-Driven 實作」。
 ```

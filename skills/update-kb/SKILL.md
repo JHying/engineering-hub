@@ -5,7 +5,7 @@ description: >
   1. 排程自啟動：掃描各專案 KB 的 pending/ 目錄、每日 git 更新，自動判斷涉及的 KB 並派發子代理並行更新。
   2. 使用者自啟動：使用者輸入要更新的內容（ticket/檔案/描述），手動選擇目標專案 KB 後觸發更新流程。
   觸發關鍵字：update-kb、更新知識庫、kb更新、同步知識庫、寫到KB、review history
-version: "1.18"
+version: "1.19"
 ---
 
 # Update Knowledge Base

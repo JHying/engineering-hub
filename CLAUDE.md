@@ -5,9 +5,10 @@
 
 ## Session 初始化(每個 session 第一則回覆固定回報一行,不逐項詢問)
 
-1. 比對 `setting/paths.yml` 的 `kb` 與實際工作目錄:
+1. 讀 memory 的 `reference_knowledge_base.md`→`reference_knowledge_base.local.md` 解出 `$KB_ROOT`,比對與實際工作目錄:
    - 一致 → 第一則回覆附一行「KB 路徑:{實際路徑}(已確認一致)」
-   - 不一致 → 提示使用者確認是否更新 paths.yml
+   - 不一致 → 提示使用者確認是否更新
+   - `.local.md` 不存在 → 提示尚未在本機執行 `setup-host.ps1`/`.sh`,需先執行
 2. 同一行附註「如需定時複習可說 `/loop 30m /quiz`」,不主動啟動,僅提示選項存在。
 3. 僅第一則回覆執行一次,同一 session 後續不重複。
 

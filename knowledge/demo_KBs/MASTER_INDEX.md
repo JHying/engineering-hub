@@ -44,6 +44,28 @@ version: demo
 
 ---
 
+### 系統規格基準
+
+> Code Review 時的門檻值來源（`guideline/REVIEW_GUIDE.md` 3-1）。**專案層級、與 ticket 無關的標準值**，不隨個別 ticket 變動；異動檔案適用哪組數字，依檔案路徑 / package 對照到下方關鍵路徑（結構性事實，不需要知道 ticket 的業務目的）。
+
+| 門檻類型 | 數值 | 備註 |
+|---------|------|------|
+| 系統現狀（強制） | 尖峰 500 TPS（order-service 下單，平日 11-13 時尖峰） | 2026-06 監控確認 |
+| 資料量現狀（強制） | ORDERS 表約 2,000 萬筆，年增約 300 萬筆 | 影響 Index / Cache 策略判斷 |
+| 系統期望目標（參考） | 尖峰目標 2,000 TPS（雙 11 等大促備援） | 未來優化方向，非強制門檻 |
+
+#### 各服務關鍵路徑對照（跨 service 異動快速定位適用門檻）
+
+| Service | 適用門檻 |
+|---------|---------|
+| order-service | 上表全部（下單為主要流量入口，見 `source-codex/services/order-service/facts.md`） |
+| payment-service | 尖峰約 350 TPS；付款紀錄表約 1,800 萬筆 |
+| notification-service | 尖峰約 800 TPS（含重試）；通知記錄表約 5,000 萬筆（含歷史通知） |
+
+> 尚未填入實際數字的專案（如新建 KB scaffolding 後），Code Review 的效能瓶頸判斷退回 review_guide 3-2～3-6 的規則型項目（N+1、非原子操作、鎖範圍等，這些違規本身不因規模而改變對錯），並標注「規模未校準」。
+
+---
+
 ### 服務間通訊
 
 ```

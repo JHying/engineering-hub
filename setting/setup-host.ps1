@@ -61,19 +61,10 @@ Local Knowledge Hub root path: ``$repo``
 Set-Content -Path $localRefPath -Value $localRefContent -Encoding utf8
 Write-Host "Wrote host-local KB path: $localRefPath"
 
-# Keep setting/paths.yml's `kb:` line in sync with the same $repo value.
-# This file IS git-tracked (unlike reference_knowledge_base.local.md above),
-# because two consumers (skills/quiz, this repo's own root CLAUDE.md) read
-# `kb:` directly without going through memory. Writing it from the same
-# $repo variable as the local-only memory file keeps both sources from
-# drifting apart; re-running this script on a different host simply
-# re-resolves it to that host's path.
-$pathsYmlPath = Join-Path $repo 'setting\paths.yml'
-$repoForwardSlash = $repo -replace '\\', '/'
-(Get-Content $pathsYmlPath -Raw -Encoding UTF8) `
-    -replace "(?m)^kb:\s*'.*'", "kb: '$repoForwardSlash'" |
-    Set-Content -Path $pathsYmlPath -Encoding UTF8
-Write-Host "Synced setting/paths.yml kb: -> $repoForwardSlash"
+# setting/paths.yml is git-tracked and intentionally has no `kb:` root path
+# key - all consumers (CLAUDE.md, skills/quiz, skills/update-kb, sdlc-agent)
+# resolve $KB_ROOT from the memory file written above, never from paths.yml.
+# This script does not touch paths.yml.
 
 # Global, non-project-scoped anchor so other tooling (e.g. the SessionStart
 # auto-link hook, setting/check-memory-link.ps1) can find the KB root from any

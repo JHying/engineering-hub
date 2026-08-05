@@ -8,7 +8,8 @@
 
 ## 1. 搜尋型(找檔案/找定義/確認某規則在哪)
 
-建議:`Explore`,model: haiku
+⚠️ 派發前確認:`subagent_type: Explore` **必須**同時明寫 `model: haiku`(tool call 參數,不是寫進下面的 prompt 內文)。
+留空不是「省成本的預設值」——內建 Explore 留空時是 inherit 主線模型但 capped at Opus,主線在 Fast mode/Opus 層級工作時留空 = 白白燒 Opus(2026-08-05 已有 2 次真實違規案例,見 lessons.md 同日條目)。
 
 ```
 目標:在 {起始目錄,例 knowledge/@PROJECT_KBs/} 底下,找出 {要找的東西,例:Kafka topic 命名規則的定義位置}。

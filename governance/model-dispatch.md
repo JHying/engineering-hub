@@ -24,6 +24,7 @@
   - `tools:` 逗號分隔工具名清單,如 `tools: Read, Grep, Glob, Bash`
 - settings.json **沒有** subagent 專用的模型/effort 設定鍵;全域 subagent 預設模型可用環境變數 `CLAUDE_CODE_SUBAGENT_MODEL`(來源:code.claude.com/docs/en/model-config.md)。
 - 內建可派發的 agent 類型:`general-purpose`(全工具)、`Explore`(唯讀搜索)、`Plan`(規劃)、`claude-code-guide`(查 Claude Code/API 文件)、`claude`、`statusline-setup`。
+- **內建 agent 留空 `model` 時的實際行為與自訂 agent 不同**(2026-08-05 重新查證,來源同上):自訂 `.claude/agents/*.md` 留空 `model` 才是單純「預設 inherit」;內建 `Explore`/`Plan` 留空時是「inherit 主線模型,但 **capped at Opus**」,`claude-code-guide` 固定 Haiku,`statusline-setup` 固定 Sonnet。實測驗證:主線在 Fast mode(底層 Opus 等級,`claude-fable-5`)時派 `Explore` 且留空 model,子代理實跑 `claude-opus-5`——不是文件錯誤,是 §3「不留空」規則沒被照做的真實代價,Explore 型別留空的代價比其他型別更不對稱(見 lessons.md 同日條目)。
 
 ### 未確認事項(不要假裝知道)
 
@@ -36,19 +37,22 @@
 
 主對話(通常是較貴的模型)只做三件事:**決策、交辦、整合結論**。以下工作一律派 subagent:
 
-| 工作 | 派給 | model | effort |
-|---|---|---|---|
-| 找檔案、跨檔搜尋、確認某規則寫在哪 | Explore | haiku | low |
-| 讀多檔+彙整摘要 | general-purpose | haiku(彙整需推理時 sonnet) | low/medium |
-| 查 Claude Code / API 官方文件 | claude-code-guide | haiku | low |
-| 批次機械修改(套用已定案的模式) | general-purpose | haiku | low |
-| 實作一個明確規格的功能/腳本 | general-purpose | sonnet | medium/high |
-| 重構、跨檔一致性修改 | general-purpose | sonnet | high |
-| 規劃複雜實作方案 | Plan | sonnet(極難題 opus) | high |
-| 對抗審查、第二意見 | general-purpose | sonnet | high |
-| read-back 驗證檔案 | general-purpose | haiku | low |
+| 工作                       | 派給                                     | model                | effort      |
+| ------------------------ | -------------------------------------- | -------------------- | ----------- |
+| 找檔案、跨檔搜尋、確認某規則寫在哪        | Explore                                | haiku                | low         |
+| 讀多檔+彙整摘要                 | general-purpose                        | haiku(彙整需推理時 sonnet) | low/medium  |
+| 查 Claude Code / API 官方文件 | claude-code-guide                      | haiku                | low         |
+| 批次機械修改(套用已定案的模式)         | general-purpose(或 `worker-mechanical`) | sonnet               | low         |
+| 實作一個明確規格的功能/腳本           | general-purpose                        | sonnet               | medium/high |
+| 重構、跨檔一致性修改               | general-purpose                        | sonnet               | high        |
+| 規劃複雜實作方案                 | Plan                                   | sonnet(極難題 opus)     | high        |
+| 對抗審查、第二意見                | general-purpose                        | sonnet               | high        |
+| read-back 驗證檔案           | general-purpose                        | haiku                | low         |
+| 安全審查/滲透測試/認證授權相關實作       | general-purpose(或 `worker-security-review`) | opus                 | high        |
 
 主線親自動手的唯一正當理由:**換便宜模型就掉品質的判斷**(架構取捨、模糊需求釐清、對使用者的最終回覆),或單一小檔的直接編輯(派發成本反而更高)。
+
+安全相關工作**一律走最高模型層級**,不適用上表其他列的省成本邏輯——出錯代價(資安風險、修復成本)遠高於多花的模型成本,不因任務「看起來簡單」而降級。
 
 ## 2. 交辦三要素(缺一不發)
 
@@ -60,7 +64,7 @@
 
 ## 3. 顯式指定 model 與 effort
 
-- 每次 Agent 呼叫都**明寫 `model` 參數**,不留空(留空=繼承主線模型=最貴)。
+- 每次 Agent 呼叫都**明寫 `model` 參數**,不留空(留空=繼承主線模型=最貴)。**`Explore` 尤其不可留空**:留空時的實際行為是「inherit 主線,但 capped at Opus」(見 §0),主線若在 Fast mode/Opus 層級工作,留空派 Explore 就是白白燒 Opus,不是省成本的唯讀搜索(2026-08-05 實測案例見 lessons.md)。
 - 派發起點從上表選;拿不準時:讀多寫少選 haiku,要寫東西選 sonnet。
 - effort 目前只能在 `.claude/agents/*.md` frontmatter 或 session 層級設定;主對話 Agent 工具呼叫本身沒有 effort 參數(2026-07-05 查證時的工具 schema 如此)。若需要固定低 effort 的常用角色,依 [maintenance-protocol.md](maintenance-protocol.md) 建 `.claude/agents/` 定義檔。
 
@@ -84,6 +88,8 @@
 | 任何同一件事 | 最多重試兩輪;第三輪前必須改變什麼(升級模型、換方法、或問人),否則就是在燒錢 |
 
 升級時 prompt 必附:前幾次的原始交辦內容、實際輸出、驗收條件哪一條沒過。沒有失敗軌跡的升級等於重新抽獎。
+
+升級發生時,同時在 lessons.md 記一筆(§3 格式):任務類型、原模型、升級後模型、失敗原因。累積量化案例,供之後校準本節與 §1 派工表的起始層級,不要只憑經驗判斷。
 
 ## 6. 驗證不自驗
 

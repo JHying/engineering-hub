@@ -116,7 +116,7 @@
 | 2026-06-27 | n8n × LLM：AI 自動化工作流設計（AI Agent、RAG、MCP、本地 LLM 整合、進階檢索策略） | [n8n-ai-workflow-automation.md](n8n-ai-workflow-automation.md) | n8n, AI Agent, Workflow, RAG, MCP, Webhook, Schedule Trigger, LM Studio, Tavily, FAISS, Query Rewriting, HyDE, Multi-Query |
 | 2026-07-01 | Playwright MCP × Claude Code：原型頁面 → Spec / Impl KB 自動化工作流（Axshare、版本對齊、差距分析） | [playwright-mcp-spec-to-kb-workflow.md](playwright-mcp-spec-to-kb-workflow.md) | Playwright MCP, Claude Code, AI Engineering, Spec Automation, Prototype, Axshare, Knowledge Base |
 | 2026-08-03 | 私有 KB + SDLC Pipeline 工作坊 vs 公開 GitHub Skill 套件架構比較（需求澄清機制、Code Review 雙軸審查、架構腐化防護、跨 session 銜接） | [kb-workshop-vs-public-skill-repo-comparison.md](kb-workshop-vs-public-skill-repo-comparison.md) | Claude Code, Skill 架構, 需求澄清, Grilling, Code Review, SDLC Agent, Discipline Skill, Handoff |
-| 2026-08-03 | Claude Code 多模型編排層（pilotfish）vs 知識庫 + SDLC Pipeline 系統定位比較（角色分工模型綁定、自動降級鏈、安全工作路由、成本節省實測） | [multi-model-orchestration-vs-kb-hub.md](multi-model-orchestration-vs-kb-hub.md) | 多模型編排, 模型調度, Claude Code, 成本優化, SDLC pipeline, 知識庫治理 |
+| 2026-08-03（決策／第二輪稽核 2026-08-05） | Claude Code 多模型編排層（pilotfish）vs 知識庫 + SDLC Pipeline 系統定位比較（角色分工模型綁定、自動降級鏈、安全工作路由、成本節省實測；四項優化方向已有決策結果——安全路由與量化案例已落地，角色綁定與自動降級鏈不採用；第二輪已補做 33 筆歷史派發的語意層級抽查（27 符合／4 不符合／2 表未涵蓋）、PreToolUse hook 攔截式驗證的可行性與業界先例調研（決定不建置 deny 版，改強化文件警告），並落地派工表與自訂 agent 的對應修正） | [multi-model-orchestration-vs-kb-hub.md](multi-model-orchestration-vs-kb-hub.md) | 多模型編排, 模型調度, Claude Code, 成本優化, SDLC pipeline, 知識庫治理 |
 
 ---
 

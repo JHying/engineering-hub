@@ -44,3 +44,23 @@
 - 情境:quiz CHANGELOG 存在 [1.4.0]/[1.5.0](2026-07-14)兩條目,描述高併發領域、% 6 輪替、履歷強制章節;git 全歷史查證後確認這些變更從未出現在任何提交過的 SKILL.md,僅 frontmatter 版本號被升過;履歷功能後來以「選用觸發」形式實裝卻沒記條目。拆檔時新條目撞號 1.5.0 才暴露。
 - 教訓:CHANGELOG 先行(或改動被還原)而 SKILL.md 沒跟上時,單看任一檔都正常;版本號、CHANGELOG、實際內容三者可以各自漂移。
 - 以後怎麼做:改 skill 時核對「frontmatter version = CHANGELOG 最新條目 = 內容實況」三點一致才算完;發現歷史條目與實作不符,在該條目下加「⚠️ 校正」註記保留版本號,不刪改原文。
+
+## 2026-08-05 誤把「主線 session 內角色扮演」當成「per-role 查表派工」
+- 情境:tech-research 筆記聲稱「SDLC 六角色仍靠動態查表選 model,無固定綁定」,並據此推導「已有動態彈性可犧牲」的結論；實際查 roles/*.md 與 skills/sdlc-agent/references/pipeline-stages.md 才發現 SDLC 角色是主線 session 用 Skill 工具直接讀文件換人設執行(非 Agent 工具派發),角色本身的模型無條件 inherit session,model-dispatch.md §1 的查表只用在角色內部再派發子任務時,不是角色本身。
+- 教訓:「XX 機制已存在,所以不需要 Y」這種會拿來否決提案的論證,前提「XX 存在」不能只轉述前一份研究筆記的敘述,要追到實際執行路徑(這裡是 skill/角色定義檔)才能核實。
+- 以後怎麼做:任何「現有機制已覆蓋 X」的論證要寫入 KB 或用來否決提案前,先讀該機制的實際定義檔核實是否真的存在;confirm 後才寫入,不能只憑先前研究筆記帶過。
+
+## 2026-08-05 Explore 留空 model 時,inherit 主線但 capped at Opus——§3「不留空」規則的代價比想像中高
+- 情境:對 33 筆歷史 SDLC 子任務派發做語意抽查,發現 2 筆 `Explore` 派發(session 841a8b、4e0161)`model` 參數留空,實際跑的是 `claude-opus-5`,而當時主線實跑 `claude-fable-5`(Fast mode,底層即 Opus 等級)。一度誤判為「Explore 預設值是 opus,跟 haiku/inherit 假設都矛盾」的系統性缺陷;派 claude-code-guide 查官方文件(code.claude.com/docs/en/sub-agents.md)後確認:內建 Explore 的 model 行為就是「inherit 主線,但 capped at Opus」,§0 原本查證的「預設 inherit」沒有錯,不需訂正。真正原因是這兩次派發違反了既有 §3「每次 Agent 呼叫都明寫 model 參數,不留空」規則,撞上主線剛好在 Opus 等級的情境。
+- 教訓:「假設某規則有缺口」之前,要先查官方文件排除「規則本身沒錯、只是沒照做」的可能性,不要看到異常數據就急著論斷是制度缺口;Explore 型別不寫 model 的代價比其他型別更不對稱——主線若在 Fast mode/Opus 層級,留空就是白白繼承 Opus,不是單純「繼承一個普通模型」。
+- 以後怎麼做:所有 Explore 派發一律顯式帶 `model: haiku`(已寫入 model-dispatch.md §1 備註),不依賴 inherit;主線若切換到 Fast mode/Opus 層級工作時,對所有子任務派發加倍留意是否漏填 model 參數。
+
+## 2026-08-05 worker-mechanical.md 與 model-dispatch.md §1 表的 model 記載不一致,以角色定義檔為準
+- 情境:語意抽查發現凡派發 `worker-mechanical` 的任務全部實跑 `sonnet`,但 §1 表「批次機械修改(套用已定案的模式)」那列寫 `haiku`;查 `.claude/agents/worker-mechanical.md` frontmatter 確認是 2026-07-12 建檔時就定案 `model: sonnet`(理由:該角色涵蓋依模板生成文件、pending 草稿寫入等需要一定推理的工作,haiku 恐不夠穩),但 §1 表當時沒有同步更新,造成兩份 governance 檔案自 2026-07-12 起就互相矛盾超過三週未被發現。
+- 教訓:新增 `.claude/agents/*.md` 定義檔、且該角色對應到 §1 表既有的某一列時,建檔當下若決定用跟表不同的 model,必須同步改表,否則兩者各自看都「沒問題」,矛盾只在交叉比對時現形(跟 2026-07-28「governance 交叉引用」是同一類病)。
+- 以後怎麼做:§1 表已改為 sonnet 對齊 worker-mechanical.md 實際值(2026-08-05);往後新增/修改 `.claude/agents/*.md` 的 model/effort,必須同一次順手比對 §1 表是否有對應列,不一致就一起改。
+
+## 2026-08-05 新增 .claude/agents/worker-security-review.md(記錄,非踩雷)
+- 情境:比對 GitHub 上多模型編排專案(pilotfish)的宣告式綁定做法,評估後認為「安全審查/滲透測試/認證授權相關實作」這列風險特徵適合建專屬 agent 檔——漏填 model 時會退回繼承主線,主線若剛好在便宜模式,資安工作就被打折;不像 Explore 那類內建型有「建了新代理不保證被用」的弱點,因為 §1 表寫的 subagent_type 本來就會被直接引用,沒有跟誰搶戲的問題。同一輪也評估了 PreToolUse hook 強制檢查方案,查證後發現業界幾乎無此用法先例、且 Agent 工具 model 參數的 schema 本身有記錄在案的版本間 regression(issue #31027、#44412),風險大於效益,決定不做,只做本項與 prompt-templates.md 模板 1 的警告加強。
+- 教訓:同一輪派工優化裡,「建專屬 agent 檔」跟「建 hook 強制檢查」看似都是「機制取代記憶」的同類手段,但前者只是宣告式綁定(業界成熟做法、風險低),後者是攔截式驗證(業界罕見、疊加上游 schema 不穩定的風險)——比較兩個手段前要先查證各自的先例與穩定性,不能因為「精神類似」就等價視之。
+- 以後怎麼做:`worker-security-review`(opus, high, tools: Read/Edit/Write/Grep/Glob/Bash)用於安全審查/滲透測試/認證授權相關實作,§1 表已同步引用;之後新增其他高風險/高代價不對稱的派工類別時,優先評估宣告式 agent 檔,不要跳過evaluate直接想 hook。

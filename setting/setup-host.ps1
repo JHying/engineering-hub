@@ -23,17 +23,26 @@ $projDir   = Join-Path $claudeDir "projects\$projName"
 New-Item -ItemType Directory -Force $projDir | Out-Null
 
 function Connect-Link([string]$linkPath, [string]$target) {
+    $target = $target.TrimEnd('\')
+
     if (Test-Path $linkPath) {
         $item = Get-Item $linkPath -Force
 
         if ($item.LinkType -eq 'Junction') {
-            Write-Host "Already linked, skipping: $linkPath"
-            return
-        }
+            $currentTarget = (@($item.Target) | Select-Object -First 1).TrimEnd('\')
 
-        $bak = "$linkPath.pre-link.bak"
-        Write-Host "Existing path detected. Moving it to $bak"
-        Move-Item $linkPath $bak
+            if ($currentTarget -eq $target) {
+                Write-Host "Already linked, skipping: $linkPath"
+                return
+            }
+
+            Write-Host "Junction target is stale ($currentTarget -> $target expected). Relinking: $linkPath"
+            Remove-Item $linkPath -Force
+        } else {
+            $bak = "$linkPath.pre-link.bak"
+            Write-Host "Existing path detected. Moving it to $bak"
+            Move-Item $linkPath $bak
+        }
     }
 
     New-Item -ItemType Junction -Path $linkPath -Target $target | Out-Null

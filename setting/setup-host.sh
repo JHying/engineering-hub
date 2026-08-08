@@ -31,11 +31,17 @@ link() {
     local target="$2"
 
     if [ -L "$link_path" ]; then
-        echo "Already linked, skipping: $link_path"
-        return
-    fi
+        local current_target
+        current_target="$(readlink "$link_path")"
 
-    if [ -e "$link_path" ]; then
+        if [ "$current_target" = "$target" ]; then
+            echo "Already linked, skipping: $link_path"
+            return
+        fi
+
+        echo "Symlink target is stale ($current_target -> $target expected). Relinking: $link_path"
+        rm "$link_path"
+    elif [ -e "$link_path" ]; then
         mv "$link_path" "$link_path.pre-link.bak"
         echo "Existing path detected. Moved to ${link_path}.pre-link.bak"
     fi

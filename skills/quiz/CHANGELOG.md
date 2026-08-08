@@ -4,6 +4,17 @@
 
 ---
 
+## [1.8.0] — 2026-08-08
+
+### Changed
+- 履歷錨定規則來源優先序調整：優先讀 `knowledge/common_KBs/profile/resume.md`（本機匯入後常駐，已列入 `.gitignore`，不進 git、不隨 clone/pull 帶過去），沒有該檔才 fallback 對話中貼上的履歷內容；避免每次使用履歷錨定模式都要重新貼履歷全文
+- SKILL.md 模式判斷表的履歷錨定說明同步更新
+
+### Context
+- 起因：`common_KBs/profile/resume.md` 屬個人化素材，改走 `.gitignore` 排除，`MASTER_INDEX.md` 同步新增對應章節說明此例外
+
+---
+
 ## [1.7.1] — 2026-08-03
 
 ### Changed

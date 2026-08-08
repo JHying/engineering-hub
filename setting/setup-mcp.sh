@@ -130,20 +130,27 @@ register_mcp_server jira-mcp \
     -t stdio \
     -- docker run -i --rm -e JIRA_URL -e JIRA_USERNAME -e JIRA_API_TOKEN ghcr.io/sooperset/mcp-atlassian:latest
 
-# playwright: no credentials; resolve the global npm bin path dynamically
-npm_prefix="$(npm config get prefix)"
-playwright_cmd="$npm_prefix/bin/playwright-mcp-server"
-if [ ! -x "$playwright_cmd" ]; then
-    echo "playwright-mcp-server not found - installing @executeautomation/playwright-mcp-server globally..."
-    npm install -g '@executeautomation/playwright-mcp-server'
-fi
-register_mcp_server playwright -t stdio -- "$playwright_cmd"
+# playwright + postman both need npm/node on PATH. Skip gracefully (not a
+# hard crash under `set -e`) if this host doesn't have it, so the script
+# still completes and registers whatever it can (e.g. jira-mcp).
+if ! command -v npm >/dev/null 2>&1; then
+    echo "WARNING: npm not found on PATH - skipping playwright and postman (install Node.js, then re-run this script to add them)."
+else
+    # playwright: no credentials; resolve the global npm bin path dynamically
+    npm_prefix="$(npm config get prefix)"
+    playwright_cmd="$npm_prefix/bin/playwright-mcp-server"
+    if [ ! -x "$playwright_cmd" ]; then
+        echo "playwright-mcp-server not found - installing @executeautomation/playwright-mcp-server globally..."
+        npm install -g '@executeautomation/playwright-mcp-server'
+    fi
+    register_mcp_server playwright -t stdio -- "$playwright_cmd"
 
-# postman: no local install needed, npx resolves it on demand
-register_mcp_server postman \
-    -e "POSTMAN_API_KEY=$postman_key" \
-    -t stdio \
-    -- npx -y @postman/postman-mcp-server
+    # postman: no local install needed, npx resolves it on demand
+    register_mcp_server postman \
+        -e "POSTMAN_API_KEY=$postman_key" \
+        -t stdio \
+        -- npx -y @postman/postman-mcp-server
+fi
 
 echo ""
 echo "Done. Verifying:"

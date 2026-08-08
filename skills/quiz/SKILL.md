@@ -1,7 +1,7 @@
 ---
 name: quiz
 description: 從 tech-research 知識庫隨機抽題，以面試考題風格出題（選擇題或簡答題），協助溫故知新、讓眼睛休息。另有 interview 模式：模擬科技大廠面試官深入追問架構、微服務、Spring、Java 底層、高併發實務、ADR 決策復盤，可指定領域；interview design 為多階段 system design 長題模擬。支援獨立呼叫或由 /loop 定時觸發。
-version: "1.7.1"
+version: "1.8.0"
 ---
 
 # quiz
@@ -14,7 +14,7 @@ version: "1.7.1"
 | `/quiz interview`          | 面試官模式：模擬大廠深度面試，每次隨機選領域（見「模式 B」章節）                             |
 | `/quiz interview {領域}`     | 面試官模式並指定領域：`架構`/`微服務`/`spring`/`java`/`高併發`/`adr`             |
 | `/quiz interview ... {職級}` | 可另指定目標職級 `senior`/`staff`/`architect`（預設 staff），追問強度與評析基準隨之校準 |
-| `/quiz interview 參考履歷 ...` | 履歷錨定模式：對話中有履歷/案例時，題目錨定其實際記載出題（見「履歷錨定」章節）                      |
+| `/quiz interview 參考履歷 ...` | 履歷錨定模式：優先讀 `common_KBs/profile/resume.md`，沒有則用對話中的履歷/案例，題目錨定其實際記載出題（見「履歷錨定」章節） |
 | `/quiz interview design`   | System Design 長題模擬：多階段完整系統設計面試（見「模式 B-D」章節）                   |
 | `/loop 30m /quiz`          | 每 30 分鐘自動出一題，session 開始時手動啟動一次即可                              |
 

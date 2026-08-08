@@ -64,3 +64,8 @@
 - 情境:比對 GitHub 上多模型編排專案(pilotfish)的宣告式綁定做法,評估後認為「安全審查/滲透測試/認證授權相關實作」這列風險特徵適合建專屬 agent 檔——漏填 model 時會退回繼承主線,主線若剛好在便宜模式,資安工作就被打折;不像 Explore 那類內建型有「建了新代理不保證被用」的弱點,因為 §1 表寫的 subagent_type 本來就會被直接引用,沒有跟誰搶戲的問題。同一輪也評估了 PreToolUse hook 強制檢查方案,查證後發現業界幾乎無此用法先例、且 Agent 工具 model 參數的 schema 本身有記錄在案的版本間 regression(issue #31027、#44412),風險大於效益,決定不做,只做本項與 prompt-templates.md 模板 1 的警告加強。
 - 教訓:同一輪派工優化裡,「建專屬 agent 檔」跟「建 hook 強制檢查」看似都是「機制取代記憶」的同類手段,但前者只是宣告式綁定(業界成熟做法、風險低),後者是攔截式驗證(業界罕見、疊加上游 schema 不穩定的風險)——比較兩個手段前要先查證各自的先例與穩定性,不能因為「精神類似」就等價視之。
 - 以後怎麼做:`worker-security-review`(opus, high, tools: Read/Edit/Write/Grep/Glob/Bash)用於安全審查/滲透測試/認證授權相關實作,§1 表已同步引用;之後新增其他高風險/高代價不對稱的派工類別時,優先評估宣告式 agent 檔,不要跳過evaluate直接想 hook。
+
+## 2026-08-08 repo 改名後,`setup-host.ps1` 的 skills junction 沒跟著修,使用者以為「跑過就該裝好」
+- 情境:repo 從 `D:\Work\knowledge-hub` 改名為 `D:\Work\engineering-hub` 後(近期 commit「rename and optimize」),使用者稱已執行過 `setup-host.ps1`,但 Skill 工具仍回報 `Unknown skill: quiz`。查 `~/.claude/skills` 實際是 Junction,但 `Target` 仍是舊路徑 `D:\Work\knowledge-hub\skills`(該目錄已不存在)。原因是 `Connect-Link` 函式只檢查「連結是否已存在(`LinkType -eq 'Junction'`)」就 skip,完全不比對 `Target` 是否等於目前 repo 路徑,所以改名後在新路徑重跑腳本也修不好舊連結。
+- 教訓:「使用者說已經跑過 setup 腳本」不等於「連結現在是對的」——idempotent 腳本若只判斷「連結存在」而不驗證連結內容,重跑無法自我修復,需要額外檢測。
+- 以後怎麼做:懷疑 skill/memory 找不到但使用者確認執行過 setup 時,先用 `Get-Item $link -Force` 讀 `.Target` 跟目前 repo 路徑比對,不要只信「跑過了」的說法;`setup-host.ps1`/`.sh` 的 `Connect-Link`/`link` 已於同日補上 Target 比對、不符就自動 relink(不再只判斷連結是否存在),重跑腳本即可自我修復。

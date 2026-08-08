@@ -137,7 +137,7 @@ function Register-McpServer {
         [string[]]$CommandArgs
     )
 
-    & $claudeExe mcp remove $Name -s user *> $null
+    try { & $claudeExe mcp remove $Name -s user *> $null } catch {}
 
     $addArgs = @('mcp', 'add', $Name, '-s', 'user') + $EnvArgs + @('-t', 'stdio', '--', $Command) + $CommandArgs
     & $claudeExe @addArgs
@@ -155,28 +155,35 @@ $null = Register-McpServer -Name 'jira-mcp' `
     -Command 'cmd' `
     -CommandArgs @('/c', 'docker run -i --rm -e JIRA_URL -e JIRA_USERNAME -e JIRA_API_TOKEN ghcr.io/sooperset/mcp-atlassian:latest')
 
-# playwright: no credentials; resolve the global npm bin path dynamically
-# (it lives under this user's npm prefix, so it can't be hardcoded across hosts)
-#
-# Note: call npm.cmd explicitly, not bare `npm`. On this host (and likely any
-# host with the same npm-generated shim layout) bare `npm` resolves to
-# npm.ps1, which has the same broken $args-forwarding issue documented above
-# for claude.ps1 (reproducibly: `npm config get prefix` via the .ps1 shim
-# fails with "Unknown command: 'pm'" - it mangles the arguments). npm.cmd
-# does not have this problem.
-$npmPrefix = (& npm.cmd config get prefix).Trim()
-$playwrightCmd = Join-Path $npmPrefix 'playwright-mcp-server.cmd'
-if (-not (Test-Path $playwrightCmd)) {
-    Write-Host "playwright-mcp-server not found - installing @executeautomation/playwright-mcp-server globally..."
-    & npm.cmd install -g '@executeautomation/playwright-mcp-server'
-}
-$null = Register-McpServer -Name 'playwright' -EnvArgs @() -Command $playwrightCmd -CommandArgs @()
+# playwright + postman both need npm/node on PATH. Skip gracefully (not a
+# hard crash) if this host doesn't have it, so the script still completes
+# and registers whatever it can (e.g. jira-mcp, which only needs Docker).
+if (-not (Get-Command npm.cmd -ErrorAction SilentlyContinue)) {
+    Write-Warning "npm.cmd not found on PATH - skipping playwright and postman (install Node.js, then re-run this script to add them)."
+} else {
+    # playwright: no credentials; resolve the global npm bin path dynamically
+    # (it lives under this user's npm prefix, so it can't be hardcoded across hosts)
+    #
+    # Note: call npm.cmd explicitly, not bare `npm`. On this host (and likely any
+    # host with the same npm-generated shim layout) bare `npm` resolves to
+    # npm.ps1, which has the same broken $args-forwarding issue documented above
+    # for claude.ps1 (reproducibly: `npm config get prefix` via the .ps1 shim
+    # fails with "Unknown command: 'pm'" - it mangles the arguments). npm.cmd
+    # does not have this problem.
+    $npmPrefix = (& npm.cmd config get prefix).Trim()
+    $playwrightCmd = Join-Path $npmPrefix 'playwright-mcp-server.cmd'
+    if (-not (Test-Path $playwrightCmd)) {
+        Write-Host "playwright-mcp-server not found - installing @executeautomation/playwright-mcp-server globally..."
+        & npm.cmd install -g '@executeautomation/playwright-mcp-server'
+    }
+    $null = Register-McpServer -Name 'playwright' -EnvArgs @() -Command $playwrightCmd -CommandArgs @()
 
-# postman: no local install needed, npx resolves it on demand
-$null = Register-McpServer -Name 'postman' `
-    -EnvArgs @('-e', "POSTMAN_API_KEY=$($secrets.postman.POSTMAN_API_KEY)") `
-    -Command 'npx' `
-    -CommandArgs @('-y', '@postman/postman-mcp-server')
+    # postman: no local install needed, npx resolves it on demand
+    $null = Register-McpServer -Name 'postman' `
+        -EnvArgs @('-e', "POSTMAN_API_KEY=$($secrets.postman.POSTMAN_API_KEY)") `
+        -Command 'npx' `
+        -CommandArgs @('-y', '@postman/postman-mcp-server')
+}
 
 Write-Host ""
 Write-Host "Done. Verifying:"

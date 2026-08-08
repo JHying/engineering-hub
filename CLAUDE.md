@@ -39,7 +39,7 @@
 
 - 修改任何 skill 的 `SKILL.md`,同一次工作中必須同步更新該 skill 的 `CHANGELOG.md`
   (版本號、日期、Added / Changed / Removed)。
-- SKILL.md 與 CHANGELOG.md 均需去識別化(不含專案名稱、ticket 編號、真實類別名稱)。
+- SKILL.md 與 CHANGELOG.md 均需去識別化(不含專案名稱、ticket 編號、真實類別名稱),Context/起因段落只寫結構性理由,不敘述具體情境細節(例如「誰匯入了什麼檔案、因為內容含有什麼真實資訊」這類寫法過於具體,一律抽象化改寫)。
 
 ## 知識庫整合規範(每次對話都適用)
 
